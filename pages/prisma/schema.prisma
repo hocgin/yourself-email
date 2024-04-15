@@ -1,0 +1,24 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ====================== 模型 ======================
+// https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#json
+model Mail {
+  id          String   @id
+  headers     String
+  fromAddress String
+  toAddress   String
+  subject     String
+  html        String
+  text        String
+  attachments String
+  date        DateTime
+  readyFlag   Boolean  @default(false)
+}

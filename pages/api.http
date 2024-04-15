@@ -1,0 +1,11 @@
+### Query / Paging
+POST http://127.0.0.1:3000/api/mail/paging
+Content-Type: application/json
+
+{}
+
+### Query / Scroll
+POST http://127.0.0.1:3000/api/mail/scroll
+Content-Type: application/json
+
+{}

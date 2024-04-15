@@ -1,113 +1,229 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+import {useMediaQuery} from "usehooks-ts";
+import {Avatar, Button, Spacer, useDisclosure, Tooltip} from "@nextui-org/react";
+import React from "react";
+import {ChatInbox, ChatWindow, ChatProfile, ChatHeader} from "@/components/Message";
+import {AnimatePresence, domAnimation, LazyMotion, m} from "framer-motion";
+import {cn, Sidebar, SidebarDrawer} from "@/components";
+import {Icon} from "@iconify/react";
+import messagingSidebarItems from "@/components/Message/messaging-sidebar-items";
+import {Logo} from "@/components/logo";
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+
+const variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 20 : -20,
+    opacity: 0,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 20 : -20,
+    opacity: 0,
+  }),
+};
+
+export default () => {
+  const [[page, direction], setPage] = React.useState([0, 0]);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const {isOpen: isProfileSidebarOpen, onOpenChange: onProfileSidebarOpenChange} = useDisclosure();
+
+  const isCompact = useMediaQuery("(max-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const onToggle = React.useCallback(() => setIsCollapsed((prev) => !prev), []);
+
+  const paginate = React.useCallback((newDirection: number) => {
+    setPage((prev) => {
+      if (!isCompact) return prev;
+
+      const currentPage = prev[0];
+
+      if (currentPage < 0 || currentPage > 2) return [currentPage, prev[1]];
+
+      return [currentPage + newDirection, newDirection];
+    });
+  }, [isCompact]);
+
+  const content = React.useMemo(() => {
+    let component = <ChatInbox page={page} paginate={paginate} />;
+
+    if (isCompact) {
+      switch (page) {
+        case 1:
+          component = <ChatWindow paginate={paginate} />;
+          break;
+        case 2:
+          component = <ChatProfile paginate={paginate} />;
+          break;
+      }
+
+      return (
+        <LazyMotion features={domAnimation}>
+          <m.div key={page}
+                 animate="center"
+                 className="col-span-12"
+                 custom={direction}
+                 exit="exit"
+                 initial="enter"
+                 transition={{
+                   x: {type: "spring", stiffness: 300, damping: 30},
+                   opacity: {duration: 0.2},
+                 }}
+                 variants={variants}>
+            {component}
+          </m.div>
+        </LazyMotion>
+      );
+    }
+
+    return (
+      <>
+        <ChatInbox className="lg:col-span-6 xl:col-span-4" />
+        <ChatWindow
+          className="lg:col-span-6 xl:col-span-5"
+          toggleMessagingProfileSidebar={onProfileSidebarOpenChange}
         />
-      </div>
+        <div className="hidden xl:col-span-3 xl:block">
+          <SidebarDrawer
+            className="xl:block"
+            isOpen={isProfileSidebarOpen}
+            sidebarPlacement="right"
+            sidebarWidth={320}
+            onOpenChange={onProfileSidebarOpenChange}>
+            <ChatProfile />
+          </SidebarDrawer>
+        </div>
+      </>
+    );
+  }, [isCompact, page, paginate, direction, isProfileSidebarOpen, onProfileSidebarOpenChange]);
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
+  return (
+    <div className="flex h-dvh max-h-full w-full gap-x-3">
+      <SidebarDrawer className={cn("min-w-[288px] rounded-lg", {"min-w-[76px]": isCollapsed})}
+                     hideCloseButton={true}
+                     isOpen={isOpen}
+                     onOpenChange={onOpenChange}>
+        <div className={cn("will-change relative flex h-full w-72 flex-col bg-default-100 p-6 transition-width", {
+          "w-[83px] items-center px-[6px] py-6": isCollapsed,
+        })}>
+          <div className={cn("flex items-center gap-3 pl-2", {
+            "justify-center gap-0 pl-0": isCollapsed,
+          })}>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground">
+              <Logo className="text-background" />
+            </div>
+            <span className={cn("w-full text-small font-bold uppercase opacity-100", {
+              "w-0 opacity-0": isCollapsed,
+            })}>
+              Acme
             </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+            <div className={cn("flex-end flex", {hidden: isCollapsed})}>
+              <Icon className="cursor-pointer dark:text-primary-foreground/60 [&>g]:stroke-[1px]"
+                    icon="solar:round-alt-arrow-left-line-duotone"
+                    width={24}
+                    onClick={isMobile ? onOpenChange : onToggle} />
+            </div>
+          </div>
+          <Spacer y={6} />
+          <div className="flex items-center gap-3 px-3">
+            <Avatar isBordered
+                    size="sm"
+                    src="https://nextuipro.nyc3.cdn.digitaloceanspaces.com/components-images/avatars/e1b8ec120710c09589a12c0004f85825.jpg" />
+            <div className={cn("flex max-w-full flex-col", {hidden: isCollapsed})}>
+              <p className="text-small font-medium text-foreground">Kate Moore</p>
+              <p className="text-tiny font-medium text-default-400">Customer Support</p>
+            </div>
+          </div>
+          <Spacer y={6} />
+          <Sidebar defaultSelectedKey="chat"
+                   iconClassName="group-data-[selected=true]:text-default-50"
+                   isCompact={isCollapsed}
+                   itemClasses={{
+                     base: "px-3 rounded-large data-[selected=true]:!bg-foreground",
+                     title: "group-data-[selected=true]:text-default-50",
+                   }}
+                   items={messagingSidebarItems} />
+          <Spacer y={8} />
+          <div className={cn("mt-auto flex flex-col", {
+            "items-center": isCollapsed,
+          })}>
+            {isCollapsed && (
+              <Button
+                isIconOnly
+                className="flex h-10 w-10 text-default-600"
+                size="sm"
+                variant="light"
+                onPress={() => paginate && paginate(page - 1)}
+              >
+                <Icon
+                  className="cursor-pointer dark:text-primary-foreground/60 [&>g]:stroke-[1px]"
+                  height={24}
+                  icon="solar:round-alt-arrow-right-line-duotone"
+                  width={24}
+                  onClick={onToggle}
+                />
+              </Button>
+            )}
+            <Tooltip content="Support" isDisabled={!isCollapsed} placement="right">
+              <Button
+                fullWidth
+                className={cn(
+                  "justify-start truncate text-default-600 data-[hover=true]:text-foreground", {
+                    "justify-center": isCollapsed,
+                  })}
+                isIconOnly={isCollapsed}
+                startContent={isCollapsed ? null : (<Icon
+                  className="flex-none text-default-600"
+                  icon="solar:info-circle-line-duotone"
+                  width={24}
+                />)}
+                variant="light">
+                {isCollapsed ? (<Icon className="text-default-500"
+                                      icon="solar:info-circle-line-duotone"
+                                      width={24} />) : ("Support")}
+              </Button>
+            </Tooltip>
+            <Tooltip content="Log Out" isDisabled={!isCollapsed} placement="right">
+              <Button
+                className={cn("justify-start text-default-500 data-[hover=true]:text-foreground", {
+                  "justify-center": isCollapsed,
+                })}
+                isIconOnly={isCollapsed}
+                startContent={isCollapsed ? null : (<Icon
+                  className="flex-none rotate-180 text-default-500"
+                  icon="solar:minus-circle-line-duotone"
+                  width={24}
+                />)}
+                variant="light">{isCollapsed ? (<Icon className="rotate-180 text-default-500"
+                                                      icon="solar:minus-circle-line-duotone"
+                                                      width={24} />)
+                : ("Log Out")}</Button>
+            </Tooltip>
+          </div>
+        </div>
+      </SidebarDrawer>
+      <main className="w-full max-h-full">
+        <div
+          className="max-h-full grid grid-cols-12 gap-0 overflow-y-hidden p-0 pb-2 sm:rounded-large sm:border-small sm:border-default-200">
+          <ChatHeader
+            aria-hidden={!isMobile}
+            className="col-span-12 sm:hidden"
+            page={page}
+            paginate={paginate}
+            onOpen={onOpen} />
+          {isCompact ? (<AnimatePresence custom={direction} initial={false} mode="wait">
+            {content}
+          </AnimatePresence>) : (content)}
+        </div>
+      </main>
+    </div>
   );
-}
+};
+
