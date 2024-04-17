@@ -9,16 +9,72 @@ datasource db {
 }
 
 // ====================== 模型 ======================
+// @see postal-mime.d.ts Email
 // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#json
+// 邮件表
 model Mail {
-  id          String   @id
-  headers     String
-  fromAddress String
-  toAddress   String
-  subject     String
-  html        String
-  text        String
-  attachments String
-  date        DateTime
-  readyFlag   Boolean  @default(false)
+  id              Int       @id @default(autoincrement())
+  // 一个 Header 对象数组，包含邮件的所有头部信息，如 Subject、From、To 等。
+  headers         String
+  // 发送者的电子邮件地址信息。
+  from_address    String
+  // 可选属性，表示邮件的发送者地址，这可能与 from 相同，也可能不同。
+  sender          String?
+  // 一个 Address 对象数组，表示邮件的回复地址，用于回复邮件时使用。
+  reply_to        String?
+  // 可选属性，表示邮件已送达的电子邮件地址。
+  delivered_to    String?
+  // 可选属性，表示邮件的返回路径地址，用于控制无法送达邮件的退回地址。
+  return_path     String?
+  // 一个 Address 对象数组，表示邮件的主要收件人。
+  to_address      String
+  // 一个 Address 对象数组，表示邮件的抄送收件人。
+  cc              String?
+  // 一个 Address 对象数组，表示邮件的密送收件人。
+  bcc             String?
+  // 邮件的主题。
+  subject         String?
+  // 邮件的唯一标识符，通常是一个消息 ID。
+  message_id      String
+  // 可选属性，表示邮件是回复的原始邮件的 Message-ID。
+  in_reply_to     String?
+  // 可选属性，表示邮件引用的相关邮件的 Message-ID 列表。
+  reference       String?
+  // 邮件发送的日期和时间。
+  date            DateTime?
+  // 邮件的 HTML 正文内容。
+  html            String?
+  // 邮件的纯文本正文内容。
+  text            String?
+  // 一个 Attachment 对象数组，包含邮件的所有附件信息。
+  attachments     String?
+  // ================================================================================
+  // 记录所属的账号(目标接收人或发件人地址)
+  owner           String
+  // 已读标记
+  is_read         Boolean?  @default(false)
+  // 标记为重要
+  is_important    Boolean?  @default(false)
+  created_at      DateTime  @default(now())
+  last_updated_at DateTime? @updatedAt
 }
+
+// // 用户配置表
+// model UserConfig {
+//   id              Int       @id @default(autoincrement())
+//   //
+//   user_id         String
+//   // 默认邮箱
+//   // 是否超级管理员
+//   // 有权限的邮箱
+//   created_at      DateTime  @default(now())
+//   last_updated_at DateTime? @updatedAt
+// }
+//
+// // 系统配置表
+// model SystemConfig {
+// }
+//
+// // 邮箱配置表
+// model MailConfig {
+// }

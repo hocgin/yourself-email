@@ -10,29 +10,10 @@
 import {createMimeMessage} from "mimetext";
 import PostalMime from "postal-mime";
 import {EmailMessage} from "cloudflare:email";
-import {streamToArrayBuffer} from './_utils'
+import {streamToArrayBuffer, extractEmail} from './_utils'
 
-export interface Env {
-  // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-  // MY_KV_NAMESPACE: KVNamespace;
-  //
-  // Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-  // MY_DURABLE_OBJECT: DurableObjectNamespace;
-  //
-  // Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-  // MY_BUCKET: R2Bucket;
-  //
-  // Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-  // MY_SERVICE: Fetcher;
-  //
-  // Example binding to a Queue. Learn more at https://developers.cloudflare.com/queues/javascript-apis/
-  // MY_QUEUE: Queue;
-}
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    return new Response('Hello World!');
-  },
   /**
    * @param event
    * @param env
@@ -42,25 +23,38 @@ export default {
    * @see https://github.com/nodemailer/mailparser
    */
   async email(event, env, ctx) {
-    console.log('get email');
-    const rawEmail = await streamToArrayBuffer(event.raw, event.rawSize);
-    const parser = new PostalMime();
-    const parsed = await parser.parse(rawEmail);
-    console.log('message=', {
-      from: event.from,
-      to: event.to,
-      // headers: JSON.stringify(headersObject),
-      rawSize: event.rawSize,
-      body: JSON.stringify(parsed),
-    });
+    try {
+      const parsed = await PostalMime.parse(event.raw);
+      let owner = parsed.deliveredTo ?? extractEmail(parsed.headers) ?? 'unknown_owner';
 
+      console.log('body', [
+        JSON.stringify(parsed.headers), JSON.stringify(parsed.from), JSON.stringify(parsed.sender),
+        JSON.stringify(parsed.replyTo), parsed.deliveredTo, parsed.returnPath, JSON.stringify(parsed.to),
+        JSON.stringify(parsed.cc), JSON.stringify(parsed.bcc), parsed.subject, parsed.messageId,
+        parsed.inReplyTo, parsed.references, parsed.date, parsed.html, parsed.text,
+        JSON.stringify(parsed.attachments), owner
+      ]);
 
-    // Store received messages
-    await env.DB.prepare(`
-      INSERT INTO mail(headers, from_address, to_address, subject, date, html, text, attachments, message_id)
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
-    `).bind(JSON.stringify(parsed.headers), JSON.stringify(parsed.from), JSON.stringify(parsed.to), parsed.subject, parsed.date, parsed.html, parsed.text, JSON.stringify(parsed.attachments), parsed.messageId)
-      .run()
+      // Store received messages
+      let prepareRaw = (env.DB as D1Database).prepare(`
+        INSERT INTO Mail(headers, from_address, sender,
+                         reply_to, delivered_to, return_path, to_address,
+                         cc, bcc, subject, message_id,
+                         in_reply_to, reference, date, html, text,
+                         attachments, owner)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18)
+      `).bind(
+        JSON.stringify(parsed.headers) ?? null, JSON.stringify(parsed.from) ?? null, JSON.stringify(parsed.sender) ?? null,
+        JSON.stringify(parsed.replyTo) ?? null, parsed.deliveredTo ?? null, parsed.returnPath ?? null, JSON.stringify(parsed.to) ?? null,
+        JSON.stringify(parsed.cc) ?? null, JSON.stringify(parsed.bcc) ?? null, parsed.subject ?? null, parsed.messageId ?? null,
+        parsed.inReplyTo ?? null, parsed.references ?? null, parsed.date ?? null, parsed.html ?? null, parsed.text ?? null,
+        JSON.stringify(parsed.attachments) ?? null, owner ?? null
+      );
+      let resp = await prepareRaw.run();
+      console.log('resp', resp.meta);
+    } catch (e) {
+      console.warn('error', e);
+    }
 
 
     // const ticket = createTicket(message);
@@ -83,3 +77,4 @@ export default {
     // await event.reply(replyMessage);
   }
 };
+

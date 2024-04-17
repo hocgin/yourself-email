@@ -59,10 +59,10 @@ const RootLayout = ({children}: { children: React.ReactNode }) => {
     <Providers themeProps={{attribute: "class", defaultTheme: "dark"}}>
       <div className="flex flex-col h-screen">
         {/*<Navbar />*/}
-        <main style={{height: 800}} className="container mx-auto pt-6 pb-6 px-6 flex-grow">
+        <main className="flex-1 flex-grow overflow-hidden">
           {children}
         </main>
-        <Footer />
+        {/*<Footer />*/}
       </div>
     </Providers>
   </Suspense>

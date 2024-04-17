@@ -44,7 +44,8 @@
     "tailwind-variants": "^0.1.18",
     "tailwindcss": "3.3.5",
     "usehooks-ts": "^3.1.0",
-    "vercel-email": "^0.0.6"
+    "vercel-email": "^0.0.6",
+    "utility": "^2.1.0"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.11.0",

@@ -11,24 +11,26 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "plugins": [{
-        "name": "next"
+      "name": "next"
     }],
     "paths": {
       "@/*": ["./*"]
     },
     "types": [
-      "@cloudflare/workers-types/2023-07-01"
+      "@cloudflare/workers-types/2023-07-01",
     ]
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
+    "**/*.d.ts",
+    "**/*.tsx",
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],

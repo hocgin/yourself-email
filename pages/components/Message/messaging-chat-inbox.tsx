@@ -28,7 +28,7 @@ export type MessageChatInboxProps = React.HTMLAttributes<HTMLDivElement> & {
 const MessageChatInbox = React.forwardRef<HTMLDivElement, MessageChatInboxProps>(({page, paginate, ...props}, ref) => {
     const listRef = useRef<any>();
     const {data, loading, loadingMore, loadMore} = useInfiniteScroll((d) =>
-      AppService.scrollByMail({nextId: d?.nextId ?? 1, size: 10 * 6}), {
+      AppService.scrollByChat({nextId: d?.nextId ?? 1, size: 10 * 6, owner: 'cc@hocg.in'}), {
       isNoMore: d => !d?.hasMore,
       threshold: 300,
       target: listRef
@@ -61,33 +61,32 @@ const MessageChatInbox = React.forwardRef<HTMLDivElement, MessageChatInboxProps>
                         className="flex h-full max-h-[calc(100vh-280px)] flex-col gap-6 overflow-y-auto px-3">
             <Listbox classNames={{base: "p-0", list: "overflow-scroll"}}
                      items={data?.records ?? []} variant="flat">
-              {(item: MessagingChatListProps) => (
-                <ListboxItem key={item.id}
-                             className={cn("mb-2 px-4", {
-                               "bg-default-100": item.active,
-                             })}
-                             endContent={<div className="text-small text-default-400">{item.time}</div>}
-                             textValue={item.name}
-                             onPress={() => paginate?.(1)}>
+              {(item: MessagingChatListProps) => {
+                let name = item?.fromAddress?.name;
+                let message = item.text;
+                let avatarUrl = item.avatar;
+                return (<ListboxItem key={item.id}
+                                     className={cn("mb-2 px-4", {
+                                       "bg-default-100": item.active,
+                                     })}
+                                     endContent={<div className="text-small text-default-400">{item.time}</div>}
+                                     textValue={name}
+                                     onPress={() => paginate?.(1)}>
                   <div className="flex items-center gap-2 py-1">
-                    {item.count == 0 ? (
-                      <Avatar alt={item.name} className="flex-shrink-0"
-                              size="sm" src={item.avatar} />
-                    ) : (
-                      <Badge color="danger" content={item.count}>
-                        <Avatar alt={item.name} className="flex-shrink-0"
-                                size="sm" src={item.avatar} />
-                      </Badge>
-                    )}
+                    {item.unreadCount == 0 ? (
+                      <Avatar alt={name} className="flex-shrink-0" size="sm" src={avatarUrl} />
+                    ) : (<Badge color="danger" content={item.unreadCount}>
+                      <Avatar alt={name} className="flex-shrink-0" size="sm" src={avatarUrl} />
+                    </Badge>)}
                     <div className="ml-2 min-w-0 flex-1">
                       <div className="text-small font-semibold text-default-foreground">
-                        {item.name}
+                        {name}
                       </div>
-                      <div className="truncate text-small text-default-500">{item.message}</div>
+                      <div className="truncate text-small text-default-500">{message}</div>
                     </div>
                   </div>
-                </ListboxItem>
-              )}
+                </ListboxItem>);
+              }}
             </Listbox>
           </ScrollShadow>
         </div>

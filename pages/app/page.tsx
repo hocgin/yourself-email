@@ -34,6 +34,7 @@ export default () => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const {isOpen: isProfileSidebarOpen, onOpenChange: onProfileSidebarOpenChange} = useDisclosure();
 
+  // PC 宽度
   const isCompact = useMediaQuery("(max-width: 1024px)");
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -87,10 +88,10 @@ export default () => {
       <>
         <ChatInbox className="lg:col-span-6 xl:col-span-4" />
         <ChatWindow
-          className="lg:col-span-6 xl:col-span-5"
+          className="lg:col-span-6 xl:col-span-8"
           toggleMessagingProfileSidebar={onProfileSidebarOpenChange}
         />
-        <div className="hidden xl:col-span-3 xl:block">
+        <div className="hidden xl:col-span-3">
           <SidebarDrawer
             className="xl:block"
             isOpen={isProfileSidebarOpen}
@@ -102,11 +103,11 @@ export default () => {
         </div>
       </>
     );
-  }, [isCompact, page, paginate, direction, isProfileSidebarOpen, onProfileSidebarOpenChange]);
+  }, [isCompact, page, paginate, direction, onProfileSidebarOpenChange]);
 
   return (
-    <div className="flex h-dvh max-h-full w-full gap-x-3">
-      <SidebarDrawer className={cn("min-w-[288px] rounded-lg", {"min-w-[76px]": isCollapsed})}
+    <div className="flex h-dvh max-h-full h-full w-full gap-x-3">
+      <SidebarDrawer className={cn("h-auto min-w-[288px] rounded-lg", {"min-w-[76px]": isCollapsed})}
                      hideCloseButton={true}
                      isOpen={isOpen}
                      onOpenChange={onOpenChange}>
@@ -209,9 +210,9 @@ export default () => {
           </div>
         </div>
       </SidebarDrawer>
-      <main className="w-full max-h-full">
+      <main className="w-full max-h-full pt-2 pb-2">
         <div
-          className="max-h-full grid grid-cols-12 gap-0 overflow-y-hidden p-0 pb-2 sm:rounded-large sm:border-small sm:border-default-200">
+          className="max-h-full h-full grid grid-cols-12 gap-0 overflow-y-hidden p-0 pb-2 sm:rounded-large sm:border-small sm:border-default-200">
           <ChatHeader
             aria-hidden={!isMobile}
             className="col-span-12 sm:hidden"

@@ -6,7 +6,7 @@ import type {D1Database} from "@cloudflare/workers-types";
 export class DBKit {
   static getCli(db: D1Database) {
     const adapter = new PrismaD1(db)
-    const client = new PrismaClient({adapter, log: ["query", "info", "warn"]});
-    return [PrismaKit.create(client), client] as const;
+    const prisma = new PrismaClient({adapter, log: ["query", "info", "warn"]});
+    return [PrismaKit.create(prisma), prisma] as const;
   }
 }

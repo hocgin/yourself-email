@@ -17,16 +17,21 @@ export class PrismaKit {
   client: PrismaClient;
   dbType: DBType;
   static Raw = {
+    // https://github.com/blakeembrey/sql-template-tag/issues/38
+    isEmpty(sql: Sql) {
+      if (sql === empty) return false;
+      return sql;
+    },
     /**
      * condition
      * @param sql
      * @param condition
      */
-    if(sql: Sql, condition: (boolean | any) = true) {
+    if(sql: Sql, condition: (boolean | any)) {
       if (!Boolean(condition)) return empty;
       return sql;
     },
-    ifIn(field: string, values: any[], condition: (boolean | any) = true) {
+    ifIn(field: string, values: any[], condition: (boolean | any)) {
       return PrismaKit.Raw.if(PrismaKit.Raw.in(field, values), condition);
     },
     in(field: string, values: any[]) {
@@ -47,7 +52,7 @@ export class PrismaKit {
       return join(values, separator, prefix, suffix);
     },
     where(raws: Sql[] = []) {
-      raws = raws.filter(Boolean);
+      raws = raws.filter(PrismaKit.Raw.isEmpty);
       if (!raws?.length) return empty;
 
       // 去除 WHERE 语句前面的 AND 或者 OR
@@ -65,14 +70,18 @@ export class PrismaKit {
       if (!raws?.length) return empty;
       return raw(`ORDER BY ${raws.join(",")}`);
     },
-    sql(select: string, whereRaws?: Sql, suffix?: Sql) {
-      return join([raw(select), whereRaws, suffix].filter(Boolean), ' ');
+    sql(select: string | Sql, whereRaws?: Sql, suffix?: Sql) {
+      let selectSql = select;
+      if (typeof select === 'string') {
+        selectSql = raw(select);
+      }
+      return join([selectSql, whereRaws, suffix].filter(PrismaKit.Raw.isEmpty), ' ');
     },
     LLike(keyword?: string) {
       if (keyword?.length) return undefined;
       return `%${keyword}`;
     },
-    ifLLike(field: string, keyword?: string, condition: (boolean | any) = true) {
+    ifLLike(field: string, keyword: (string | any), condition: (boolean | any)) {
       if (!Boolean(condition)) return empty;
       let resolveKeyword = PrismaKit.Raw.LLike(keyword);
       if (!resolveKeyword) return empty;
@@ -82,7 +91,7 @@ export class PrismaKit {
       if (keyword?.length) return undefined;
       return `${keyword}%`;
     },
-    ifRLike(field: string, keyword?: string, condition: (boolean | any) = true) {
+    ifRLike(field: string, keyword: (string | any), condition: (boolean | any)) {
       if (!Boolean(condition)) return empty;
       let resolveKeyword = PrismaKit.Raw.RLike(keyword);
       if (!resolveKeyword) return empty;
@@ -92,7 +101,7 @@ export class PrismaKit {
       if (keyword?.length) return undefined;
       return `%${keyword}%`;
     },
-    ifLike(field: string, keyword?: string, condition: (boolean | any) = true) {
+    ifLike(field: string, keyword: (string | any), condition: (boolean | any)) {
       if (!Boolean(condition)) return empty;
       let resolveKeyword = PrismaKit.Raw.like(keyword);
       if (!resolveKeyword) return empty;
