@@ -36,15 +36,13 @@ const MessagingChatMessage = React.forwardRef<HTMLDivElement, MessagingChatMessa
           </div>
           <div ref={messageRef} className="mt-2 text-small text-default-900">
             {message}
-            {imageUrl && (
-              <Image
-                alt={`Image sent by ${name}`}
-                className="mt-2 border-2 border-default-200 shadow-small"
-                height={96}
-                src={imageUrl}
-                width={264}
-              />
-            )}
+            {imageUrl && (<Image
+              alt={`Image sent by ${name}`}
+              className="mt-2 border-2 border-default-200 shadow-small"
+              height={96}
+              src={imageUrl}
+              width={264}
+            />)}
           </div>
         </div>
       </div>

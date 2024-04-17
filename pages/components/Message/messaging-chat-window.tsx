@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useRef, useState} from "react";
 import {
   Button,
   Dropdown,
@@ -14,7 +14,8 @@ import {Icon} from "@iconify/react";
 import MessagingChatMessage from "./messaging-chat-message";
 import MessagingChatInput from "./messaging-chat-input";
 import MessagingChatHeader from "./messaging-chat-header";
-import messagingChatConversations from "./messaging-chat-conversations";
+import {useInfiniteTopScroll} from "@/components/useInfiniteTopScroll";
+import {AppService} from "@/service/http/app";
 
 export type MessagingChatWindowProps = React.HTMLAttributes<HTMLDivElement> & {
   paginate?: (page: number) => void;
@@ -23,6 +24,14 @@ export type MessagingChatWindowProps = React.HTMLAttributes<HTMLDivElement> & {
 
 const MessagingChatWindow = React.forwardRef<HTMLDivElement, MessagingChatWindowProps>(
   ({paginate, toggleMessagingProfileSidebar, ...props}, ref) => {
+    let targetRef = useRef();
+    const {data, loading, loadMore, loadingMore, noMore} = useInfiniteTopScroll(
+      (d) => AppService.scrollByMail({nextId: d?.nextId ?? 1, size: 10 * 6}),
+      {
+        target: targetRef,
+        isNoMore: (d) => !d?.hasMore,
+      },
+    );
     return (
       <div ref={ref} {...props}>
         <div className="w-full flex h-full flex-col sm:border-default-200 lg:border-l-small xl:border-r-small">
@@ -60,11 +69,15 @@ const MessagingChatWindow = React.forwardRef<HTMLDivElement, MessagingChatWindow
             </div>
           </div>
           <div className="flex w-full flex-1 overflow-visible">
-            <ScrollShadow
-              className="flex max-h-[calc(100vh-180px)] flex-col gap-6 px-6 py-4 lg:max-h-[calc(100vh-180px)]">
-              {messagingChatConversations.map((messagingChatConversation, idx) => (
-                <MessagingChatMessage key={idx} {...messagingChatConversation} />
-              ))}
+            <ScrollShadow ref={targetRef}
+                          className="flex max-h-[calc(100vh-220px)] flex-col gap-6 px-6 py-4 lg:max-h-[calc(100vh-180px)]">
+              {(data?.records ?? []).map((item, idx) => {
+                let name = item?.fromAddress?.name;
+                let message = item.text;
+                let avatarUrl = item.avatar;
+                let time = item?.date;
+                return <MessagingChatMessage key={idx} time={time} avatar={avatarUrl} message={message} name={name} />;
+              })}
             </ScrollShadow>
           </div>
           <div className="mx-2 mt-auto flex flex-col">
