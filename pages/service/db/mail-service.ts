@@ -1,9 +1,10 @@
 import type {D1Database} from "@cloudflare/workers-types";
 import {DBKit} from "../../_utils/db";
-import {QueryChatScrollRo, QueryMailScrollRo, SendMailRo} from "../../types/http";
+import {QueryMailScrollRo, QueryHistoryScrollRo, SendMailRo, IMail} from "../../types/http";
 import {PrismaKit} from "../../_utils/prisma";
 import sql, {raw} from "sql-template-tag";
 import {Mail} from "@prisma/client";
+import Email from "vercel-email";
 
 export enum Schema {
   Mail = 'mail'
@@ -16,7 +17,7 @@ export class MailService {
    * @param client
    * @param ro
    */
-  static async scrollByChat(client: D1Database, ro: QueryChatScrollRo) {
+  static async scrollByChat(client: D1Database, ro: QueryMailScrollRo) {
     let [cli, x] = DBKit.getCli(client);
     let keyword = ro.keyword;
     let rawSql = PrismaKit.Raw.sql(
@@ -47,7 +48,7 @@ export class MailService {
    * @param client
    * @param ro
    */
-  static async scrollByMail(client: D1Database, ro: QueryMailScrollRo) {
+  static async scrollByMail(client: D1Database, ro: QueryHistoryScrollRo) {
     let [cli] = DBKit.getCli(client);
     let keyword = ro.keyword;
     let rawSql = PrismaKit.Raw.sql(
@@ -67,7 +68,28 @@ export class MailService {
    */
   static async sendMail(client: D1Database, ro: SendMailRo) {
     let [cli, prisma] = DBKit.getCli(client);
-    // await Email.send(payload);
+    let asMail = (mail: IMail) => ({
+      email: mail?.address,
+      name: mail?.name,
+    });
+    let to = ro?.to ?? [];
+    let from = ro?.from;
+    await prisma.mail.create({
+      data: {
+        headers: '[]',
+        from_address: JSON.stringify(from),
+        to_address: JSON.stringify(to),
+        html: ro.html,
+        owner: from?.address,
+        message_id: `message_id_${Date.now()}`,
+      },
+    });
+    await Email.send({
+      to: to.map(asMail),
+      from: asMail(from),
+      subject: ro.subject,
+      html: ro?.html,
+    });
   }
 
   static asMail(entity: (Mail | any)) {
@@ -95,6 +117,6 @@ export class MailService {
       createdAt: entity.created_at,
       lastUpdatedAt: entity.last_updated_at,
       unreadCount: entity?.unread_count,
-    }
+    } as const;
   }
 }

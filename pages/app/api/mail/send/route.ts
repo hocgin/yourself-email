@@ -1,8 +1,8 @@
 import {NextRequest} from 'next/server';
 import {getRequestContext} from '@cloudflare/next-on-pages';
 import {ContextKit, ResultKit} from "@hocgin/nextjs-kit";
-import {SendMailRo} from "../../../../types/http";
-import {MailService} from "../../../../service/db/mail-service";
+import {SendMailRo} from "@/types/http";
+import {MailService} from "@/service/db/mail-service";
 
 export const runtime = 'edge'
 

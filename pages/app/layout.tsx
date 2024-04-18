@@ -4,11 +4,7 @@ import {Metadata} from "next";
 import React, {Suspense} from "react";
 import classNames from "clsx";
 import {fontSans} from "@/config/fonts";
-import {Providers} from "./providers";
-import {Navbar} from "@/components/Navbar";
-import {Link} from "@nextui-org/link";
 import {siteConfig} from "@/config/site";
-import {Footer} from "@/components";
 
 
 export const metadata: Metadata = {
@@ -56,15 +52,7 @@ const RootLayout = ({children}: { children: React.ReactNode }) => {
     fontSans.variable
   )}>
   <Suspense>
-    <Providers themeProps={{attribute: "class", defaultTheme: "dark"}}>
-      <div className="flex flex-col h-screen">
-        {/*<Navbar />*/}
-        <main className="flex-1 flex-grow overflow-hidden">
-          {children}
-        </main>
-        {/*<Footer />*/}
-      </div>
-    </Providers>
+    <main className="flex-1">{children}</main>
   </Suspense>
   </body>
   </html>;

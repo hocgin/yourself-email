@@ -1,18 +1,15 @@
 import {NextRequest} from 'next/server';
 import {getRequestContext} from "@cloudflare/next-on-pages";
-import {MailService} from "../../../../service/db/mail-service";
+import {MailService} from "@/service/db/mail-service";
 import {ContextKit, ResultKit} from '@hocgin/nextjs-kit';
-import {QueryChatScrollRo} from "@/types/http";
+import {QueryHistoryScrollRo} from "@/types/http";
 
 export const runtime = 'edge'
 
-/**
- * 根据查询用户列表和最新接收记录
- */
 const POST = ContextKit.withError(async (request: NextRequest) => {
   const {env, cf, ctx} = getRequestContext();
-  let ro = await request.json() as QueryChatScrollRo;
-  let result = await MailService.scrollByChat(env.DB, ro);
+  let ro = await request.json() as QueryHistoryScrollRo;
+  let result = await MailService.scrollByMail(env.DB, ro);
   return ResultKit.success(result);
 });
 export {POST};
