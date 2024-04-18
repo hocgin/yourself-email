@@ -37,29 +37,19 @@ import {Nav} from "./nav"
 import {useMail} from "./use-mail"
 
 interface MailProps {
-  defaultLayout: number[] | undefined
+  defaultLayout?: number[] | undefined
   defaultCollapsed?: boolean
   navCollapsedSize: number
 }
 
-export function Mail({
-                       defaultLayout = [265, 440, 655],
-                       defaultCollapsed = false,
-                       navCollapsedSize,
-                     }: MailProps) {
+export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false, navCollapsedSize}: MailProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const {selected, setSelected, selectedMail, setSelectedMail, setKeyword, accounts, allMails, unreadMails} = useMail();
   return (
     <TooltipProvider delayDuration={0}>
-      <ResizablePanelGroup
-        direction="horizontal"
-        onLayout={(sizes: number[]) => {
-          document.cookie = `react-resizable-panels:layout=${JSON.stringify(
-            sizes
-          )}`
-        }}
-        className="h-full max-h-screen items-stretch"
-      >
+      <ResizablePanelGroup direction="horizontal"
+                           onLayout={(sizes: number[]) => document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`}
+                           className="h-full max-h-screen items-stretch">
         <ResizablePanel
           defaultSize={defaultLayout[0]}
           collapsedSize={navCollapsedSize}

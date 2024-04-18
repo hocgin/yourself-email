@@ -5,7 +5,7 @@ import {IScroll} from "@hocgin/nextjs-kit";
 export class AppService {
 
   static listAccounts(): Promise<ListAccountVo> {
-    return useGet(`/api/mail/accounts`)
+    return useGet(`/api/user/accounts`)
       .then(RabbitKit.thenDataTryErrorIfExits);
   }
 
