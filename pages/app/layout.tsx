@@ -1,6 +1,6 @@
 // These styles apply to every route in the application
 import "@/styles/globals.css";
-import {Metadata} from "next";
+import type {Metadata, Viewport} from "next";
 import React, {Suspense} from "react";
 import classNames from "clsx";
 import {fontSans} from "@/config/fonts";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  applicationName: `Feed`,
+  applicationName: `Dove-Mail`,
   manifest: '/manifest.json',
   icons: {
     icon: "/logo.png",
@@ -30,18 +30,19 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: `black-translucent`
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  // viewportFit: 'cover',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: [
     {media: "(prefers-color-scheme: light)", color: "white"},
     {media: "(prefers-color-scheme: dark)", color: "black"},
   ],
-  viewport: {
-    width: 'device-width',
-    // viewportFit: 'cover',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  }
-};
+}
 
 
 const RootLayout = ({children}: { children: React.ReactNode }) => {

@@ -22,7 +22,13 @@ export function useMail(option?: Option) {
 
   // 未读列表
   const unreadMail = useInfiniteScroll((d) =>
-    AppService.scrollByMail({nextId: d?.nextId ?? 1, size: 10 * 6, keyword, owner: selected?.address, onlyUnread: true}), {
+    AppService.scrollByMail({
+      nextId: d?.nextId ?? 1,
+      size: 10 * 6,
+      keyword,
+      owner: selected?.address,
+      onlyUnread: true
+    }), {
     isNoMore: d => !d?.hasMore,
     reloadDeps: [keyword, selected],
     threshold: 300,
@@ -36,8 +42,6 @@ export function useMail(option?: Option) {
     threshold: 300,
     target: option?.allTarget
   });
-
-  console.log('useMail', {selected, unreadMail: unreadMail.data, allMail: allMail.data});
 
   return {
     selected, setSelected,
