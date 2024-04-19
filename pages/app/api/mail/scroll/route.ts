@@ -1,6 +1,6 @@
 import {NextRequest} from 'next/server';
 import {getRequestContext} from "@cloudflare/next-on-pages";
-import {MailService} from "../../../../service/db/mail-service";
+import {MailService} from "@/service/db/mail-service";
 import {ContextKit, ResultKit} from '@hocgin/nextjs-kit';
 import {QueryMailScrollRo} from "@/types/http";
 

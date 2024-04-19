@@ -1,4 +1,4 @@
-import {PrismaClient} from "@prisma/client";
+// import type {PrismaClient} from "@prisma/client";
 import sql, {empty, join, raw, Sql} from "sql-template-tag";
 import {CompleteRo, Paging, PagingRo, Scroll, ScrollRo} from "@hocgin/nextjs-kit";
 
@@ -8,13 +8,15 @@ export enum DBType {
   PostgreSQL = 'postgresql',
 }
 
+type DBClient = any;
+
 
 // https://github.com/blakeembrey/sql-template-tag
 // https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#sql-injection-prevention
 
 export class PrismaKit {
   static SINGLETON: PrismaKit;
-  client: PrismaClient;
+  client: DBClient;
   dbType: DBType;
   static Raw = {
     // https://github.com/blakeembrey/sql-template-tag/issues/38
@@ -114,7 +116,7 @@ export class PrismaKit {
    * @param client
    * @param dbType
    */
-  static create(client: PrismaClient, dbType: DBType = DBType.MySQL) {
+  static create(client: DBClient, dbType: DBType = DBType.MySQL) {
     PrismaKit.SINGLETON = new PrismaKit();
     PrismaKit.SINGLETON.client = client;
     PrismaKit.SINGLETON.dbType = dbType;

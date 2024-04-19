@@ -1,4 +1,4 @@
-import {Paging, Scroll, ScrollRo} from "@hocgin/nextjs-kit";
+import type {Paging, Scroll, ScrollRo} from "@hocgin/nextjs-kit";
 
 export interface IMail {
   address: string;

@@ -1,3 +1,5 @@
+"use client";
+
 import {useInfiniteScroll, useRequest} from "ahooks";
 import {AppService} from "@/service/http/app";
 import React, {useState} from "react";
@@ -49,6 +51,6 @@ export function useMail(option?: Option) {
     selectedMail, setSelectedMail,
     accounts: accounts.data ?? [],
     unreadMails: unreadMail.data?.list ?? [],
-    allMails: allMail.data?.list ?? [],
+    allMails: allMail.data?.list ?? []
   } as const;
 }

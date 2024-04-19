@@ -1,14 +1,9 @@
 import type {D1Database} from "@cloudflare/workers-types";
-import {DBKit} from "../../_utils/db";
-import {QueryMailScrollRo, QueryHistoryScrollRo, SendMailRo, IMail} from "../../types/http";
-import {PrismaKit} from "../../_utils/prisma";
+import {usePrisma, PrismaKit} from "@/lib";
+import type {QueryMailScrollRo, QueryHistoryScrollRo, SendMailRo, IMail} from "@/types/http";
 import sql, {raw} from "sql-template-tag";
-import {Mail} from "@prisma/client";
+import type {Mail} from "@prisma/client";
 import Email from "vercel-email";
-
-export enum Schema {
-  Mail = 'mail'
-}
 
 export class MailService {
 
@@ -18,7 +13,7 @@ export class MailService {
    * @param ro
    */
   static async scrollByChat(client: D1Database, ro: QueryMailScrollRo) {
-    let [cli, x] = DBKit.getCli(client);
+    let {kit} = usePrisma(client);
     let keyword = ro.keyword;
     let rawSql = PrismaKit.Raw.sql(
       sql`WITH LatestMail AS (SELECT M.*,
@@ -40,7 +35,7 @@ export class MailService {
         PrismaKit.Raw.if(sql`AND (LM.is_read = false)`, ro?.onlyUnread),
       ]),
       PrismaKit.Raw.orderBy(['LM.date DESC']));
-    return (await cli.scrollRaw(rawSql, ro)).convert(this.asMail);
+    return (await kit.scrollRaw(rawSql, ro)).convert(this.asMail);
   }
 
   /**
@@ -49,7 +44,7 @@ export class MailService {
    * @param ro
    */
   static async scrollByMail(client: D1Database, ro: QueryHistoryScrollRo) {
-    let [cli] = DBKit.getCli(client);
+    let {kit} = usePrisma(client);
     let keyword = ro.keyword;
     let rawSql = PrismaKit.Raw.sql(
       'SELECT M.* FROM Mail M',
@@ -58,7 +53,7 @@ export class MailService {
       ]),
       PrismaKit.Raw.orderBy(['M.id'])
     );
-    return (await cli.scrollRaw(rawSql, ro)).convert(this.asMail);
+    return (await kit.scrollRaw(rawSql, ro)).convert(this.asMail);
   }
 
   /**
@@ -67,7 +62,7 @@ export class MailService {
    * @param ro
    */
   static async sendMail(client: D1Database, ro: SendMailRo) {
-    let [cli, prisma] = DBKit.getCli(client);
+    let {kit, prisma} = usePrisma(client);
     let asMail = (mail: IMail) => ({
       email: mail?.address,
       name: mail?.name,

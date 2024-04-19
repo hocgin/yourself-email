@@ -10,10 +10,10 @@ if (process.env.NODE_ENV === 'development') {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // https://nextjs.org/docs/pages/building-your-application/routing/internationalization
-  i18n: {
-    locales: ['en'],
-    defaultLocale: 'en'
-  },
+  // i18n: {
+  //   locales: ['en'],
+  //   defaultLocale: 'en'
+  // },
 };
 
 export default nextConfig;
