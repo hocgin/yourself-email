@@ -5,6 +5,8 @@ import {AppService} from "@/service/http/app";
 import React, {useState} from "react";
 import {BasicTarget} from "@/components/useInfiniteTopScroll/types";
 import {IMail, Mail} from "@/types/http";
+import {useToast} from "@/components/ui/use-toast"
+
 
 interface Option {
   unreadTarget: BasicTarget<Element | Document>;
@@ -13,11 +15,18 @@ interface Option {
 
 
 export function useMail(option?: Option) {
+  const {toast} = useToast();
+  // 查看邮件详情
   let [selectedMail, setSelectedMail] = useState<Mail>();
+  // 当前选中的账号
   let [selected, setSelected] = useState<IMail>();
   // 账号列表
   let accounts = useRequest(AppService.listAccounts, {
-    onSuccess: (data) => setSelected(data?.length ? data?.[0] : null)
+    onSuccess: (data) => {
+      if (selected) return;
+      setSelected(data?.length ? data?.[0] : null);
+    },
+    onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
   });
 
   let [keyword, setKeyword] = useState<string>();

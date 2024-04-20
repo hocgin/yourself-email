@@ -1,6 +1,8 @@
+'use client';
+
 import {Mail} from "@/components/mail/mail"
 
-export default function MailPage() {
+export default function Home() {
   return (
     <>
       <div>

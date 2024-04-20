@@ -5,6 +5,7 @@ import React, {Suspense} from "react";
 import classNames from "clsx";
 import {fontSans} from "@/config/fonts";
 import {siteConfig} from "@/config/site";
+import { Toaster } from "@/components/ui/toaster"
 
 
 export const metadata: Metadata = {
@@ -53,6 +54,7 @@ const RootLayout = ({children}: { children: React.ReactNode }) => {
   )}>
   <Suspense>
     <main className="flex-1">{children}</main>
+    <Toaster />
   </Suspense>
   </body>
   </html>;

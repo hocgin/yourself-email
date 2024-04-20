@@ -13,8 +13,9 @@
     "build-cf-types": "wrangler types --env-interface CloudflareEnv env.d.ts"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^9.5.0",
     "@hocgin/hkit": "^2.0.158",
-    "@hocgin/nextjs-kit": "^2.0.158",
+    "@hocgin/nextjs-kit": "^2.0.160",
     "@prisma/adapter-d1": "^5.12.1",
     "@prisma/client": "^5.12.1",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -28,6 +29,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "ahooks": "^3.7.11",
     "class-variance-authority": "^0.7.0",
