@@ -14,6 +14,7 @@ import {
   Trash2,
   Users2,
 } from "lucide-react"
+import {EnvelopeOpenIcon} from "@radix-ui/react-icons";
 
 import {cn} from "@/lib/utils"
 import {Input} from "@/components/ui/input"
@@ -37,6 +38,7 @@ import {Nav} from "./nav"
 import {useMail} from "./use-mail"
 import {useState} from "react";
 import Empty from "@/components/empty";
+import {Button} from "@/components/ui/button";
 
 interface MailProps {
   defaultLayout?: number[] | undefined
@@ -76,6 +78,13 @@ export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false,
           )}>
             <AccountSwitcher isCollapsed={isCollapsed} defaultValue={selected} onSelectedAccount={setSelected}
                              accounts={accounts} />
+          </div>
+          <Separator />
+          <div className='justify-center px-2 py-2 flex'>
+            <Button className={'w-full'} size="sm" variant="ghost">
+              <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
+              写邮件
+            </Button>
           </div>
           <Separator />
           <Nav isCollapsed={isCollapsed}
