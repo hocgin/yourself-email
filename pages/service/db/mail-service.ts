@@ -102,7 +102,23 @@ export class MailService {
     let mail = await prisma.mail.findFirst({
       where: {id: Number(id)},
     });
+    if (mail && !mail?.is_read) {
+      await this.readyById(client, id)
+    }
     return this.asMail(mail);
+  }
+
+  /**
+   * 标记为已读
+   * @param client
+   * @param id
+   */
+  static async readyById(client: D1Database, id: any) {
+    let {kit, prisma} = usePrisma(client);
+    await prisma.mail.update({
+      where: {id: Number(id)},
+      data: {is_read: true}
+    });
   }
 
   static asMail(entity: (Mail | any)) {
