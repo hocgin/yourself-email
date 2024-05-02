@@ -5,7 +5,7 @@ import React, {Suspense} from "react";
 import classNames from "clsx";
 import {fontSans} from "@/config/fonts";
 import {siteConfig} from "@/config/site";
-import { Toaster } from "@/components/ui/toaster"
+import {Toaster} from "@/components/ui/toaster"
 
 
 export const metadata: Metadata = {
@@ -47,11 +47,8 @@ export const viewport: Viewport = {
 
 
 const RootLayout = ({children}: { children: React.ReactNode }) => {
-  return <html lang="en" suppressHydrationWarning>
-  <body className={classNames(
-    "min-h-screen bg-background font-sans antialiased",
-    fontSans.variable
-  )}>
+  return <html lang="en" suppressHydrationWarning className={'h-full'}>
+  <body className={classNames("flex h-full bg-background font-sans antialiased", fontSans.variable)}>
   <Suspense>
     <main className="flex-1">{children}</main>
     <Toaster />

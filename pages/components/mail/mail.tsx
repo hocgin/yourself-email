@@ -121,7 +121,7 @@ export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false,
               <TabsContent value="unread" className="m-0">
                 <MailList items={unreadMails} selected={selectedMail?.id} onClick={setSelectedMail} />
               </TabsContent>
-            </> : <div className={'py-5 px-10 h-screen'}>
+            </> : <div className={'py-5 px-10 h-full'}>
               <Empty />
             </div>}
           </Tabs>

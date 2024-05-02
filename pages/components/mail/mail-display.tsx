@@ -277,9 +277,7 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
             </form>
           </div>
         </div>
-      ) : (<div className='py-5 px-10 h-screen'>
-        <Empty />
-      </div>)}
+      ) : (<div className='py-5 px-10 h-full'><Empty /></div>)}
     </div>
   )
 }
