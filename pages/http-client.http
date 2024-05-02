@@ -43,5 +43,5 @@ X-Requested-With: XMLHttpRequest
 
 
 ### Query Mail Detail
-GET http://127.0.0.1:3000/api/mail/1
+GET {{host}}/api/mail/1
 Content-Type: application/json

@@ -9,6 +9,7 @@ export const runtime = 'edge'
  * 邮件详情
  */
 const GET = ContextKit.withError(async (request: NextRequest, {params}) => {
+  console.log('params', params);
   const {env, cf, ctx} = getRequestContext();
   return ResultKit.success((await MailService.fetchById(env.DB, params.id)));
 });
