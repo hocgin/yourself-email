@@ -93,6 +93,11 @@ export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false,
                  label: "128",
                  icon: Inbox,
                  variant: "default",
+               }, {
+                 title: "Trash",
+                 label: "",
+                 icon: Trash2,
+                 variant: "ghost",
                }]} />
         </ResizablePanel>
         <ResizableHandle withHandle />
