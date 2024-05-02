@@ -1,0 +1,1 @@
+export {InboxContent} from './inbox';

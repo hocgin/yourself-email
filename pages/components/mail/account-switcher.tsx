@@ -14,6 +14,7 @@ import {IMail} from "@/types/http";
 import {LangKit} from "@hocgin/hkit";
 import {useMail} from "@/components/mail/use-mail";
 import {useMemo} from "react";
+import {UserAvatar} from "@/components/avatar";
 
 interface AccountSwitcherProps {
   isCollapsed: boolean;
@@ -27,6 +28,7 @@ export function AccountSwitcher({isCollapsed, accounts, defaultValue, onSelected
     accounts.find((account) => account.address === defaultValue?.address),
     LangKit.toMap<IMail, string, IMail>(accounts, e => e.address)
   ], [accounts, defaultValue?.address]);
+  let title = selectedAccount?.name?.length ? selectedAccount?.name : selectedAccount?.address;
   return (
     <Select value={defaultValue?.address} onValueChange={(selected) => onSelectedAccount?.(saMaps?.[selected])}>
       <SelectTrigger className={cn(
@@ -35,9 +37,10 @@ export function AccountSwitcher({isCollapsed, accounts, defaultValue, onSelected
         "flex h-9 w-9 shrink-0 items-center justify-center p-0 [&>span]:w-auto [&>svg]:hidden"
       )} aria-label="Select account">
         <SelectValue placeholder="Select an account">
-          {selectedAccount?.icon}
+          {isCollapsed ?
+            <UserAvatar size={'sm'} radius={'small'} username={title} src={selectedAccount?.icon} /> : undefined}
           <span className={cn("ml-2", isCollapsed && "hidden")}>
-            {selectedAccount?.name?.length ? selectedAccount?.name : selectedAccount?.address}
+            {title}
           </span>
         </SelectValue>
       </SelectTrigger>

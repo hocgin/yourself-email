@@ -51,6 +51,7 @@ import {useState} from "react";
 import {useToast} from "@/components/ui/use-toast"
 import {cn} from "@/lib";
 import {Empty} from "@/components/empty";
+import {UserAvatar} from "@/components/avatar";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -221,12 +222,7 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
         <div className="flex flex-1 flex-col">
           <div className="flex items-start p-4">
             <div className="flex items-start gap-4 text-sm">
-              <Avatar>
-                <AvatarImage alt={fromName} />
-                <AvatarFallback>
-                  {fromName.split(" ").map((chunk) => chunk[0]).join("")}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar username={fromName} />
               <div className="grid gap-1">
                 <div className="font-semibold">
                   <span>{fromName}</span>&nbsp;
