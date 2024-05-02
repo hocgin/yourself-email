@@ -95,7 +95,7 @@ export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false,
                 <TabsTrigger
                   value="all"
                   className="text-zinc-600 dark:text-zinc-200">
-                  All mail
+                  All
                 </TabsTrigger>
                 <TabsTrigger
                   value="unread"
