@@ -7,6 +7,7 @@ import {cn} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
 import {ScrollArea} from "@/components/ui/scroll-area"
 import {Mail} from "@/types/http";
+import {Empty} from '@/components/empty';
 
 interface MailListProps {
   items: Mail[];
@@ -15,19 +16,21 @@ interface MailListProps {
 }
 
 export function MailList({items, selected, onClick}: MailListProps) {
+  let isEmpty = !items?.length;
   return (
     <ScrollArea className="h-screen">
-      <div className="flex flex-col gap-2 p-4 pt-0">
-        {items.map((item) => (<button key={item.id}
-                                      className={cn(
-                                        "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
-                                        selected === item.id && "bg-muted"
-                                      )}
-                                      onClick={() => onClick(item)}>
+      <div className={cn("flex flex-col gap-2 p-4 pt-0", isEmpty ? "items-center justify-center" : null)}>
+        {isEmpty ? <Empty /> : items.map((item) => (<button key={item.id} className={cn(
+          "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
+          selected === item.id && "bg-muted"
+        )} onClick={() => onClick(item)}>
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-center">
               <div className="flex items-center gap-2">
-                <div className="font-semibold">{item.fromAddress?.name}</div>
+                <div className="font-semibold">
+                  <span>{item.fromAddress?.name}</span>&nbsp;
+                  <span className={cn('text-xs', 'font-light')}>&lt;{item.fromAddress?.address}&gt;</span>
+                </div>
                 {!item.isRead && (
                   <span className="flex h-2 w-2 rounded-full bg-blue-600" />
                 )}

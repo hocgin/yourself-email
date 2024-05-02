@@ -10,7 +10,7 @@ let prisma: PrismaClient<{ adapter: PrismaD1 }, never, DefaultArgs>
 export function usePrisma(d1: D1Database) {
   if (!prisma) {
     const adapter = new PrismaD1(d1)
-    prisma = new PrismaClient({adapter})
+    prisma = new PrismaClient({adapter, log: ["query", "info", "warn"]})
   }
   return {kit: PrismaKit.create<PrismaClient>(prisma), prisma} as DBCliType;
 }

@@ -24,7 +24,9 @@ export function useMail(option?: Option) {
   let accounts = useRequest(AppService.listAccounts, {
     onSuccess: (data) => {
       if (selected) return;
-      setSelected(data?.length ? data?.[0] : null);
+      let selectedMail = data?.length ? data?.[0] : null;
+      console.log('selectedMail', selectedMail);
+      setSelected(selectedMail);
     },
     onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
   });

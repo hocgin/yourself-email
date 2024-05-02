@@ -69,22 +69,40 @@ export class MailService {
     });
     let to = ro?.to ?? [];
     let from = ro?.from;
-    await prisma.mail.create({
-      data: {
-        headers: '[]',
-        from_address: JSON.stringify(from),
-        to_address: JSON.stringify(to),
-        html: ro.html,
-        owner: from?.address,
-        message_id: `message_id_${Date.now()}`,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.mail.create({
+        data: {
+          headers: '[]',
+          from_address: JSON.stringify(from),
+          to_address: JSON.stringify(to),
+          html: ro.html,
+          owner: from?.address,
+          message_id: `message_id_${Date.now()}`,
+        },
+      });
+
+      await Email.send({
+        to: to.map(asMail),
+        from: asMail(from),
+        subject: ro.subject,
+        html: ro?.html,
+      });
     });
-    await Email.send({
-      to: to.map(asMail),
-      from: asMail(from),
-      subject: ro.subject,
-      html: ro?.html,
+
+  }
+
+  /**
+   * 查询邮件详情
+   * @param client
+   * @param id
+   */
+  static async fetchById(client: D1Database, id: any) {
+    if (!id) return;
+    let {kit, prisma} = usePrisma(client);
+    let mail = await prisma.mail.findFirst({
+      where: {id: Number(id)},
     });
+    return this.asMail(mail);
   }
 
   static asMail(entity: (Mail | any)) {

@@ -21,7 +21,27 @@ Content-Type: application/json
 
 
 ### Send Mail
-POST http://127.0.0.1:3000/api/mail/send
+POST {{host}}/api/mail/send
 Content-Type: application/json
+X-Requested-With: XMLHttpRequest
 
-{}
+{
+  "to": [
+    {
+      "address": "hocgin@gmail.com",
+      "name": "夏不来"
+    }
+  ],
+  "from": {
+    "address": "cc@hocg.in",
+    "name": ""
+  },
+  "subject": "Reply to hocgin@gmail.com",
+  "html": "testt"
+}
+
+
+
+### Query Mail Detail
+GET http://127.0.0.1:3000/api/mail/1
+Content-Type: application/json

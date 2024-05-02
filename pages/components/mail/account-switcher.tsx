@@ -28,7 +28,7 @@ export function AccountSwitcher({isCollapsed, accounts, defaultValue, onSelected
     LangKit.toMap<IMail, string, IMail>(accounts, e => e.address)
   ], [accounts, defaultValue?.address]);
   return (
-    <Select defaultValue={defaultValue?.address} onValueChange={(selected) => onSelectedAccount?.(saMaps?.[selected])}>
+    <Select value={defaultValue?.address} onValueChange={(selected) => onSelectedAccount?.(saMaps?.[selected])}>
       <SelectTrigger className={cn(
         "flex items-center gap-2 [&>span]:line-clamp-1 [&>span]:flex [&>span]:w-full [&>span]:items-center [&>span]:gap-1 [&>span]:truncate [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
         isCollapsed &&

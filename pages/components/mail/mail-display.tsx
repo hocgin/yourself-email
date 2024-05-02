@@ -48,6 +48,9 @@ import {IMail, Mail} from "@/types/http";
 import {useRequest} from "ahooks";
 import {AppService} from "@/service/http/app";
 import {useState} from "react";
+import {useToast} from "@/components/ui/use-toast"
+import {cn} from "@/lib";
+import {Empty} from "@/components/empty";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -55,21 +58,22 @@ interface MailDisplayProps {
 }
 
 export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
+  const {toast} = useToast()
   const [replyContent, setReplyContent] = useState<string>()
   let sendMail = useRequest(() => AppService.sendMail({
     to: [mail.fromAddress],
     from: selectedOwner,
-    subject: '',
+    subject: `Reply to ${mail.fromAddress}`,
     html: replyContent
   }), {
     manual: true,
-    onSuccess: () => {
+    onSuccess: (_) => {
       // 发送成功
       setReplyContent(undefined);
+      toast({title: `发送成功`, description: `Reply to ${mail.fromAddress}`});
+      // todo 查询页面
     },
-    onError: () => {
-
-    },
+    onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
   });
 
   const today = new Date()
@@ -224,10 +228,15 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="grid gap-1">
-                <div className="font-semibold">{fromName}</div>
-                <div className="line-clamp-1 text-xs">{mail.subject}</div>
-                <div className="line-clamp-1 text-xs">
-                  <span className="font-medium">Reply-To:</span> {fromAddress}
+                <div className="font-semibold">
+                  <span>{fromName}</span>&nbsp;
+                  <span className={cn('text-xs', 'font-light')}>&lt;{fromAddress}&gt;</span>
+                </div>
+                {/*<div className="line-clamp-1 text-xs">*/}
+                {/*  {mail.subject}*/}
+                {/*</div>*/}
+                <div className="line-clamp-1 text-xs font-medium">
+                  {mail.subject}
                 </div>
               </div>
             </div>
@@ -268,11 +277,9 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
             </form>
           </div>
         </div>
-      ) : (
-        <div className="p-8 text-center text-muted-foreground">
-          No message selected
-        </div>
-      )}
+      ) : (<div className='py-5 px-10 h-screen'>
+        <Empty />
+      </div>)}
     </div>
   )
 }
