@@ -18,7 +18,7 @@ interface MailListProps {
 export function MailList({items, selected, onClick}: MailListProps) {
   let isEmpty = !items?.length;
   return (
-    <ScrollArea className="h-screen">
+    <ScrollArea className="h-full">
       <div className={cn("flex flex-col gap-2 p-4 pt-0", isEmpty ? "items-center justify-center" : null)}>
         {isEmpty ? <Empty /> : items.map((item) => (<button key={item.id} className={cn(
           "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
