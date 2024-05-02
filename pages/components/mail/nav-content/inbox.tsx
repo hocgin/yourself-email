@@ -8,6 +8,7 @@ import {MailList} from "@/components/mail/mail-list";
 import Empty from "../../empty";
 import {MailDisplay} from "@/components/mail/mail-display";
 import {IMail, Mail} from "@/types/http";
+import {useQueryState} from "nuqs";
 
 type Created = {
   defaultLayout: number[];
@@ -18,6 +19,12 @@ type Created = {
   setKeyword: (keyword: string) => void;
   setSelectedMail: (mail: Mail) => void;
 };
+
+export enum TabKey {
+  all = 'all',
+  unread = 'unread',
+}
+
 export const InboxContent: React.FC<Created> = ({
                                                   defaultLayout,
                                                   selectedMail,
@@ -27,10 +34,10 @@ export const InboxContent: React.FC<Created> = ({
                                                   setSelectedMail,
                                                   selected
                                                 }) => {
-  const [tabKey, setTabKey] = useState('all');
+  let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
   return <>
-    <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-      <Tabs value={tabKey} onValueChange={setTabKey}>
+    <ResizablePanel className={'flex flex-col'} defaultSize={defaultLayout[1]} minSize={30}>
+      <Tabs className='flex flex-col overflow-hidden' value={tabKey} onValueChange={setTabKey}>
         <div className="flex items-center px-4 py-2">
           <h1 className="text-xl font-bold">Inbox</h1>
           <TabsList className="ml-auto">
@@ -47,20 +54,20 @@ export const InboxContent: React.FC<Created> = ({
           </TabsList>
         </div>
         <Separator />
-        {(tabKey === 'all' ? allMails : unreadMails)?.length ? <>
-          <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <form>
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search" className="pl-8"
-                       onChange={e => setKeyword(e.target.value)} />
-              </div>
-            </form>
-          </div>
-          <TabsContent value="all" className="m-0">
+        <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <form>
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search" className="pl-8"
+                     onChange={e => setKeyword(e.target.value)} />
+            </div>
+          </form>
+        </div>
+        {(tabKey === TabKey.all ? allMails : unreadMails)?.length ? <>
+          <TabsContent value={TabKey.all} className="m-0 flex-1 overflow-hidden">
             <MailList items={allMails} selected={selectedMail?.id} onClick={setSelectedMail} />
           </TabsContent>
-          <TabsContent value="unread" className="m-0">
+          <TabsContent value={TabKey.unread} className="m-0 flex-1 overflow-hidden">
             <MailList items={unreadMails} selected={selectedMail?.id} onClick={setSelectedMail} />
           </TabsContent>
         </> : <div className={'py-5 px-10 h-full'}>

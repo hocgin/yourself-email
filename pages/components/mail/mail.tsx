@@ -23,12 +23,6 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import {Separator} from "@/components/ui/separator"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
 import {TooltipProvider} from "@/components/ui/tooltip"
 import {AccountSwitcher} from "./account-switcher"
 import {Nav} from "./nav"
@@ -36,6 +30,9 @@ import {useMail} from "./use-mail"
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {InboxContent} from "@/components/mail/nav-content";
+import {useLocalStorageState} from 'ahooks';
+import {NewMail} from "@/components/mail/nav-content/new-mail";
+import {useQueryState} from 'nuqs';
 
 interface MailProps {
   defaultLayout?: number[] | undefined
@@ -43,10 +40,15 @@ interface MailProps {
   navCollapsedSize: number
 }
 
-export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false, navCollapsedSize}: MailProps) {
-  let [route, setRoute] = useState<string>('inbox');
-  const [tabKey, setTabKey] = useState('all');
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
+enum RouteKey {
+  Inbox = 'inbox',
+  New = 'new',
+  Trash = 'trash',
+}
+
+export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, navCollapsedSize}: MailProps) {
+  let [routeKey, setRouteKey] = useQueryState('path', {defaultValue: RouteKey.Inbox});
+  const [isCollapsed, setIsCollapsed] = useLocalStorageState<boolean>('isCollapsed', {defaultValue: defaultCollapsed})
   const {selected, setSelected, selectedMail, setSelectedMail, setKeyword, accounts, allMails, unreadMails} = useMail();
   return (
     <TooltipProvider delayDuration={0}>
@@ -78,7 +80,7 @@ export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false,
           </div>
           <Separator />
           <div className='justify-center px-2 py-2 flex'>
-            <Button className={'w-full'} size="sm" variant="ghost">
+            <Button className={'w-full'} size="sm" variant="ghost" onClick={() => setRouteKey(RouteKey.New)}>
               <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
               写邮件
             </Button>
@@ -89,20 +91,26 @@ export function Mail({defaultLayout = [265, 440, 655], defaultCollapsed = false,
                  title: "Inbox",
                  label: "128",
                  icon: Inbox,
-                 variant: "default",
+                 variant: routeKey === RouteKey.Inbox ? "default" : 'ghost',
+                 onClick: () => setRouteKey(RouteKey.Inbox)
                }, {
                  title: "Trash",
                  label: "",
                  icon: Trash2,
-                 variant: "ghost",
+                 variant: routeKey === RouteKey.Trash ? "default" : 'ghost',
+                 onClick: () => setRouteKey(RouteKey.Trash)
                }]} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-
-
-        <InboxContent allMails={allMails} selected={selected} selectedMail={selectedMail}
-                      setSelectedMail={setSelectedMail} unreadMails={unreadMails} defaultLayout={defaultLayout}
-                      setKeyword={setKeyword} />
+        {routeKey === RouteKey.Inbox ? <InboxContent allMails={allMails} selected={selected} selectedMail={selectedMail}
+                                                     setSelectedMail={setSelectedMail} unreadMails={unreadMails}
+                                                     defaultLayout={defaultLayout}
+                                                     setKeyword={setKeyword} /> : undefined}
+        {routeKey === RouteKey.New ? <NewMail defaultLayout={defaultLayout} /> : undefined}
+        {routeKey === RouteKey.Trash ? <InboxContent allMails={allMails} selected={selected} selectedMail={selectedMail}
+                                                     setSelectedMail={setSelectedMail} unreadMails={unreadMails}
+                                                     defaultLayout={defaultLayout}
+                                                     setKeyword={setKeyword} /> : undefined}
       </ResizablePanelGroup>
     </TooltipProvider>
   );

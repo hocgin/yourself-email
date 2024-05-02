@@ -2,7 +2,7 @@ import type {Paging, Scroll, ScrollRo} from "@hocgin/nextjs-kit";
 
 export interface IMail {
   address: string;
-  name: string;
+  name?: string;
   icon?: string;
 
   [key: string]: any
@@ -38,20 +38,28 @@ export interface Mail {
 
 export type ListAccountVo = IMail[];
 
-export interface QueryMailScrollRo extends ScrollRo {
+export interface ChatUserScrollRo extends ScrollRo {
   owner: string;
   keyword?: string;
   onlyUnread?: boolean;
 }
 
-export interface QueryHistoryScrollRo extends ScrollRo {
+export interface ChatHistoryScrollRo extends ScrollRo {
   keyword?: string;
   fromAddress?: string;
+}
+
+export interface MailScrollRo extends ScrollRo {
+  owner: string;
+  keyword?: string;
+  onlyUnread?: boolean;
 }
 
 export interface SendMailRo {
   from: IMail
   to: IMail[];
+  cc?: IMail[];
+  bcc?: IMail[];
   subject: string
   html?: string
   attachments?: string

@@ -1,6 +1,6 @@
 "use client";
 
-import {useInfiniteScroll, useRequest} from "ahooks";
+import {useInfiniteScroll, useRequest, useSet} from "ahooks";
 import {AppService} from "@/service/http/app";
 import React, {useState} from "react";
 import {BasicTarget} from "@/components/useInfiniteTopScroll/types";
@@ -16,6 +16,8 @@ interface Option {
 
 export function useMail(option?: Option) {
   const {toast} = useToast();
+  // 本地已读 ID 列表
+  let [localReadyList, {add: addLocalReady}] = useSet<string>([]);
   // 查看邮件详情
   let [selectedMail, setSelectedMail] = useState<Mail>();
   // 当前选中的账号
@@ -24,10 +26,17 @@ export function useMail(option?: Option) {
   let accounts = useRequest(AppService.listAccounts, {
     onSuccess: (data) => {
       if (selected) return;
-      let selectedMail = data?.length ? data?.[0] : null;
-      console.log('selectedMail', selectedMail);
-      setSelected(selectedMail);
+      let selectedAct = data?.length ? data?.[0] : null;
+      console.log('selectedMail', selectedAct);
+      setSelected(selectedAct);
     },
+    onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
+  });
+
+  // 查询邮件详情
+  let getMail = useRequest(AppService.getMail, {
+    manual: true,
+    onSuccess: (data) => setSelectedMail(data),
     onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
   });
 
@@ -59,9 +68,18 @@ export function useMail(option?: Option) {
   return {
     selected, setSelected,
     setKeyword,
-    selectedMail, setSelectedMail,
+    selectedMail,
+    setSelectedMail: (mail: Mail) => {
+      setSelectedMail(mail);
+      getMail.run(mail.id);
+      addLocalReady(mail.id);
+    },
     accounts: accounts.data ?? [],
-    unreadMails: unreadMail.data?.list ?? [],
-    allMails: allMail.data?.list ?? []
+    unreadMails: relist(localReadyList, unreadMail.data?.list ?? []),
+    allMails: relist(localReadyList, allMail.data?.list ?? []),
   } as const;
+}
+
+function relist(localReadyList: Set<string>, oldList: Mail[]) {
+  return oldList.map(e => ({...e, isRead: e?.isRead || localReadyList.has(e?.id)}));
 }

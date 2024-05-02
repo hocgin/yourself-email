@@ -2,7 +2,7 @@ import {NextRequest} from 'next/server';
 import {getRequestContext} from "@cloudflare/next-on-pages";
 import {MailService} from "@/service/db/mail-service";
 import {ContextKit, ResultKit} from '@hocgin/nextjs-kit';
-import {QueryMailScrollRo} from "@/types/http";
+import {ChatUserScrollRo, MailScrollRo} from "@/types/http";
 
 export const runtime = 'edge'
 
@@ -11,8 +11,8 @@ export const runtime = 'edge'
  */
 const POST = ContextKit.withError(async (request: NextRequest) => {
   const {env, cf, ctx} = getRequestContext();
-  let ro = await request.json() as QueryMailScrollRo;
-  let result = await MailService.scrollByChat(env.DB, ro);
+  let ro = await request.json() as MailScrollRo;
+  let result = await MailService.scrollBy(env.DB, ro);
   return ResultKit.success(result);
 });
 export {POST};

@@ -1,6 +1,6 @@
 import type {D1Database} from "@cloudflare/workers-types";
 import {usePrisma, PrismaKit} from "@/lib";
-import type {QueryMailScrollRo, QueryHistoryScrollRo, SendMailRo, IMail} from "@/types/http";
+import {ChatUserScrollRo, ChatHistoryScrollRo, SendMailRo, IMail, MailScrollRo} from "@/types/http";
 import sql, {raw} from "sql-template-tag";
 import type {Mail} from "@prisma/client";
 import Email from "vercel-email";
@@ -12,7 +12,7 @@ export class MailService {
    * @param client
    * @param ro
    */
-  static async scrollByChat(client: D1Database, ro: QueryMailScrollRo) {
+  static async scrollByChatUser(client: D1Database, ro: ChatUserScrollRo) {
     let {kit} = usePrisma(client);
     let keyword = ro.keyword;
     let rawSql = PrismaKit.Raw.sql(
@@ -43,13 +43,33 @@ export class MailService {
    * @param client
    * @param ro
    */
-  static async scrollByMail(client: D1Database, ro: QueryHistoryScrollRo) {
+  static async scrollByChatHistory(client: D1Database, ro: ChatHistoryScrollRo) {
     let {kit} = usePrisma(client);
     let keyword = ro.keyword;
     let rawSql = PrismaKit.Raw.sql(
       'SELECT M.* FROM Mail M',
       PrismaKit.Raw.where([
         PrismaKit.Raw.if(sql`AND (M.subject LIKE ${keyword} OR M.text LIKE ${keyword})`, keyword),
+      ]),
+      PrismaKit.Raw.orderBy(['M.id'])
+    );
+    return (await kit.scrollRaw(rawSql, ro)).convert(this.asMail);
+  }
+
+
+  /**
+   * 查询所有邮件，指定所属人
+   */
+  static async scrollBy(client: D1Database, ro: MailScrollRo) {
+    let {kit} = usePrisma(client);
+    let keyword = PrismaKit.Raw.like(ro.keyword);
+    console.log('keyword', keyword);
+    let rawSql = PrismaKit.Raw.sql(
+      'SELECT M.* FROM Mail M',
+      PrismaKit.Raw.where([
+        PrismaKit.Raw.if(sql`AND (M.subject LIKE ${keyword} OR M.text LIKE ${keyword})`, keyword),
+        PrismaKit.Raw.if(sql`AND (M.is_read = false)`, ro?.onlyUnread),
+        sql`AND (M.owner = ${ro.owner})`,
       ]),
       PrismaKit.Raw.orderBy(['M.id'])
     );
@@ -63,32 +83,37 @@ export class MailService {
    */
   static async sendMail(client: D1Database, ro: SendMailRo) {
     let {kit, prisma} = usePrisma(client);
-    let asMail = (mail: IMail) => ({
+    let asMail = (mail) => ({
       email: mail?.address,
       name: mail?.name,
     });
+    let asMails = (mails: IMail[]) => {
+      if (!mails?.length) return undefined;
+      return mails.map(asMail);
+    };
     let to = ro?.to ?? [];
+    let cc = ro?.cc ?? [];
+    let bcc = ro?.bcc ?? [];
     let from = ro?.from;
-    await prisma.$transaction(async (tx) => {
-      await tx.mail.create({
-        data: {
-          headers: '[]',
-          from_address: JSON.stringify(from),
-          to_address: JSON.stringify(to),
-          html: ro.html,
-          owner: from?.address,
-          message_id: `message_id_${Date.now()}`,
-        },
-      });
 
-      await Email.send({
-        to: to.map(asMail),
-        from: asMail(from),
-        subject: ro.subject,
-        html: ro?.html,
-      });
+    await Email.send({
+      to: asMails(to),
+      cc: asMails(cc),
+      bcc: asMails(bcc),
+      from: asMail(from),
+      subject: ro.subject,
+      html: ro?.html,
     });
-
+    await prisma.mail.create({
+      data: {
+        headers: '[]',
+        from_address: JSON.stringify(from),
+        to_address: JSON.stringify(to),
+        html: ro.html,
+        owner: from?.address,
+        message_id: `message_id_${Date.now()}`,
+      },
+    });
   }
 
   /**

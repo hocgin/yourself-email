@@ -9,11 +9,14 @@ dependencies:
     specifier: ^9.5.0
     version: 9.7.2(esbuild@0.17.19)(next@14.1.0)(webpack@5.91.0)
   '@hocgin/hkit':
-    specifier: ^2.0.158
-    version: 2.0.158(dayjs@1.11.10)
+    specifier: ^2.0.162
+    version: 2.0.162(dayjs@1.11.10)
   '@hocgin/nextjs-kit':
-    specifier: ^2.0.161
-    version: 2.0.161(@panva/hkdf@1.1.1)(jose@4.15.5)(next@14.1.0)(sql-template-tag@5.2.0)
+    specifier: ^2.0.162
+    version: 2.0.162(@panva/hkdf@1.1.1)(jose@4.15.5)(next@14.1.0)(sql-template-tag@5.2.0)
+  '@hookform/resolvers':
+    specifier: ^3.3.4
+    version: 3.3.4(react-hook-form@7.51.3)
   '@prisma/adapter-d1':
     specifier: 5.12.1
     version: 5.12.1
@@ -23,6 +26,9 @@ dependencies:
   '@radix-ui/react-avatar':
     specifier: ^1.0.4
     version: 1.0.4(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-dialog':
+    specifier: ^1.0.5
+    version: 1.0.5(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-dropdown-menu':
     specifier: ^2.0.6
     version: 2.0.6(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
@@ -68,6 +74,9 @@ dependencies:
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
+  cmdk:
+    specifier: ^1.0.0
+    version: 1.0.0(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
   date-fns:
     specifier: ^2.30.0
     version: 2.30.0
@@ -77,6 +86,9 @@ dependencies:
   next:
     specifier: 14.1.0
     version: 14.1.0(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+  nuqs:
+    specifier: ^1.17.1
+    version: 1.17.1(next@14.1.0)
   query-string:
     specifier: ^9.0.0
     version: 9.0.0
@@ -89,6 +101,9 @@ dependencies:
   react-dom:
     specifier: ^18
     version: 18.2.0(react@18.2.0)
+  react-hook-form:
+    specifier: ^7.51.3
+    version: 7.51.3(react@18.2.0)
   react-resizable-panels:
     specifier: ^2.0.17
     version: 2.0.17(react-dom@18.2.0)(react@18.2.0)
@@ -116,6 +131,9 @@ dependencies:
   vercel-email:
     specifier: ^0.0.6
     version: 0.0.6
+  zod:
+    specifier: ^3.23.6
+    version: 3.23.6
 
 devDependencies:
   '@cloudflare/next-on-pages':
@@ -1750,8 +1768,8 @@ packages:
     resolution: {integrity: sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==}
     dev: false
 
-  /@hocgin/hkit@2.0.158(dayjs@1.11.10):
-    resolution: {integrity: sha512-7x6KwXZrvbFFrRE4YXYU1CYlPo0y+tBixCTf9rXj44/EfeGvMaLCJQc0TtuH1J27qyZUjWasO2w/FKGO6Mdc8Q==}
+  /@hocgin/hkit@2.0.162(dayjs@1.11.10):
+    resolution: {integrity: sha512-jx9cZGprqSGCtqSomJr8dfMdKcmAdgo1YPA/lBcS4XLUgjmuEQDtFkOuY5hH1FcaQ8krF7+pAwa4mCDjP6D30A==}
     peerDependencies:
       dayjs: ^1.11.1
     dependencies:
@@ -1760,8 +1778,8 @@ packages:
       umi-request: 1.4.0
     dev: false
 
-  /@hocgin/nextjs-kit@2.0.161(@panva/hkdf@1.1.1)(jose@4.15.5)(next@14.1.0)(sql-template-tag@5.2.0):
-    resolution: {integrity: sha512-8Ud7C06C6kCWEnvemFRBvNv0LXRwrlGhJ8hRRlAMvBsV6EQn3bii7yVcEunUQuQG4x3zYJULXpvH+KcCcYMGlA==}
+  /@hocgin/nextjs-kit@2.0.162(@panva/hkdf@1.1.1)(jose@4.15.5)(next@14.1.0)(sql-template-tag@5.2.0):
+    resolution: {integrity: sha512-qq9/9pGCwz929Oq0rh27Fy9n+IWzuUjVhFF9q017/43Pc5ZiesSp3EjfE6/lGWdU0WT0dlE6FHffc6J+PaGf7A==}
     peerDependencies:
       '@panva/hkdf': ^1.1.1
       jose: ^4.14.4
@@ -1773,6 +1791,14 @@ packages:
       next: 14.1.0(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
       path-to-regexp: 6.2.2
       sql-template-tag: 5.2.0
+    dev: false
+
+  /@hookform/resolvers@3.3.4(react-hook-form@7.51.3):
+    resolution: {integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.51.3(react@18.2.0)
     dev: false
 
   /@isaacs/cliui@8.0.2:
@@ -2121,6 +2147,40 @@ packages:
       '@babel/runtime': 7.24.4
       '@types/react': 18.2.78
       react: 18.2.0
+    dev: false
+
+  /@radix-ui/react-dialog@1.0.5(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-GjWJX/AUpB703eEBanuBnIWdIXg6NvJFCXcNlSZk4xdszCdhrJgBoUd1cGk67vFO+WdA2pfI/plOpqz/5GUP6Q==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.24.4
+      '@radix-ui/primitive': 1.0.1
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.78)(react@18.2.0)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.78)(react@18.2.0)
+      '@radix-ui/react-dismissable-layer': 1.0.5(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-focus-guards': 1.0.1(@types/react@18.2.78)(react@18.2.0)
+      '@radix-ui/react-focus-scope': 1.0.4(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-id': 1.0.1(@types/react@18.2.78)(react@18.2.0)
+      '@radix-ui/react-portal': 1.0.4(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-presence': 1.0.1(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-slot': 1.0.2(@types/react@18.2.78)(react@18.2.0)
+      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.2.78)(react@18.2.0)
+      '@types/react': 18.2.78
+      '@types/react-dom': 18.2.25
+      aria-hidden: 1.2.4
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-remove-scroll: 2.5.5(@types/react@18.2.78)(react@18.2.0)
     dev: false
 
   /@radix-ui/react-direction@1.0.1(@types/react@18.2.78)(react@18.2.0):
@@ -3784,6 +3844,21 @@ packages:
   /clsx@2.1.0:
     resolution: {integrity: sha512-m3iNNWpd9rl3jvvcBnu70ylMdrXt8Vlq4HYadnU5fwcOtvkSQWPmj7amUcDT2qYI7risszBjI5AUIUox9D16pg==}
     engines: {node: '>=6'}
+    dev: false
+
+  /cmdk@1.0.0(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-gDzVf0a09TvoJ5jnuPvygTB77+XdOSwEmJ88L6XPFPlv7T3RxbP9jgenfylrAMD0+Le1aO0nVjQUzl2g+vjz5Q==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      '@radix-ui/react-dialog': 1.0.5(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.25)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
     dev: false
 
   /code-block-writer@10.1.1:
@@ -5633,7 +5708,7 @@ packages:
       workerd: 1.20240405.0
       ws: 8.16.0
       youch: 3.3.3
-      zod: 3.22.4
+      zod: 3.23.6
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -5656,7 +5731,7 @@ packages:
       workerd: 1.20240405.0
       ws: 8.16.0
       youch: 3.3.3
-      zod: 3.22.4
+      zod: 3.23.6
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -5722,6 +5797,10 @@ packages:
       minipass: 3.3.6
       yallist: 4.0.0
     dev: true
+
+  /mitt@3.0.1:
+    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
+    dev: false
 
   /mkdirp@0.5.6:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
@@ -5897,6 +5976,15 @@ packages:
       gauge: 3.0.2
       set-blocking: 2.0.0
     dev: true
+
+  /nuqs@1.17.1(next@14.1.0):
+    resolution: {integrity: sha512-zJPisj8L+SzKzt57c5s3fJW0ikksPr+PyeLyNwvx0i5ggTr5XR5uFhCoX/T+Mkmb6X5UxHB/0nnuZyFiQsh0cA==}
+    peerDependencies:
+      next: '>=13.4 <14.0.2 || ^14.0.3'
+    dependencies:
+      mitt: 3.0.1
+      next: 14.1.0(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+    dev: false
 
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
@@ -6243,6 +6331,15 @@ packages:
 
   /react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
+    dev: false
+
+  /react-hook-form@7.51.3(react@18.2.0):
+    resolution: {integrity: sha512-cvJ/wbHdhYx8aviSWh28w9ImjmVsb5Y05n1+FW786vEZQJV5STNM0pW6ujS+oiBecb0ARBxJFyAnXj9+GHXACQ==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-remove-scroll-bar@2.3.6(@types/react@18.2.78)(react@18.2.0):
@@ -7864,6 +7961,5 @@ packages:
       stacktracey: 2.1.8
     dev: true
 
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
-    dev: true
+  /zod@3.23.6:
+    resolution: {integrity: sha512-RTHJlZhsRbuA8Hmp/iNL7jnfc4nZishjsanDAfEY1QpDQZCahUp3xDzl+zfweE9BklxMUcgBgS1b7Lvie/ZVwA==}
