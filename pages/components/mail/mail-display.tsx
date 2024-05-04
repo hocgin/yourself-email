@@ -1,49 +1,14 @@
 "use client";
 
-import addDays from "date-fns/addDays"
-import addHours from "date-fns/addHours"
 import format from "date-fns/format"
-import nextSaturday from "date-fns/nextSaturday"
-import {
-  Archive,
-  ArchiveX,
-  Clock,
-  Forward,
-  MoreVertical,
-  Reply,
-  ReplyAll,
-  Trash2,
-} from "lucide-react"
+import {Archive, Clock, MoreVertical, Trash2,} from "lucide-react"
 
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 import {Button} from "@/components/ui/button"
-import {Calendar} from "@/components/ui/calendar"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {Label} from "@/components/ui/label"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import {Separator} from "@/components/ui/separator"
-import {Switch} from "@/components/ui/switch"
 import {Textarea} from "@/components/ui/textarea"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import {Tooltip, TooltipContent, TooltipTrigger,} from "@/components/ui/tooltip"
 import {IMail, Mail} from "@/types/http";
 import {useRequest} from "ahooks";
 import {AppService} from "@/service/http/app";
@@ -52,13 +17,16 @@ import {useToast} from "@/components/ui/use-toast"
 import {cn} from "@/lib";
 import {Empty} from "@/components/empty";
 import {UserAvatar} from "@/components/avatar";
+import {EventEmitter} from "ahooks/lib/useEventEmitter";
+import {Message, MessageType} from "@/types/base";
 
 interface MailDisplayProps {
   mail: Mail | null;
-  selectedOwner?: IMail
+  selectedOwner?: IMail;
+  $event: EventEmitter<Message>;
 }
 
-export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
+export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
   const {toast} = useToast()
   const [replyContent, setReplyContent] = useState<string>()
   let sendMail = useRequest(() => AppService.sendMail({
@@ -76,7 +44,33 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
     },
     onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
   });
-
+  let unread = useRequest(() => AppService.unread(mail?.id), {
+    manual: true,
+    onSuccess: (_) => {
+      mail.isRead = false;
+      $event.emit({type: MessageType.UpdateMail, value: mail});
+      toast({title: `Mask as unread`});
+    },
+    onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
+  });
+  let setTrash = useRequest((id, isTrash: boolean) => AppService.setTrash(id, isTrash), {
+    manual: true,
+    onSuccess: (_, [id, isTrash]) => {
+      mail.isTrash = isTrash;
+      $event.emit({type: MessageType.UpdateMail, value: mail});
+      toast({title: isTrash ? `Move to Trash` : `Remove From Trash`});
+    },
+    onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
+  });
+  let setArchive = useRequest((id, isArchive: boolean) => AppService.setArchive(id, isArchive), {
+    manual: true,
+    onSuccess: (_, [id, isArchive]) => {
+      mail.isArchive = isArchive;
+      $event.emit({type: MessageType.UpdateMail, value: mail});
+      toast({title: isArchive ? `Move to Archive` : 'Remove From Archive'})
+    },
+    onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
+  });
   const today = new Date()
   let fromName = mail?.fromAddress?.name;
   let fromAddress = mail?.fromAddress?.address;
@@ -86,7 +80,8 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant={mail?.isArchive ? "secondary" : "ghost"} size="icon" disabled={!mail}
+                      onClick={() => setArchive.run(mail?.id, !mail?.isArchive)}>
                 <Archive className="h-4 w-4" />
                 <span className="sr-only">Archive</span>
               </Button>
@@ -95,110 +90,31 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <ArchiveX className="h-4 w-4" />
-                <span className="sr-only">Move to junk</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to junk</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <Button variant={mail?.isTrash ? "secondary" : "ghost"} size="icon" disabled={!mail}
+                      onClick={() => setTrash.run(mail?.id, !mail?.isTrash)}>
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">Move to trash</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Move to trash</TooltipContent>
-          </Tooltip>
-          <Separator orientation="vertical" className="mx-1 h-6" />
-          <Tooltip>
-            <Popover>
-              <PopoverTrigger asChild>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" disabled={!mail}>
-                    <Clock className="h-4 w-4" />
-                    <span className="sr-only">Snooze</span>
-                  </Button>
-                </TooltipTrigger>
-              </PopoverTrigger>
-              <PopoverContent className="flex w-[535px] p-0">
-                <div className="flex flex-col gap-2 border-r px-2 py-4">
-                  <div className="px-4 text-sm font-medium">Snooze until</div>
-                  <div className="grid min-w-[250px] gap-1">
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      Later today{" "}
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addHours(today, 4), "E, h:m b")}
-                      </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      Tomorrow
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 1), "E, h:m b")}
-                      </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      This weekend
-                      <span className="ml-auto text-muted-foreground">
-                        {format(nextSaturday(today), "E, h:m b")}
-                      </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
-                      Next week
-                      <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 7), "E, h:m b")}
-                      </span>
-                    </Button>
-                  </div>
-                </div>
-                <div className="p-2">
-                  <Calendar />
-                </div>
-              </PopoverContent>
-            </Popover>
-            <TooltipContent>Snooze</TooltipContent>
+            <TooltipContent>Trash</TooltipContent>
           </Tooltip>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Reply className="h-4 w-4" />
-                <span className="sr-only">Reply</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Reply</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <ReplyAll className="h-4 w-4" />
-                <span className="sr-only">Reply all</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Reply all</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Forward className="h-4 w-4" />
-                <span className="sr-only">Forward</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Forward</TooltipContent>
+            <Popover>
+              <PopoverTrigger asChild>
+                <TooltipTrigger asChild>
+                  <Button variant={'ghost'} size="icon" disabled={!mail}>
+                    <Clock className="h-4 w-4" />
+                    <span className="sr-only">History</span>
+                  </Button>
+                </TooltipTrigger>
+              </PopoverTrigger>
+              <PopoverContent className="flex w-[535px] p-0">
+                历史记录预览,点击后看详情
+              </PopoverContent>
+            </Popover>
+            <TooltipContent>History</TooltipContent>
           </Tooltip>
         </div>
         <Separator orientation="vertical" className="mx-2 h-6" />
@@ -210,10 +126,10 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Mark as unread</DropdownMenuItem>
-            <DropdownMenuItem>Star thread</DropdownMenuItem>
-            <DropdownMenuItem>Add label</DropdownMenuItem>
-            <DropdownMenuItem>Mute thread</DropdownMenuItem>
+            <DropdownMenuItem onClick={unread.run}>Mark as unread</DropdownMenuItem>
+            {/*<DropdownMenuItem>Star thread</DropdownMenuItem>*/}
+            {/*<DropdownMenuItem>Add label</DropdownMenuItem>*/}
+            {/*<DropdownMenuItem>Mute thread</DropdownMenuItem>*/}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -253,19 +169,10 @@ export function MailDisplay({mail, selectedOwner}: MailDisplayProps) {
                 <Textarea className="p-4" onChange={e => setReplyContent(e?.target?.value)}
                           placeholder={`Reply ${fromName}...`} />
                 <div className="flex items-center">
-                  <Label
-                    htmlFor="mute"
-                    className="flex items-center gap-2 text-xs font-normal">
-                    <Switch id="mute" aria-label="Mute thread" /> Mute this
-                    thread
-                  </Label>
-                  <Button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      sendMail.runAsync();
-                    }}
-                    size="sm"
-                    className="ml-auto">
+                  <Button onClick={(e) => {
+                    e.preventDefault();
+                    sendMail.run();
+                  }} size="sm" className="ml-auto">
                     Send
                   </Button>
                 </div>

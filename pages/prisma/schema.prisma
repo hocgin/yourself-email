@@ -53,23 +53,32 @@ model Mail {
   owner           String
   // 已读标记
   is_read         Boolean?  @default(false)
-  // 标记为重要
-  is_important    Boolean?  @default(false)
+  // 标记为归档
+  is_archive      Boolean?  @default(false)
+  // 标记为待删除
+  is_trash        Boolean?  @default(false)
   created_at      DateTime  @default(now())
   last_updated_at DateTime? @updatedAt
 }
 
 // // 用户配置表
-// model UserConfig {
-//   id              Int       @id @default(autoincrement())
-//   //
-//   user_id         String
-//   // 默认邮箱
-//   // 是否超级管理员
-//   // 有权限的邮箱
-//   created_at      DateTime  @default(now())
-//   last_updated_at DateTime? @updatedAt
-// }
+model UserConfig {
+  id              Int       @id @default(autoincrement())
+  //
+  email           String    @unique
+  // // 只读
+  // only_read       Boolean?  @default(true)
+  // 超级管理员
+  is_super_admin  Boolean?  @default(false)
+  // 读邮箱名单(有权限的邮箱)
+  read_mail       String?
+  // 发邮箱名单(有权限的邮箱)
+  sent_mail       String?
+  // 默认邮箱
+  created_at      DateTime  @default(now())
+  last_updated_at DateTime? @updatedAt
+}
+
 //
 // // 系统配置表
 // model SystemConfig {

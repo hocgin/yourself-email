@@ -9,6 +9,8 @@ import Empty from "../../empty";
 import {MailDisplay} from "@/components/mail/mail-display";
 import {IMail, Mail} from "@/types/http";
 import {useQueryState} from "nuqs";
+import {EventEmitter} from "ahooks/lib/useEventEmitter";
+import {Message} from "@/types/base";
 
 type Created = {
   defaultLayout: number[];
@@ -18,6 +20,7 @@ type Created = {
   unreadMails: Mail[];
   setKeyword: (keyword: string) => void;
   setSelectedMail: (mail: Mail) => void;
+  $event: EventEmitter<Message>;
 };
 
 export enum TabKey {
@@ -32,7 +35,7 @@ export const InboxContent: React.FC<Created> = ({
                                                   unreadMails,
                                                   setKeyword,
                                                   setSelectedMail,
-                                                  selectedOwner
+                                                  selectedOwner, $event
                                                 }) => {
   let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
   return <>
@@ -77,7 +80,7 @@ export const InboxContent: React.FC<Created> = ({
     </ResizablePanel>
     <ResizableHandle withHandle />
     <ResizablePanel defaultSize={defaultLayout[2]}>
-      <MailDisplay mail={selectedMail} selectedOwner={selectedOwner} />
+      <MailDisplay $event={$event} mail={selectedMail} selectedOwner={selectedOwner} />
     </ResizablePanel>
   </>;
 };

@@ -31,7 +31,7 @@ type Created = {
   defaultLayout: number[];
   selectedOwner?: IMail
 };
-export const NewMail: React.FC<Created> = ({selectedOwner, defaultLayout}) => {
+export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) => {
   let [openCc, {toggle: toggleOpenCc}] = useBoolean(false);
   let [openBcc, {toggle: toggleOpenBcc}] = useBoolean(false);
   let sendMail = useRequest(({to, cc, bcc, subject, html}) => {
@@ -127,11 +127,14 @@ export const NewMail: React.FC<Created> = ({selectedOwner, defaultLayout}) => {
               <FormMessage />
             </FormItem>
           )} />
-        <Button type="submit">
-          {sendMail.loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <></>}
-          Submit
-        </Button>
+        <div className="flex items-center">
+          <Button type="submit" size="sm" className="ml-auto">
+            {sendMail.loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <></>}
+            Send
+          </Button>
+        </div>
       </form>
     </Form>
-  </ResizablePanel>;
+  </ResizablePanel>
+    ;
 }

@@ -3,8 +3,15 @@ import type {ListAccountVo} from "@/types/http";
 import {PrismaKit, usePrisma} from "@/lib";
 import sql from "sql-template-tag";
 import {isSupperAdmin} from "@/lib/utils";
+import {UserSession} from "@hocgin/nextjs-kit/dist/esm/type";
 
 export class UserService {
+
+  static async getState(client: D1Database, session: UserSession) {
+    let {kit, prisma} = usePrisma(client);
+    let email = session.email;
+
+  }
 
   static async listAccountsByUser(client: D1Database) {
     let {kit, prisma} = usePrisma(client);

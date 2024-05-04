@@ -28,7 +28,8 @@ export interface Mail {
   text: string,
   attachments: string[],
   isRead: boolean,
-  isImportant: boolean,
+  isTrash: boolean,
+  isArchive: boolean,
   createdAt: string,
   lastUpdatedAt: string,
   unreadCount: number;
@@ -53,6 +54,8 @@ export interface MailScrollRo extends ScrollRo {
   owner: string;
   keyword?: string;
   onlyUnread?: boolean;
+  isTrash?: boolean;
+  isArchive?: boolean;
 }
 
 export interface SendMailRo {

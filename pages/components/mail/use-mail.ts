@@ -71,8 +71,10 @@ export function useMail(option?: Option) {
     selectedMail,
     setSelectedMail: (mail: Mail) => {
       setSelectedMail(mail);
-      getMail.run(mail.id);
-      addLocalReady(mail.id);
+      if (mail.id !== selectedMail?.id) {
+        getMail.run(mail.id);
+        addLocalReady(mail.id);
+      }
     },
     accounts: accounts.data ?? [],
     unreadMails: relist(localReadyList, unreadMail.data?.list ?? []),

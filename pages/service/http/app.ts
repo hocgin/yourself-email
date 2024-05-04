@@ -1,4 +1,4 @@
-import {RabbitKit, useGet, usePost} from "@hocgin/hkit";
+import {RabbitKit, useGet, usePost, usePut} from "@hocgin/hkit";
 import {ListAccountVo, ChatUserScrollRo, ChatHistoryScrollRo, SendMailRo} from "@/types/http";
 import {IScroll} from "@hocgin/nextjs-kit";
 
@@ -30,4 +30,18 @@ export class AppService {
       .then(RabbitKit.thenDataTryErrorIfExits);
   }
 
+  static unread(id: string) {
+    return usePut(`/api/mail/${id}/unread`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.thenDataTryErrorIfExits);
+  }
+
+  static setTrash(id: string, isTrash: boolean) {
+    return usePut(`/api/mail/${id}/${isTrash ? 'trash' : 'untrash'}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.thenDataTryErrorIfExits);
+  }
+
+  static setArchive(id: string, isArchive: boolean) {
+    return usePut(`/api/mail/${id}/${isArchive ? 'archive' : 'unarchive'}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.thenDataTryErrorIfExits);
+  }
 }

@@ -63,12 +63,13 @@ export class MailService {
   static async scrollBy(client: D1Database, ro: MailScrollRo) {
     let {kit} = usePrisma(client);
     let keyword = PrismaKit.Raw.like(ro.keyword);
-    console.log('keyword', keyword);
     let rawSql = PrismaKit.Raw.sql(
       'SELECT M.* FROM Mail M',
       PrismaKit.Raw.where([
         PrismaKit.Raw.if(sql`AND (M.subject LIKE ${keyword} OR M.text LIKE ${keyword})`, keyword),
         PrismaKit.Raw.if(sql`AND (M.is_read = false)`, ro?.onlyUnread),
+        PrismaKit.Raw.if(sql`AND (M.is_trash = ${ro?.isTrash})`, ro?.isTrash !== undefined),
+        PrismaKit.Raw.if(sql`AND (M.is_archive = ${ro?.isArchive})`, ro?.isArchive !== undefined),
         sql`AND (M.owner = ${ro.owner})`,
       ]),
       PrismaKit.Raw.orderBy(['M.id'])
@@ -128,21 +129,50 @@ export class MailService {
       where: {id: Number(id)},
     });
     if (mail && !mail?.is_read) {
-      await this.readyById(client, id)
+      await this.setReadyById(client, id, true)
     }
     return this.asMail(mail);
   }
 
   /**
-   * 标记为已读
+   * 标记归档状态
    * @param client
    * @param id
+   * @param isArchive
    */
-  static async readyById(client: D1Database, id: any) {
+  static async setArchiveById(client: D1Database, id: any, isArchive: boolean) {
     let {kit, prisma} = usePrisma(client);
     await prisma.mail.update({
       where: {id: Number(id)},
-      data: {is_read: true}
+      data: {is_archive: isArchive}
+    });
+  }
+
+  /**
+   * 标记回收站状态
+   * @param client
+   * @param id
+   * @param isTrash
+   */
+  static async setTrashById(client: D1Database, id: any, isTrash: boolean) {
+    let {kit, prisma} = usePrisma(client);
+    await prisma.mail.update({
+      where: {id: Number(id)},
+      data: {is_trash: isTrash}
+    });
+  }
+
+  /**
+   * 标记为已读状态
+   * @param client
+   * @param id
+   * @param isArchive
+   */
+  static async setReadyById(client: D1Database, id: any, isReady: boolean) {
+    let {kit, prisma} = usePrisma(client);
+    await prisma.mail.update({
+      where: {id: Number(id)},
+      data: {is_read: isReady}
     });
   }
 
@@ -167,7 +197,8 @@ export class MailService {
       text: entity.text,
       attachments: entity.attachments,
       isRead: entity.is_read,
-      isImportant: entity.is_important,
+      isTrash: entity.is_trash,
+      isArchive: entity.is_archive,
       createdAt: entity.created_at,
       lastUpdatedAt: entity.last_updated_at,
       unreadCount: entity?.unread_count,
