@@ -28,18 +28,14 @@ X-Requested-With: XMLHttpRequest
 {
   "to": [
     {
-      "address": "hocgin@gmail.com",
-      "name": "夏不来"
+      "address": "hocgin@gmail.com"
     }
   ],
-  "from": {
-    "address": "cc@hocg.in",
-    "name": ""
-  },
-  "subject": "Reply to hocgin@gmail.com",
-  "html": "testt"
+  "cc": [],
+  "bcc": [],
+  "subject": "hi",
+  "html": "你好"
 }
-
 
 
 ### Query Mail Detail
