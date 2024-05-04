@@ -3,6 +3,7 @@ import {ResizablePanel} from "@/components/ui/resizable";
 import {DataTable} from "./data-table";
 import {columns} from "./columns";
 import {Input} from "@/components/ui/input";
+import {Search} from "lucide-react";
 
 type Created = {
   defaultLayout: number[];
@@ -10,15 +11,9 @@ type Created = {
 export const PermissionsContent: React.FC<Created> = ({defaultLayout, ...props}) => {
   return <ResizablePanel defaultSize={100 - defaultLayout[0]} minSize={30}>
     <div className={'w-2/3 space-y-2 mx-auto my-10'}>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          // value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          // onChange={(event) =>
-          //   table.getColumn("email")?.setFilterValue(event.target.value)
-          // }
-          className="max-w-sm"
-        />
+      <div className="flex items-center relative">
+        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input placeholder="Filter emails..." className="max-w-sm pl-8" />
       </div>
       <DataTable columns={columns} data={[{
         id: '1',
