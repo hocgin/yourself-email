@@ -102,15 +102,17 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
                }]} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        {routeKey === RouteKey.Inbox ? <InboxContent allMails={allMails} selected={selected} selectedMail={selectedMail}
-                                                     setSelectedMail={setSelectedMail} unreadMails={unreadMails}
-                                                     defaultLayout={defaultLayout}
-                                                     setKeyword={setKeyword} /> : undefined}
-        {routeKey === RouteKey.New ? <NewMail defaultLayout={defaultLayout} /> : undefined}
-        {routeKey === RouteKey.Trash ? <InboxContent allMails={allMails} selected={selected} selectedMail={selectedMail}
-                                                     setSelectedMail={setSelectedMail} unreadMails={unreadMails}
-                                                     defaultLayout={defaultLayout}
-                                                     setKeyword={setKeyword} /> : undefined}
+        {routeKey === RouteKey.Inbox ?
+          <InboxContent allMails={allMails} selectedOwner={selected} selectedMail={selectedMail}
+                        setSelectedMail={setSelectedMail} unreadMails={unreadMails}
+                        defaultLayout={defaultLayout}
+                        setKeyword={setKeyword} /> : undefined}
+        {routeKey === RouteKey.New ? <NewMail selectedOwner={selected} defaultLayout={defaultLayout} /> : undefined}
+        {routeKey === RouteKey.Trash ?
+          <InboxContent allMails={allMails} selectedOwner={selected} selectedMail={selectedMail}
+                        setSelectedMail={setSelectedMail} unreadMails={unreadMails}
+                        defaultLayout={defaultLayout}
+                        setKeyword={setKeyword} /> : undefined}
       </ResizablePanelGroup>
     </TooltipProvider>
   );

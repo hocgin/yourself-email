@@ -12,7 +12,7 @@ import {useQueryState} from "nuqs";
 
 type Created = {
   defaultLayout: number[];
-  selected: IMail;
+  selectedOwner: IMail;
   selectedMail: Mail;
   allMails: Mail[];
   unreadMails: Mail[];
@@ -32,7 +32,7 @@ export const InboxContent: React.FC<Created> = ({
                                                   unreadMails,
                                                   setKeyword,
                                                   setSelectedMail,
-                                                  selected
+                                                  selectedOwner
                                                 }) => {
   let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
   return <>
@@ -77,7 +77,7 @@ export const InboxContent: React.FC<Created> = ({
     </ResizablePanel>
     <ResizableHandle withHandle />
     <ResizablePanel defaultSize={defaultLayout[2]}>
-      <MailDisplay mail={selectedMail} selectedOwner={selected} />
+      <MailDisplay mail={selectedMail} selectedOwner={selectedOwner} />
     </ResizablePanel>
   </>;
 };
