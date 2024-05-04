@@ -1,5 +1,6 @@
 import {Button} from "@/components/ui/button";
 import {ColumnDef} from "@tanstack/react-table";
+import {Checkbox} from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,6 +25,9 @@ export const columns: ColumnDef<Row>[] = [{
 }, {
   accessorKey: "isSuperAdmin",
   header: "Super Admin",
+  cell: ({row}) => {
+    return <Checkbox disabled checked={row?.original?.isSuperAdmin} />
+  }
 }, {
   accessorKey: "readMail",
   header: "Read Mail List",
