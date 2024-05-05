@@ -29,7 +29,7 @@ export const PermissionsContent: React.FC<Created> = ({defaultLayout, ...props})
       <div className="flex items-center relative justify-between">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input placeholder="Filter emails..." className="max-w-sm pl-8"
-               onChange={(e: any) => run(e?.target?.keyword)} />
+               onChange={(e: any) => run(e?.target?.value)} />
         <AddDialog event$={event$} />
       </div>
       <DataTable columns={columns(event$)} data={data ?? []} />

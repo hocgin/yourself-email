@@ -22,7 +22,7 @@ type Created = {
   onOpenChange: (open: boolean) => void;
   event$: EventEmitter<Message>
 };
-export const DeleteDialog: React.FC<Created> = React.forwardRef(({id, event$, children, onOpenChange}) => {
+export const DeleteDialog: React.FC<Created> = ({id, event$, children, onOpenChange}) => {
   let $deleteByUserConfig = useRequest(AppService.deleteByUserConfig, {
     manual: true,
     onSuccess: (_) => toast({title: `Success`}),
@@ -46,4 +46,4 @@ export const DeleteDialog: React.FC<Created> = React.forwardRef(({id, event$, ch
       </DialogFooter>
     </DialogContent>
   </Dialog>
-});
+};

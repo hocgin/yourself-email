@@ -30,7 +30,7 @@ type Created = {
   children: React.ReactElement;
   onOpenChange: (open: boolean) => void;
 };
-export const ViewDialog: React.FC<Created> = React.forwardRef(({children, data, onOpenChange}) => {
+export const ViewDialog: React.FC<Created> = ({children, data, onOpenChange}) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -95,4 +95,4 @@ export const ViewDialog: React.FC<Created> = React.forwardRef(({children, data, 
       </Form>
     </DialogContent>
   </Dialog>
-});
+};

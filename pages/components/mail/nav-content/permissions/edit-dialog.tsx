@@ -36,7 +36,7 @@ type Created = {
   children: React.ReactElement;
   onOpenChange: (open: boolean) => void;
 };
-export const EditDialog: React.FC<Created> = React.forwardRef(({id, data, children, event$, onOpenChange}) => {
+export const EditDialog: React.FC<Created> = ({id, data, children, event$, onOpenChange}) => {
   let $updateByUserConfig = useRequest(AppService.updateUserConfig, {
     manual: true,
     onSuccess: (_) => toast({title: `Success`}),
@@ -108,4 +108,4 @@ export const EditDialog: React.FC<Created> = React.forwardRef(({id, data, childr
       </Form>
     </DialogContent>
   </Dialog>
-});
+};

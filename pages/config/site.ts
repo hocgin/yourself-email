@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + NextUI + Prisma",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Dove Mail",
+  description: "Dove Mail",
   navItems: [],
   navMenuItems: [],
   links: {

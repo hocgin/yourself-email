@@ -1,6 +1,7 @@
 import {Button} from "@/components/ui/button";
 import {ColumnDef} from "@tanstack/react-table";
-import {Checkbox} from "@/components/ui/checkbox"
+import {Checkbox} from "@/components/ui/checkbox";
+import {Badge} from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -22,8 +23,8 @@ export type Row = {
   id: string
   email: string;
   isSuperAdmin: boolean
-  readMail: string;
-  sentMail: string;
+  readMail: string[];
+  sentMail: string[];
 }
 
 export function columns(event$: EventEmitter<Message>) {
@@ -39,9 +40,19 @@ export function columns(event$: EventEmitter<Message>) {
   }, {
     accessorKey: "readMail",
     header: "Read Mail List",
+    cell: ({row}) => {
+      let original = row.original;
+      let mails = original?.readMail ?? [];
+      return renderMailBadge(mails);
+    }
   }, {
     accessorKey: "sentMail",
     header: "Sent Mail List",
+    cell: ({row}) => {
+      let original = row.original;
+      let mails = original?.sentMail ?? [];
+      return renderMailBadge(mails);
+    }
   }, {
     accessorKey: "Action",
     enableHiding: false,
@@ -110,3 +121,13 @@ export function columns(event$: EventEmitter<Message>) {
   return columns;
 }
 
+
+function renderMailBadge(mails: string[]) {
+  let newMails = mails.slice(0, Math.min(2, mails.length));
+  let size = mails?.length - newMails?.length;
+  let elements = newMails.map(e => <Badge variant="secondary">{e}</Badge>);
+  if (size > 0) {
+    elements.push(<Badge variant="secondary">+{size}</Badge>)
+  }
+  return <div className={'flex flex-row gap-1'}>{elements}</div>;
+}

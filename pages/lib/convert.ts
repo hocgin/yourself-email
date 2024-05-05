@@ -39,7 +39,7 @@ export class ConvertKit {
       email: entity.email,
       isSuperAdmin: entity.is_super_admin,
       readMail: `${entity.read_mail}`.split(','),
-      sentMail: `${entity.read_mail}`.split(','),
+      sentMail: `${entity.sent_mail}`.split(','),
     };
   }
 }
