@@ -17,6 +17,7 @@ Content-Type: application/json
 ### Query Mail Accounts
 GET http://127.0.0.1:3000/api/user/account
 Content-Type: application/json
+X-Requested-With: XMLHttpRequest
 
 
 

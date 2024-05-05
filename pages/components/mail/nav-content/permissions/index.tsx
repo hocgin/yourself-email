@@ -4,36 +4,35 @@ import {DataTable} from "./data-table";
 import {columns} from "./columns";
 import {Input} from "@/components/ui/input";
 import {Search} from "lucide-react";
+import {AddDialog} from "@/components/mail/nav-content/permissions/add-dialog";
+import {useEventEmitter, useRequest} from "ahooks";
+import {AppService} from "@/service/http/app";
+import {toast} from "@/components/ui/use-toast";
+import {Message, MessageType} from "@/types/base";
 
 type Created = {
   defaultLayout: number[];
 };
 export const PermissionsContent: React.FC<Created> = ({defaultLayout, ...props}) => {
+  let event$ = useEventEmitter<Message>();
+  let {data, refresh, run} = useRequest((keyword: string) => AppService.pagingByUserConfig({keyword}), {
+    onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
+  });
+  event$.useSubscription(async (message) => {
+    if (message?.type === MessageType.RefreshUserConfig) {
+      refresh();
+    }
+  });
+
   return <ResizablePanel defaultSize={100 - defaultLayout[0]} minSize={30}>
     <div className={'w-2/3 space-y-2 mx-auto my-10'}>
-      <div className="flex items-center relative">
+      <div className="flex items-center relative justify-between">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Filter emails..." className="max-w-sm pl-8" />
+        <Input placeholder="Filter emails..." className="max-w-sm pl-8"
+               onChange={(e: any) => run(e?.target?.keyword)} />
+        <AddDialog event$={event$} />
       </div>
-      <DataTable columns={columns} data={[{
-        id: '1',
-        email: 'hocgin@gmail.com',
-        isSuperAdmin: true,
-        readMail: 'all',
-        sentMail: 'all',
-      }, {
-        id: '2',
-        email: 'test@hocg.in',
-        isSuperAdmin: false,
-        readMail: 'c1@hocg.in、c2@hocg.in',
-        sentMail: 'c1@hocg.in、c2@hocg.in',
-      }, {
-        id: '3',
-        email: '其他',
-        isSuperAdmin: false,
-        readMail: 'no',
-        sentMail: 'no',
-      }]} />
+      <DataTable columns={columns(event$)} data={data ?? []} />
     </div>
   </ResizablePanel>;
 };

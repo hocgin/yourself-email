@@ -16,8 +16,9 @@ type Created = {
   defaultLayout: number[];
   selectedOwner: IMail;
   selectedMail: Mail;
-  allMails: Mail[];
-  unreadMails: Mail[];
+  tabKey: string;
+  setTabKey: (tabKey: string) => void;
+  mails: Mail[];
   setKeyword: (keyword: string) => void;
   setSelectedMail: (mail: Mail) => void;
   $event: EventEmitter<Message>;
@@ -31,13 +32,12 @@ export enum TabKey {
 export const InboxContent: React.FC<Created> = ({
                                                   defaultLayout,
                                                   selectedMail,
-                                                  allMails,
-                                                  unreadMails,
+                                                  mails,
                                                   setKeyword,
                                                   setSelectedMail,
-                                                  selectedOwner, $event
+                                                  selectedOwner, $event,
+                                                  tabKey, setTabKey
                                                 }) => {
-  let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
   return <>
     <ResizablePanel className={'flex flex-col'} defaultSize={defaultLayout[1]} minSize={30}>
       <Tabs className='flex flex-col overflow-hidden' value={tabKey} onValueChange={setTabKey}>
@@ -66,12 +66,12 @@ export const InboxContent: React.FC<Created> = ({
             </div>
           </form>
         </div>
-        {(tabKey === TabKey.all ? allMails : unreadMails)?.length ? <>
+        {mails?.length ? <>
           <TabsContent value={TabKey.all} className="m-0 flex-1 overflow-hidden">
-            <MailList items={allMails} selected={selectedMail?.id} onClick={setSelectedMail} />
+            <MailList items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
           </TabsContent>
           <TabsContent value={TabKey.unread} className="m-0 flex-1 overflow-hidden">
-            <MailList items={unreadMails} selected={selectedMail?.id} onClick={setSelectedMail} />
+            <MailList items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
           </TabsContent>
         </> : <div className={'py-5 px-10 h-full'}>
           <Empty />

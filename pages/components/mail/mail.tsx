@@ -14,6 +14,8 @@ import {InboxContent, PermissionsContent, SentContent} from "@/components/mail/n
 import {useEventEmitter, useLocalStorageState} from 'ahooks';
 import {useQueryState} from 'nuqs';
 import {Message, MessageType} from "@/types/base";
+import {TabKey} from "@/components/mail/nav-content/inbox";
+import {useEffect} from "react";
 
 interface MailProps {
   defaultLayout?: number[] | undefined
@@ -36,9 +38,30 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
       setSelectedMail(message?.value);
     }
   });
-  let [routeKey, setRouteKey] = useQueryState('path', {defaultValue: RouteKey.Inbox});
+  let [path, setPath] = useQueryState('path', {defaultValue: RouteKey.Inbox});
+  let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
   const [isCollapsed, setIsCollapsed] = useLocalStorageState<boolean>('isCollapsed', {defaultValue: defaultCollapsed})
-  const {selected, setSelected, selectedMail, setSelectedMail, setKeyword, accounts, allMails, unreadMails} = useMail();
+  const {
+    filter,
+    setFilter,
+    selected,
+    setSelected,
+    selectedMail,
+    setSelectedMail,
+    setKeyword,
+    accounts,
+    mails,
+    inboxUnreadCount
+  } = useMail();
+  useEffect(() => {
+    setFilter({
+      ...filter,
+      onlyUnread: tabKey === TabKey.unread ? true : undefined,
+      isArchive: path === RouteKey.Archive ? true : undefined,
+      isTrash: path === RouteKey.Trash,
+    })
+  }, [path, tabKey]);
+
   return (
     <TooltipProvider delayDuration={0}>
       <ResizablePanelGroup direction="horizontal"
@@ -73,52 +96,52 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
                  title: "Sent",
                  label: "",
                  icon: Send,
-                 variant: routeKey === RouteKey.New ? "default" : 'ghost',
-                 onClick: () => setRouteKey(RouteKey.New)
+                 variant: path === RouteKey.New ? "default" : 'ghost',
+                 onClick: () => setPath(RouteKey.New)
                }, {
                  title: "Inbox",
-                 label: "128",
+                 label: inboxUnreadCount,
                  icon: Inbox,
-                 variant: routeKey === RouteKey.Inbox ? "default" : 'ghost',
-                 onClick: () => setRouteKey(RouteKey.Inbox)
+                 variant: path === RouteKey.Inbox ? "default" : 'ghost',
+                 onClick: () => setPath(RouteKey.Inbox)
                }, {
                  title: "Archive",
-                 label: "128",
+                 label: "",
                  icon: Archive,
-                 variant: routeKey === RouteKey.Archive ? "default" : 'ghost',
-                 onClick: () => setRouteKey(RouteKey.Archive)
+                 variant: path === RouteKey.Archive ? "default" : 'ghost',
+                 onClick: () => setPath(RouteKey.Archive)
                }, {
                  title: "Trash",
                  label: "",
                  icon: Trash2,
-                 variant: routeKey === RouteKey.Trash ? "default" : 'ghost',
-                 onClick: () => setRouteKey(RouteKey.Trash)
+                 variant: path === RouteKey.Trash ? "default" : 'ghost',
+                 onClick: () => setPath(RouteKey.Trash)
                }, {
                  title: "Permissions",
                  label: "",
                  icon: Users2,
-                 variant: routeKey === RouteKey.Permissions ? "default" : 'ghost',
-                 onClick: () => setRouteKey(RouteKey.Permissions)
+                 variant: path === RouteKey.Permissions ? "default" : 'ghost',
+                 onClick: () => setPath(RouteKey.Permissions)
                }]} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        {routeKey === RouteKey.Inbox ?
-          <InboxContent allMails={allMails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
-                        setSelectedMail={setSelectedMail} unreadMails={unreadMails}
+        {path === RouteKey.Inbox ?
+          <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
+                        setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
                         defaultLayout={defaultLayout}
                         setKeyword={setKeyword} /> : undefined}
-        {routeKey === RouteKey.Archive ?
-          <InboxContent allMails={allMails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
-                        setSelectedMail={setSelectedMail} unreadMails={unreadMails}
+        {path === RouteKey.Archive ?
+          <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
+                        setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
                         defaultLayout={defaultLayout}
                         setKeyword={setKeyword} /> : undefined}
-        {routeKey === RouteKey.New ? <SentContent selectedOwner={selected} defaultLayout={defaultLayout} /> : undefined}
-        {routeKey === RouteKey.Trash ?
-          <InboxContent allMails={allMails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
-                        setSelectedMail={setSelectedMail} unreadMails={unreadMails}
+        {path === RouteKey.New ? <SentContent selectedOwner={selected} defaultLayout={defaultLayout} /> : undefined}
+        {path === RouteKey.Trash ?
+          <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
+                        setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
                         defaultLayout={defaultLayout}
                         setKeyword={setKeyword} /> : undefined}
-        {routeKey === RouteKey.Permissions ? <PermissionsContent defaultLayout={defaultLayout} /> : undefined}
+        {path === RouteKey.Permissions ? <PermissionsContent defaultLayout={defaultLayout} /> : undefined}
       </ResizablePanelGroup>
     </TooltipProvider>
   );

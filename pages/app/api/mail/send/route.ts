@@ -6,8 +6,9 @@ import {MailService} from "@/service/db/mail-service";
 export const runtime = 'edge'
 
 const POST = ContextKit.withError(async (request: NextRequest) => {
+  let session = await ContextKit.getSessionThrow(request);
   const {env, cf, ctx} = getRequestContext();
-  await MailService.sendMail(env.DB, (await request.json()))
+  await MailService.sendMail(env.DB, (await request.json()), session);
   return ResultKit.success();
 })
 export {POST};

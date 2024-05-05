@@ -1,11 +1,40 @@
-import {RabbitKit, useGet, usePost, usePut} from "@hocgin/hkit";
-import {ListAccountVo, ChatUserScrollRo, ChatHistoryScrollRo, SendMailRo} from "@/types/http";
+import {RabbitKit, useDelete, useGet, usePost, usePut} from "@hocgin/hkit";
+import {
+  ListAccountVo,
+  ChatUserScrollRo,
+  ChatHistoryScrollRo,
+  SendMailRo,
+  UserConfigPagingRo,
+  UserConfigSaveRo
+} from "@/types/http";
 import {IScroll} from "@hocgin/nextjs-kit";
 
 export class AppService {
 
-  static listAccounts(): Promise<ListAccountVo> {
-    return useGet(`/api/user/account`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+  static pagingByUserConfig(payload: UserConfigPagingRo = {}) {
+    payload.size = 1000;
+    payload.page = 0;
+    return usePost(`/api/user/config/paging`, {data: {...payload}, headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.getPagingListForResult);
+  }
+
+  static addUserConfig(payload: UserConfigSaveRo) {
+    return usePost(`/api/user/config`, {data: {...payload}, headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.thenDataTryErrorIfExits);
+  }
+
+  static updateUserConfig(id: string | number, payload: UserConfigSaveRo) {
+    return usePut(`/api/user/config/${id}`, {data: {...payload}, headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.thenDataTryErrorIfExits);
+  }
+
+  static deleteByUserConfig(id: string | number) {
+    return useDelete(`/api/user/config/${id}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.thenDataTryErrorIfExits);
+  }
+
+  static state() {
+    return useGet(`/api/user/state`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
       .then(RabbitKit.thenDataTryErrorIfExits);
   }
 

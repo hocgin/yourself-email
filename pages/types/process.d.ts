@@ -12,10 +12,6 @@ declare global {
     // the package as a dev dependency and you have added
     // it to your `tsconfig.json` file under
     // `compilerOptions.types`.            DB: D1Database;
-    // 是否预览模式
-    PREVIEW?: boolean;
-    // 超级管理员名单, 使用","分割
-    SUPER_ADMIN?: string;
   }
 }
 

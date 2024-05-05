@@ -6,7 +6,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import {z} from "zod"
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {toast} from "@/components/ui/use-toast";
 import {useBoolean, useRequest} from "ahooks";
 import {AppService} from "@/service/http/app";
@@ -16,6 +16,7 @@ import MultipleSelector from "@/components/ui-expansions/multiple-selector";
 
 const FormSchema = z.object({
   to: z.array(z.any()),
+  from: z.string().email(),
   subject: z.string().min(1, {
     message: "Bio must be at least 1 characters.",
   }).max(50, {
@@ -24,7 +25,7 @@ const FormSchema = z.object({
   cc: z.array(z.any()).optional(),
   bcc: z.array(z.any()).optional(),
   html: z.string(),
-})
+});
 
 
 type Created = {
@@ -34,31 +35,49 @@ type Created = {
 export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) => {
   let [openCc, {toggle: toggleOpenCc}] = useBoolean(false);
   let [openBcc, {toggle: toggleOpenBcc}] = useBoolean(false);
-  let sendMail = useRequest(({to, cc, bcc, subject, html}) => {
+  let sendMail = useRequest(({to, from, cc, bcc, subject, html}) => {
     let asMail = (list: any[]) => (list ?? []).map(e => ({address: e.value} as any));
     return AppService.sendMail({
       to: asMail(to),
       cc: asMail(cc),
       bcc: asMail(bcc),
-      from: selectedOwner, subject, html
+      from: {address: from},
+      subject,
+      html
     });
   }, {
     manual: true,
-    onSuccess: (_) => toast({title: `发送成功`}),
+    onSuccess: (_) => toast({title: `Success`}),
     onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      from: selectedOwner?.address === '*' ? undefined : selectedOwner?.address,
+    }
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    sendMail.runAsync(data);
+    sendMail.run(data);
   }
 
   return <ResizablePanel defaultSize={100 - defaultLayout[0]} minSize={30}>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-2 mx-auto my-10">
+        <FormField
+          control={form.control}
+          name="from"
+          render={({field}) => <FormItem>
+            <FormControl>
+              <div className="flex w-full items-center">
+                <Input type='email' placeholder="发件人" value={field.value}
+                       disabled={selectedOwner?.address !== '*'}
+                       onChange={field.onChange} />
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>} />
         <FormField
           control={form.control}
           name="to"

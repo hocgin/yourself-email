@@ -1,4 +1,4 @@
-import type {Paging, Scroll, ScrollRo} from "@hocgin/nextjs-kit";
+import type {Paging, Scroll, ScrollRo, PagingRo} from "@hocgin/nextjs-kit";
 
 export interface IMail {
   address: string;
@@ -56,6 +56,16 @@ export interface MailScrollRo extends ScrollRo {
   onlyUnread?: boolean;
   isTrash?: boolean;
   isArchive?: boolean;
+}
+
+export interface UserConfigPagingRo extends PagingRo {
+  keyword?: string;
+}
+
+export interface UserConfigSaveRo {
+  email?: string;
+  readMail?: string[];
+  sentMail?: string[];
 }
 
 export interface SendMailRo {

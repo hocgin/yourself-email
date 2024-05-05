@@ -350,7 +350,8 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       >
         <div
           className={cn(
-            'group shadow-sm h-9 flex items-center rounded-md border border-input px-3 py-1 text-sm ring-offset-background focus-within:ring-ring focus-within:ring-offset-2',
+            'group shadow-sm min-h-9 flex items-center rounded-md border border-input px-3 py-1 text-sm ring-offset-background focus-within:ring-ring focus-within:ring-offset-2',
+            disabled ? 'opacity-50' : undefined,
             className,
           )}>
           <div className="flex flex-wrap gap-1">
@@ -409,7 +410,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
               }}
               placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : placeholder}
               className={cn(
-                'flex-1 bg-transparent outline-none placeholder:text-slate-500 dark:border-slate-800 dark:placeholder:text-slate-400',
+                'flex-1 bg-transparent outline-none placeholder:text-slate-500 dark:border-slate-800 dark:placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-50',
                 inputProps?.className,
               )}
             />

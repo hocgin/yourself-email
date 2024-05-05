@@ -5,5 +5,10 @@ export interface Message {
 
 export enum MessageType {
   RefreshMail = 'RefreshMail',
+  RefreshUserConfig = 'RefreshUserConfig',
   UpdateMail = 'UpdateMail',
+}
+
+export class UnAccessError extends Error {
+
 }

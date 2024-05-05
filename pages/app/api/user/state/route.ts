@@ -1,16 +1,14 @@
 import {NextRequest} from 'next/server';
-import {getRequestContext} from "@cloudflare/next-on-pages";
-import {ContextKit, ResultKit} from '@hocgin/nextjs-kit';
+import {ContextKit, ResultKit} from '@hocgin/nextjs-kit'
 import {UserService} from "@/service/db/user-service";
+import {getRequestContext} from '@cloudflare/next-on-pages';
 
 export const runtime = 'edge'
 
-/**
- * 获取有权限的账号列表
- */
 const GET = ContextKit.withError(async (request: NextRequest) => {
+  let session = await ContextKit.getSessionThrow(request);
   const {env, cf, ctx} = getRequestContext();
-  let result = await UserService.listAccountsByUser(env.DB);
-  return ResultKit.success(result);
+  return ResultKit.success(await UserService.getState(env.DB, session));
 });
+
 export {GET};

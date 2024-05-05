@@ -4,8 +4,30 @@ import {ChatUserScrollRo, ChatHistoryScrollRo, SendMailRo, IMail, MailScrollRo} 
 import sql, {raw} from "sql-template-tag";
 import type {Mail} from "@prisma/client";
 import Email from "vercel-email";
+import {UserSession} from "@hocgin/nextjs-kit/dist/esm/type";
+import {UserService} from "@/service/db/user-service";
+import {UnAccessError} from "@/types/base";
+import {ConvertKit} from "@/lib/convert";
 
 export class MailService {
+
+  static async countByUnread(client: D1Database, session: UserSession) {
+    let authorize = await UserService.useAuthorize(client, session);
+    let {kit, prisma} = usePrisma(client);
+    let inboxUnreadCount: number;
+    if (authorize.readAccessAll) {
+      inboxUnreadCount = await prisma.mail.count({where: {is_read: false, is_trash: false}});
+    } else {
+      inboxUnreadCount = await prisma.mail.count({
+        where: {
+          is_read: false,
+          is_trash: false,
+          owner: {in: authorize.readMails}
+        }
+      });
+    }
+    return {inboxUnreadCount};
+  }
 
   /**
    * 查询用户列表(根据最新沟通记录排序)
@@ -35,7 +57,7 @@ export class MailService {
         PrismaKit.Raw.if(sql`AND (LM.is_read = false)`, ro?.onlyUnread),
       ]),
       PrismaKit.Raw.orderBy(['LM.date DESC']));
-    return (await kit.scrollRaw(rawSql, ro)).convert(this.asMail);
+    return (await kit.scrollRaw(rawSql, ro)).convert(ConvertKit.asMail);
   }
 
   /**
@@ -53,14 +75,17 @@ export class MailService {
       ]),
       PrismaKit.Raw.orderBy(['M.id'])
     );
-    return (await kit.scrollRaw(rawSql, ro)).convert(this.asMail);
+    return (await kit.scrollRaw(rawSql, ro)).convert(ConvertKit.asMail);
   }
 
 
   /**
    * 查询所有邮件，指定所属人
    */
-  static async scrollBy(client: D1Database, ro: MailScrollRo) {
+  static async scrollBy(client: D1Database, ro: MailScrollRo, session: UserSession) {
+    let authorize = await UserService.useAuthorize(client, session);
+    if (!authorize.readAccess(ro?.owner)) throw new UnAccessError();
+
     let {kit} = usePrisma(client);
     let keyword = PrismaKit.Raw.like(ro.keyword);
     let rawSql = PrismaKit.Raw.sql(
@@ -70,19 +95,27 @@ export class MailService {
         PrismaKit.Raw.if(sql`AND (M.is_read = false)`, ro?.onlyUnread),
         PrismaKit.Raw.if(sql`AND (M.is_trash = ${ro?.isTrash})`, ro?.isTrash !== undefined),
         PrismaKit.Raw.if(sql`AND (M.is_archive = ${ro?.isArchive})`, ro?.isArchive !== undefined),
-        sql`AND (M.owner = ${ro.owner})`,
+        PrismaKit.Raw.if(sql`AND (M.owner = ${ro.owner})`, ro.owner !== '*'),
       ]),
       PrismaKit.Raw.orderBy(['M.id'])
     );
-    return (await kit.scrollRaw(rawSql, ro)).convert(this.asMail);
+    return (await kit.scrollRaw(rawSql, ro)).convert(ConvertKit.asMail);
   }
 
   /**
    * 发送邮件
    * @param client
    * @param ro
+   * @param session
    */
-  static async sendMail(client: D1Database, ro: SendMailRo) {
+  static async sendMail(client: D1Database, ro: SendMailRo, session: UserSession) {
+    let {sentAccess} = await UserService.useAuthorize(client, session);
+
+    // 是否有权限发送
+    let access = sentAccess(ro?.from?.address);
+    if (!access) throw new UnAccessError();
+
+
     let {kit, prisma} = usePrisma(client);
     let asMail = (mail) => ({
       email: mail?.address,
@@ -131,7 +164,7 @@ export class MailService {
     if (mail && !mail?.is_read) {
       await this.setReadyById(client, id, true)
     }
-    return this.asMail(mail);
+    return ConvertKit.asMail(mail);
   }
 
   /**
@@ -176,32 +209,4 @@ export class MailService {
     });
   }
 
-  static asMail(entity: (Mail | any)) {
-    return {
-      id: entity.id,
-      headers: JSON.parse(entity.headers),
-      fromAddress: JSON.parse(entity.from_address),
-      sender: JSON.parse(entity.sender),
-      replyTo: JSON.parse(entity.reply_to),
-      toAddress: JSON.parse(entity.to_address),
-      cc: JSON.parse(entity.cc),
-      bcc: JSON.parse(entity.bcc),
-      returnPath: JSON.parse(entity.return_path),
-      deliveredTo: entity.delivered_to,
-      subject: entity.subject,
-      messageId: entity.message_id,
-      inReplyTo: entity.in_reply_to,
-      reference: entity.reference,
-      date: entity.date,
-      html: entity.html,
-      text: entity.text,
-      attachments: entity.attachments,
-      isRead: entity.is_read,
-      isTrash: entity.is_trash,
-      isArchive: entity.is_archive,
-      createdAt: entity.created_at,
-      lastUpdatedAt: entity.last_updated_at,
-      unreadCount: entity?.unread_count,
-    } as const;
-  }
 }
