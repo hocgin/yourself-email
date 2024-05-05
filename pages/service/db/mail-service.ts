@@ -64,16 +64,22 @@ export class MailService {
    * 查询与某用户的沟通记录
    * @param client
    * @param ro
+   * @param session
    */
-  static async scrollByChatHistory(client: D1Database, ro: ChatHistoryScrollRo) {
+  static async scrollByChatHistory(client: D1Database, ro: ChatHistoryScrollRo, session: UserSession) {
+    let authorize = await UserService.useAuthorize(client, session);
+    if (!authorize.readAccess(ro?.owner)) throw new UnAccessError();
     let {kit} = usePrisma(client);
-    let keyword = ro.keyword;
+    let keyword = PrismaKit.Raw.like(ro.keyword);
+    let fromAddress = PrismaKit.Raw.like(`%"${ro.fromAddress}"%`);
     let rawSql = PrismaKit.Raw.sql(
       'SELECT M.* FROM Mail M',
       PrismaKit.Raw.where([
         PrismaKit.Raw.if(sql`AND (M.subject LIKE ${keyword} OR M.text LIKE ${keyword})`, keyword),
+        PrismaKit.Raw.if(sql`AND (M.owner = ${ro.owner})`, ro.owner !== '*'),
+        PrismaKit.Raw.if(sql`AND M.from_address like ${fromAddress}`, ro.fromAddress),
       ]),
-      PrismaKit.Raw.orderBy(['M.id'])
+      PrismaKit.Raw.orderBy(['M.id DESC'])
     );
     return (await kit.scrollRaw(rawSql, ro)).convert(ConvertKit.asMail);
   }
@@ -154,17 +160,18 @@ export class MailService {
    * 查询邮件详情
    * @param client
    * @param id
+   * @param session
    */
-  static async fetchById(client: D1Database, id: any) {
-    if (!id) return;
+  static async fetchById(client: D1Database, id: any, session: UserSession) {
+    let authorize = await UserService.useAuthorize(client, session);
     let {kit, prisma} = usePrisma(client);
-    let mail = await prisma.mail.findFirst({
-      where: {id: Number(id)},
-    });
-    if (mail && !mail?.is_read) {
-      await this.setReadyById(client, id, true)
+    let mail = ConvertKit.asMail(await prisma.mail.findUnique({where: {id: Number(id)}}));
+    console.log('mail?.owner', mail?.owner);
+    if (!authorize.readAccess(mail?.owner)) throw new UnAccessError();
+    if (mail && !mail?.isRead) {
+      await this.setReadyById(client, id, true, session);
     }
-    return ConvertKit.asMail(mail);
+    return mail;
   }
 
   /**
@@ -172,9 +179,14 @@ export class MailService {
    * @param client
    * @param id
    * @param isArchive
+   * @param session
    */
-  static async setArchiveById(client: D1Database, id: any, isArchive: boolean) {
+  static async setArchiveById(client: D1Database, id: any, isArchive: boolean, session: UserSession) {
+    let authorize = await UserService.useAuthorize(client, session);
     let {kit, prisma} = usePrisma(client);
+    let mail = ConvertKit.asMail((await prisma.mail.findUnique({where: {id: Number(id)}})));
+    if (!authorize.readAccess(mail?.owner)) throw new UnAccessError();
+    if (!mail) return;
     await prisma.mail.update({
       where: {id: Number(id)},
       data: {is_archive: isArchive}
@@ -186,9 +198,14 @@ export class MailService {
    * @param client
    * @param id
    * @param isTrash
+   * @param session
    */
-  static async setTrashById(client: D1Database, id: any, isTrash: boolean) {
+  static async setTrashById(client: D1Database, id: any, isTrash: boolean, session: UserSession) {
+    let authorize = await UserService.useAuthorize(client, session);
     let {kit, prisma} = usePrisma(client);
+    let mail = ConvertKit.asMail((await prisma.mail.findUnique({where: {id: Number(id)}})));
+    if (!authorize.readAccess(mail?.owner)) throw new UnAccessError();
+    if (!mail) return;
     await prisma.mail.update({
       where: {id: Number(id)},
       data: {is_trash: isTrash}
@@ -199,10 +216,15 @@ export class MailService {
    * 标记为已读状态
    * @param client
    * @param id
-   * @param isArchive
+   * @param isReady
+   * @param session
    */
-  static async setReadyById(client: D1Database, id: any, isReady: boolean) {
+  static async setReadyById(client: D1Database, id: any, isReady: boolean, session: UserSession) {
+    let authorize = await UserService.useAuthorize(client, session);
     let {kit, prisma} = usePrisma(client);
+    let mail = ConvertKit.asMail((await prisma.mail.findUnique({where: {id: Number(id)}})));
+    if (!authorize.readAccess(mail?.owner)) throw new UnAccessError();
+    if (!mail) return;
     await prisma.mail.update({
       where: {id: Number(id)},
       data: {is_read: isReady}

@@ -22,6 +22,7 @@ type Created = {
   setKeyword: (keyword: string) => void;
   setSelectedMail: (mail: Mail) => void;
   $event: EventEmitter<Message>;
+  contentRef: React.MutableRefObject<Element>;
 };
 
 export enum TabKey {
@@ -36,7 +37,7 @@ export const InboxContent: React.FC<Created> = ({
                                                   setKeyword,
                                                   setSelectedMail,
                                                   selectedOwner, $event,
-                                                  tabKey, setTabKey
+                                                  tabKey, setTabKey, contentRef
                                                 }) => {
   return <>
     <ResizablePanel className={'flex flex-col'} defaultSize={defaultLayout[1]} minSize={30}>
@@ -67,12 +68,7 @@ export const InboxContent: React.FC<Created> = ({
           </form>
         </div>
         {mails?.length ? <>
-          <TabsContent value={TabKey.all} className="m-0 flex-1 overflow-hidden">
-            <MailList items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
-          </TabsContent>
-          <TabsContent value={TabKey.unread} className="m-0 flex-1 overflow-hidden">
-            <MailList items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
-          </TabsContent>
+          <MailList contentRef={contentRef} items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
         </> : <div className={'py-5 px-10 h-full'}>
           <Empty />
         </div>}

@@ -9,8 +9,7 @@ import {useToast} from "@/components/ui/use-toast"
 
 
 interface Option {
-  unreadTarget: BasicTarget<Element | Document>;
-  allTarget: BasicTarget<Element | Document>;
+  inboxRef: BasicTarget<Element | Document>;
 }
 
 
@@ -60,7 +59,7 @@ export function useMail(option?: Option) {
     isNoMore: d => !d?.hasMore,
     reloadDeps: [keyword, selected, filter],
     threshold: 300,
-    target: option?.unreadTarget
+    target: option?.inboxRef
   });
 
   return {

@@ -3,6 +3,7 @@ import type {Mail, UserConfig} from "@prisma/client";
 export class ConvertKit {
 
   static asMail(entity: (Mail | any)) {
+    if (!entity) return;
     return {
       id: entity.id,
       headers: JSON.parse(entity.headers),
@@ -28,6 +29,7 @@ export class ConvertKit {
       createdAt: entity.created_at,
       lastUpdatedAt: entity.last_updated_at,
       unreadCount: entity?.unread_count,
+      owner: entity?.owner
     } as const;
   }
 

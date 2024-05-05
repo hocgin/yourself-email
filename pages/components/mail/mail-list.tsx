@@ -1,9 +1,9 @@
 "use client";
 
-import {ComponentProps} from "react"
+import React, {ComponentProps} from "react"
 import formatDistanceToNow from "date-fns/formatDistanceToNow"
 
-import {cn} from "@/lib/utils"
+import {cn, formatDistanceDay} from "@/lib/utils"
 import {Badge} from "@/components/ui/badge"
 import {ScrollArea} from "@/components/ui/scroll-area"
 import {Mail} from "@/types/http";
@@ -12,13 +12,14 @@ import {Empty} from '@/components/empty';
 interface MailListProps {
   items: Mail[];
   selected?: string;
-  onClick?: (item: Mail) => void
+  onClick?: (item: Mail) => void;
+  contentRef: React.MutableRefObject<any>;
 }
 
-export function MailList({items, selected, onClick}: MailListProps) {
+export function MailList({contentRef, items, selected, onClick}: MailListProps) {
   let isEmpty = !items?.length;
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-full" ref={contentRef}>
       <div className={cn("flex flex-col gap-2 p-4 pt-0", isEmpty ? "items-center justify-center" : null)}>
         {isEmpty ? <Empty /> : items.map((item) => (<button key={item.id} className={cn(
           "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
@@ -37,9 +38,7 @@ export function MailList({items, selected, onClick}: MailListProps) {
               </div>
               <div
                 className={cn("ml-auto text-xs", selected === item.id ? "text-foreground" : "text-muted-foreground")}>
-                {formatDistanceToNow(new Date(item.date), {
-                  addSuffix: true,
-                })}
+                {formatDistanceDay(new Date(item.date))}
               </div>
             </div>
             <div className="text-xs font-medium">{item.subject}</div>

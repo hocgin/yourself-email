@@ -45,7 +45,8 @@ export class AppService {
   }
 
   static scrollByHistory(payload: ChatHistoryScrollRo) {
-    return usePost(`/api/history/scroll`, {data: {...payload}, headers: {'X-Requested-With': 'XMLHttpRequest'}})
+
+    return usePost(`/api/mail/history/scroll`, {data: {...payload}, headers: {'X-Requested-With': 'XMLHttpRequest'}})
       .then(RabbitKit.thenDataTryErrorIfExits).then(RabbitKit.getScrollData);
   }
 

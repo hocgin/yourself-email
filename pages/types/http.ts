@@ -32,6 +32,7 @@ export interface Mail {
   isArchive: boolean,
   createdAt: string,
   lastUpdatedAt: string,
+  owner: string,
   unreadCount: number;
   labels?: string[];
 }
@@ -47,7 +48,8 @@ export interface ChatUserScrollRo extends ScrollRo {
 
 export interface ChatHistoryScrollRo extends ScrollRo {
   keyword?: string;
-  fromAddress?: string;
+  fromAddress: string;
+  owner: string;
 }
 
 export interface MailScrollRo extends ScrollRo {

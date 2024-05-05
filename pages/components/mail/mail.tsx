@@ -15,7 +15,7 @@ import {useEventEmitter, useLocalStorageState} from 'ahooks';
 import {useQueryState} from 'nuqs';
 import {Message, MessageType} from "@/types/base";
 import {TabKey} from "@/components/mail/nav-content/inbox";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 
 interface MailProps {
   defaultLayout?: number[] | undefined
@@ -32,6 +32,7 @@ enum RouteKey {
 }
 
 export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, navCollapsedSize}: MailProps) {
+  const inboxRef = useRef();
   let $event = useEventEmitter<Message>();
   $event.useSubscription(async (message: Message) => {
     if (message.type === MessageType.UpdateMail) {
@@ -52,7 +53,7 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
     accounts,
     mails,
     inboxUnreadCount
-  } = useMail();
+  } = useMail({inboxRef});
   useEffect(() => {
     setFilter({
       ...filter,
@@ -125,22 +126,13 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
                }]} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        {path === RouteKey.Inbox ?
+        {[RouteKey.Inbox, RouteKey.Archive, RouteKey.Trash].includes(path as any) ?
           <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
-                        setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
-                        defaultLayout={defaultLayout}
-                        setKeyword={setKeyword} /> : undefined}
-        {path === RouteKey.Archive ?
-          <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
+                        contentRef={inboxRef}
                         setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
                         defaultLayout={defaultLayout}
                         setKeyword={setKeyword} /> : undefined}
         {path === RouteKey.New ? <SentContent selectedOwner={selected} defaultLayout={defaultLayout} /> : undefined}
-        {path === RouteKey.Trash ?
-          <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
-                        setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
-                        defaultLayout={defaultLayout}
-                        setKeyword={setKeyword} /> : undefined}
         {path === RouteKey.Permissions ? <PermissionsContent defaultLayout={defaultLayout} /> : undefined}
       </ResizablePanelGroup>
     </TooltipProvider>

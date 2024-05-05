@@ -10,5 +10,7 @@ export enum MessageType {
 }
 
 export class UnAccessError extends Error {
-
+  constructor() {
+    super('NoPermissionToAccessThisResource');
+  }
 }

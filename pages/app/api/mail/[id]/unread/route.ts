@@ -9,7 +9,8 @@ export const runtime = 'edge'
  * 标记为未读
  */
 const PUT = ContextKit.withError(async (request: NextRequest, {params}) => {
+  let session = await ContextKit.getSessionThrow(request);
   const {env, cf, ctx} = getRequestContext();
-  return ResultKit.success((await MailService.setReadyById(env.DB, params.id, false)));
+  return ResultKit.success((await MailService.setReadyById(env.DB, params.id, false, session)));
 });
 export {PUT};

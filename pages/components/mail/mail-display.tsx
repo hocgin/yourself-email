@@ -5,7 +5,7 @@ import {Archive, Clock, MoreVertical, Trash2,} from "lucide-react"
 
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 import {Button} from "@/components/ui/button"
-import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
+import {History} from "./history"
 import {Separator} from "@/components/ui/separator"
 import {Textarea} from "@/components/ui/textarea"
 import {Tooltip, TooltipContent, TooltipTrigger,} from "@/components/ui/tooltip"
@@ -14,7 +14,7 @@ import {useRequest} from "ahooks";
 import {AppService} from "@/service/http/app";
 import {useState} from "react";
 import {useToast} from "@/components/ui/use-toast"
-import {cn} from "@/lib";
+import {cn, formatDistanceDay} from "@/lib";
 import {Empty} from "@/components/empty";
 import {UserAvatar} from "@/components/avatar";
 import {EventEmitter} from "ahooks/lib/useEventEmitter";
@@ -101,19 +101,8 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <Tooltip>
-            <Popover>
-              <PopoverTrigger asChild>
-                <TooltipTrigger asChild>
-                  <Button variant={'ghost'} size="icon" disabled={!mail}>
-                    <Clock className="h-4 w-4" />
-                    <span className="sr-only">History</span>
-                  </Button>
-                </TooltipTrigger>
-              </PopoverTrigger>
-              <PopoverContent className="flex w-[535px] p-0">
-                历史记录预览,点击后看详情
-              </PopoverContent>
-            </Popover>
+            <History fromAddress={mail?.fromAddress?.address} owner={mail?.owner} $event={$event}
+                     selectedMail={mail} disabled={!mail} />
             <TooltipContent>History</TooltipContent>
           </Tooltip>
         </div>
@@ -154,7 +143,7 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
             </div>
             {mail.date && (
               <div className="ml-auto text-xs text-muted-foreground">
-                {format(new Date(mail.date), "PPpp")}
+                {formatDistanceDay(new Date(mail.date))}
               </div>
             )}
           </div>
