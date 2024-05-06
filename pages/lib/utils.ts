@@ -2,8 +2,7 @@ import {type ClassValue, clsx} from "clsx"
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import {twMerge} from "tailwind-merge"
 import format from "date-fns/format";
-// @ts-ignore
-import {stripHtml} from "string-strip-html";
+import {stripHtml as _stripHtml} from "string-strip-html";
 import sanitizeHtml, {IOptions} from 'sanitize-html';
 
 export function cn(...inputs: ClassValue[]) {
@@ -34,15 +33,26 @@ export function formatDistanceDay(date: Date): string {
 
 export function stripHtml(html: string) {
   if (!html?.length) return html;
-  return stripHtml(html)?.result;
+  return _stripHtml(html)?.result;
 }
 
 const defaultOptions = {
-  allowedTags: ['b', 'i', 'em', 'strong', 'a'],
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
   allowedAttributes: {
-    'a': ['href']
+    '*': ["style"],
+    td: ['*'],
+    p: ['dir', '*'],
+    a: ['href', 'name', 'target', 'style'],
+    // We don't currently allow img itself by default, but
+    // these attributes would make sense if we did.
+    img: ['style', 'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
   },
-};
+  // allowedStyles: {
+  //   '*': {
+  //     '*': [/^.*$/],
+  //   }
+  // }
+} as any;
 
 export const sanitize = (dirty: string, options?: IOptions) => {
   return ({

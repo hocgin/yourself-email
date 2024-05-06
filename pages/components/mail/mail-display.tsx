@@ -125,7 +125,7 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
       </div>
       <Separator />
       {mail ? (
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex items-start p-4">
             <div className="flex items-start gap-4 text-sm">
               <UserAvatar username={fromName} />
@@ -149,8 +149,8 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
             )}
           </div>
           <Separator />
-          <div className="flex-1 whitespace-pre-wrap p-4 text-sm">
-            <div dangerouslySetInnerHTML={sanitize(mail.html)} />
+          <div className="flex-1 p-4 overflow-y-auto">
+            <div className={'html-content'} dangerouslySetInnerHTML={sanitize(mail.html)} />
           </div>
           <Separator className="mt-auto" />
           <div className="p-4">

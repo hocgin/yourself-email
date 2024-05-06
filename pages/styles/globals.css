@@ -3,5 +3,31 @@
 @tailwind utilities;
 
 .min-h-9 {
-  min-height: 2.25rem;
+    min-height: 2.25rem;
+}
+
+/* fix html content css */
+.html-content img {
+    max-width: unset;
+}
+
+.html-content a {
+    color: #15c;
+    text-decoration: underline;
+}
+
+.html-content blockquote,
+.html-content dl,
+.html-content dd,
+.html-content h1,
+.html-content h2,
+.html-content h3,
+.html-content h4,
+.html-content h5,
+.html-content h6,
+.html-content hr,
+.html-content figure,
+.html-content p,
+.html-content pre {
+    margin: auto;
 }

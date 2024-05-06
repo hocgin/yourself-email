@@ -5,7 +5,7 @@ import {UserAvatar} from "@/components/avatar";
 import {Mail} from "@/types/http";
 import format from "date-fns/format";
 import {Button} from "@/components/ui/button";
-import {cn} from "@/lib";
+import {cn, stripHtml} from "@/lib";
 
 type Created = {
   mail: Mail;
@@ -19,8 +19,8 @@ export const MailCard: React.FC<Created> = ({mail, selected, onClick}) => {
     </div>
     <div className="space-y-1 flex-1">
       <h4 className="text-sm font-semibold">{mail?.subject}</h4>
-      <p className="text-sm">
-        {mail?.text}
+      <p className="text-sm line-clamp-2 text-muted-foreground">
+        {stripHtml(mail?.html)?.substring?.(0, 300)}
       </p>
       <div className="flex items-center pt-2">
         <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}

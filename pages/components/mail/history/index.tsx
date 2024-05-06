@@ -55,10 +55,12 @@ export const History: React.FC<Created> = ({disabled, selectedMail, $event, owne
       </div>
       <ScrollArea className={'h-[400px]'} ref={contentRef}>
         <div className={"flex flex-col gap-2"}>
-          {data?.length ? data.map(mail => <MailCard selected={selectedMail?.id === mail.id} mail={mail} onClick={(mail) => $event.emit({
-              type: MessageType.UpdateMail,
-              value: mail
-            })} />)
+          {data?.length ? data.map(mail =>
+              <MailCard selected={selectedMail?.id === mail.id} mail={mail}
+                        onClick={(mail) => $event.emit({
+                          type: MessageType.UpdateMail,
+                          value: mail
+                        })} />)
             : <div className={'py-5 px-10 h-full'}><Empty /></div>}
         </div>
       </ScrollArea>
