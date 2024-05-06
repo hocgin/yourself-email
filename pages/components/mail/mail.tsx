@@ -43,13 +43,10 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
   let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
   const [isCollapsed, setIsCollapsed] = useLocalStorageState<boolean>('isCollapsed', {defaultValue: defaultCollapsed})
   const {
-    filter,
-    setFilter,
-    selected,
-    setSelected,
-    selectedMail,
-    setSelectedMail,
-    setKeyword,
+    filter, setFilter,
+    selected, setSelected,
+    selectedMail, setSelectedMail,
+    keyword, setKeyword,
     accounts,
     mails,
     inboxUnreadCount
@@ -131,7 +128,7 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
                         contentRef={inboxRef}
                         setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
                         defaultLayout={defaultLayout}
-                        setKeyword={setKeyword} /> : undefined}
+                        keyword={keyword} setKeyword={setKeyword} /> : undefined}
         {path === RouteKey.New ? <SentContent selectedOwner={selected} defaultLayout={defaultLayout} /> : undefined}
         {path === RouteKey.Permissions ? <PermissionsContent defaultLayout={defaultLayout} /> : undefined}
       </ResizablePanelGroup>

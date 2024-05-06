@@ -17,6 +17,7 @@ type Created = {
   selectedOwner: IMail;
   selectedMail: Mail;
   tabKey: string;
+  keyword: string;
   setTabKey: (tabKey: string) => void;
   mails: Mail[];
   setKeyword: (keyword: string) => void;
@@ -34,6 +35,7 @@ export const InboxContent: React.FC<Created> = ({
                                                   defaultLayout,
                                                   selectedMail,
                                                   mails,
+                                                  keyword,
                                                   setKeyword,
                                                   setSelectedMail,
                                                   selectedOwner, $event,
@@ -62,7 +64,7 @@ export const InboxContent: React.FC<Created> = ({
           <form>
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search" className="pl-8"
+              <Input placeholder="Search" className="pl-8" value={keyword}
                      onChange={e => setKeyword(e.target.value)} />
             </div>
           </form>

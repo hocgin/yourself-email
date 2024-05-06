@@ -64,7 +64,7 @@ export function useMail(option?: Option) {
 
   return {
     selected, setSelected,
-    setKeyword,
+    keyword, setKeyword,
     filter, setFilter,
     selectedMail,
     setSelectedMail: (mail: Mail) => {

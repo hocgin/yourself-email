@@ -51,7 +51,7 @@ export const History: React.FC<Created> = ({disabled, selectedMail, $event, owne
     <PopoverContent className={'w-[435px]'}>
       <div className="relative pb-2">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search" className="pl-8" onChange={e => setKeyword(e?.target?.value)} />
+        <Input placeholder="Search" className="pl-8" value={keyword} onChange={e => setKeyword(e?.target?.value)} />
       </div>
       <ScrollArea className={'h-[400px]'} ref={contentRef}>
         <div className={"flex flex-col gap-2"}>
