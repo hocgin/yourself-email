@@ -59,7 +59,7 @@ export class UserService {
       isSuperAdmin: authorize.isSuperAdmin,
       sentMails: authorize.sentMails,
       readMails: authorize.readMails,
-      accounts: unique([...result, ...(authorize.readMails ?? []).map(address => ({address}))]),
+      accounts: unique([...(result ?? []).map(({address}) => address), ...(authorize.readMails ?? [])]).map(address => ({address})),
       ...(await MailService.countByUnread(client, session))
     };
   }

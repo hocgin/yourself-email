@@ -19,6 +19,7 @@ import {Empty} from "@/components/empty";
 import {UserAvatar} from "@/components/avatar";
 import {EventEmitter} from "ahooks/lib/useEventEmitter";
 import {Message, MessageType} from "@/types/base";
+import {sanitize} from "@/lib/utils";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -149,7 +150,7 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
           </div>
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">
-            {mail.text}
+            <div dangerouslySetInnerHTML={sanitize(mail.html)} />
           </div>
           <Separator className="mt-auto" />
           <div className="p-4">
