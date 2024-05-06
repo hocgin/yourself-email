@@ -79,3 +79,8 @@ export interface SendMailRo {
   html?: string
   attachments?: string
 }
+
+export interface ReplyMailRo {
+  id: string;
+  html?: string;
+}

@@ -1,6 +1,6 @@
 import type {D1Database} from "@cloudflare/workers-types";
 import {PrismaKit, usePrisma} from "@/lib";
-import {ChatHistoryScrollRo, ChatUserScrollRo, IMail, MailScrollRo, SendMailRo} from "@/types/http";
+import {ChatHistoryScrollRo, ChatUserScrollRo, IMail, MailScrollRo, ReplyMailRo, SendMailRo} from "@/types/http";
 import sql from "sql-template-tag";
 import Email from "@/lib/vercel-email";
 import {UserSession} from "@hocgin/nextjs-kit/dist/esm/type";
@@ -170,6 +170,10 @@ export class MailService {
         is_read: true,
       },
     });
+  }
+
+  static async replyMail(client: D1Database, id: string, ro: ReplyMailRo, session: UserSession, env: CloudflareEnv) {
+
   }
 
   /**
