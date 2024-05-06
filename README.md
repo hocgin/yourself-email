@@ -5,6 +5,7 @@
 ### 效果展示
 
 > 演示地址: http://mail.hocg.in, 使用任意邮箱登录。
+>
 > 可读/写邮箱: test@hocg.in 和 test2@hocg.in
 
 <div style="display:inline-block">
@@ -164,6 +165,7 @@ echo -n "v=DKIM1;p=" > dkim_record.txt && openssl rsa -in private_key.pem -pubou
 - [x] 权限设计实现
 - [x] 用户状态，查询未读数量、权限账号列表
 - [ ] 支持富文本编辑器
+- [ ] 整理/开发 API 接口
 
 </details>
 

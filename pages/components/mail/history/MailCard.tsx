@@ -16,7 +16,7 @@ export const MailCard: React.FC<Created> = ({mail, selected, onClick}) => {
     <div className={'flex justify-center items-center'}>
       <UserAvatar className={'w-10 h-10'} username={mail?.fromAddress?.name ?? mail?.fromAddress?.address} />
     </div>
-    <div className="space-y-1 flex-1">
+    <div className="space-y-1 flex-1 w-[1px]">
       <h4 className="text-sm font-semibold">{mail?.subject}</h4>
       <p className="text-sm line-clamp-2 text-muted-foreground">
         {stripHtml(mail?.html ?? mail?.text)?.substring?.(0, 300)}
