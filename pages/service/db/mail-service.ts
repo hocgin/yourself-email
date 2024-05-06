@@ -134,21 +134,24 @@ export class MailService {
     let cc = ro?.cc ?? [];
     let bcc = ro?.bcc ?? [];
     let from = ro?.from;
-
+    let html = ro.html;
+    if (html) {
+      html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><meta http-equiv="Content-Type" content="text/html charset=UTF-8" /><html lang="en"><body>${html}</body></html>`
+    }
     await Email.send({
       to: asMails(to),
       cc: asMails(cc),
       bcc: asMails(bcc),
       from: asMail(from),
       subject: ro.subject,
-      html: ro?.html,
+      html: html,
     });
     await prisma.mail.create({
       data: {
         headers: '[]',
         from_address: JSON.stringify(from),
         to_address: JSON.stringify(to),
-        html: ro.html,
+        html: html,
         owner: from?.address,
         message_id: `message_id_${Date.now()}`,
       },
