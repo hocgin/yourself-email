@@ -7,7 +7,10 @@
 > 演示地址: http://mail.hocg.in, 使用任意邮箱登录。
 > 可读/写邮箱: test@hocg.in 和 test2@hocg.in
 
-<img src="docs/tutorial/demo.c1.png" width="425"/> <img src="docs/tutorial/demo.c2.png" width="425"/>
+<div style="display:inline-block">
+  <img src="docs/tutorial/demo.c1.png" width="45%"/>
+  <img src="docs/tutorial/demo.c2.png" width="45%"/>
+</div>
 
 ### 部署流程
 
