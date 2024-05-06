@@ -30,9 +30,9 @@ interface MailDisplayProps {
 export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
   const {toast} = useToast()
   const [replyContent, setReplyContent] = useState<string>()
-  let title = mail?.subject ?? mail.fromAddress?.address;
+  let title = mail?.subject ?? mail?.fromAddress?.address;
   let sendMail = useRequest(() => AppService.sendMail({
-    to: [mail.fromAddress],
+    to: [mail?.fromAddress],
     from: {address: mail?.owner},
     subject: `Re: ${title}`,
     html: replyContent

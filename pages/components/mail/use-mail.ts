@@ -17,6 +17,7 @@ type FilterType = {
   onlyUnread?: boolean;
   isTrash?: boolean;
   isArchive?: boolean;
+  isSent?: boolean;
 };
 
 export function useMail(option?: Option) {

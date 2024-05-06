@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {Inbox, Send, Trash2, Users2, Archive} from "lucide-react"
+import {Inbox, Send, PencilLine, Plus, Trash2, Users2, Archive} from "lucide-react"
 
 import {cn} from "@/lib/utils"
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup,} from "@/components/ui/resizable"
@@ -27,6 +27,7 @@ enum RouteKey {
   Inbox = 'inbox',
   Archive = 'archive',
   New = 'new',
+  Sent = 'sent',
   Trash = 'trash',
   Permissions = 'permissions',
 }
@@ -57,6 +58,7 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
       onlyUnread: tabKey === TabKey.unread ? true : undefined,
       isArchive: path === RouteKey.Archive ? true : undefined,
       isTrash: path === RouteKey.Trash,
+      isSent: path === RouteKey.Sent,
     })
   }, [path, tabKey]);
 
@@ -91,11 +93,17 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
           <Separator />
           <Nav isCollapsed={isCollapsed}
                links={[{
+                 title: "Compose",
+                 label: "",
+                 icon: Plus,
+                 variant: path === RouteKey.New ? "default" : 'ghost',
+                 onClick: () => setPath(RouteKey.New)
+               }, {
                  title: "Sent",
                  label: "",
                  icon: Send,
-                 variant: path === RouteKey.New ? "default" : 'ghost',
-                 onClick: () => setPath(RouteKey.New)
+                 variant: path === RouteKey.Sent ? "default" : 'ghost',
+                 onClick: () => setPath(RouteKey.Sent)
                }, {
                  title: "Inbox",
                  label: inboxUnreadCount,
@@ -123,7 +131,7 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
                }]} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        {[RouteKey.Inbox, RouteKey.Archive, RouteKey.Trash].includes(path as any) ?
+        {[RouteKey.Inbox, RouteKey.Archive, RouteKey.Trash, RouteKey.Sent].includes(path as any) ?
           <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
                         contentRef={inboxRef}
                         setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
