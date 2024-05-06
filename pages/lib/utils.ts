@@ -39,3 +39,9 @@ export const removeArray = (a: string[] = [], b: string[] = []) => {
   if (!b?.length) return a;
   return a.filter(item => !b.includes(item));
 }
+
+export const getEmailName = (address?: string) => {
+  if (!address) return address;
+  if (!address.includes('@')) return address;
+  return address.split('@')[0];
+};

@@ -1,12 +1,13 @@
 import type {D1Database} from "@cloudflare/workers-types";
-import {usePrisma, PrismaKit} from "@/lib";
-import {ChatUserScrollRo, ChatHistoryScrollRo, SendMailRo, IMail, MailScrollRo} from "@/types/http";
+import {PrismaKit, usePrisma} from "@/lib";
+import {ChatHistoryScrollRo, ChatUserScrollRo, IMail, MailScrollRo, SendMailRo} from "@/types/http";
 import sql from "sql-template-tag";
-import Email from "vercel-email";
+import Email from "@/lib/vercel-email";
 import {UserSession} from "@hocgin/nextjs-kit/dist/esm/type";
 import {UserService} from "@/service/db/user-service";
 import {UnAccessError} from "@/types/base";
 import {ConvertKit} from "@/lib/convert";
+import {getEmailName} from "@/lib/utils";
 
 export class MailService {
 
@@ -112,20 +113,31 @@ export class MailService {
    * @param client
    * @param ro
    * @param session
+   * @param env
    */
-  static async sendMail(client: D1Database, ro: SendMailRo, session: UserSession) {
+  static async sendMail(client: D1Database, ro: SendMailRo, session: UserSession, env: CloudflareEnv) {
     let {sentAccess} = await UserService.useAuthorize(client, session);
 
     // 是否有权限发送
     let access = sentAccess(ro?.from?.address);
     if (!access) throw new UnAccessError();
 
+    let dkim = {};
+    if (env.DKIM_DOMAIN && env.DKIM_SELECTOR && env.DKIM_PRIVATE_KEY) {
+      dkim = {
+        dkim_domain: env.DKIM_DOMAIN,
+        dkim_selector: env.DKIM_SELECTOR,
+        dkim_private_key: env.DKIM_PRIVATE_KEY,
+      };
+    }
 
     let {kit, prisma} = usePrisma(client);
-    let asMail = (mail) => ({
-      email: mail?.address,
-      name: mail?.name,
-    });
+    let asMail = (mail) => {
+      return {
+        email: mail?.address,
+        name: mail?.name ?? getEmailName(mail?.address),
+      };
+    };
     let asMails = (mails: IMail[]) => {
       if (!mails?.length) return undefined;
       return mails.map(asMail);
@@ -138,22 +150,22 @@ export class MailService {
     if (html) {
       html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><meta http-equiv="Content-Type" content="text/html charset=UTF-8" /><html lang="en"><body>${html}</body></html>`
     }
+    let subject = ro.subject;
     await Email.send({
-      to: asMails(to),
-      cc: asMails(cc),
-      bcc: asMails(bcc),
-      from: asMail(from),
-      subject: ro.subject,
-      html: html,
+      to: asMails(to), from: asMail(from),
+      cc: asMails(cc), bcc: asMails(bcc),
+      subject: subject, html: html,
+      ...dkim
     });
     await prisma.mail.create({
       data: {
         headers: '[]',
-        from_address: JSON.stringify(from),
-        to_address: JSON.stringify(to),
-        html: html,
+        to_address: JSON.stringify(to), from_address: JSON.stringify(from),
+        cc: JSON.stringify(cc), bcc: JSON.stringify(bcc),
+        subject, html: html,
         owner: from?.address,
         message_id: `message_id_${Date.now()}`,
+        date: new Date(),
       },
     });
   }

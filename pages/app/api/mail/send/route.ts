@@ -8,7 +8,7 @@ export const runtime = 'edge'
 const POST = ContextKit.withError(async (request: NextRequest) => {
   let session = await ContextKit.getSessionThrow(request);
   const {env, cf, ctx} = getRequestContext();
-  await MailService.sendMail(env.DB, (await request.json()), session);
+  await MailService.sendMail(env.DB, (await request.json()), session, env);
   return ResultKit.success();
 })
 export {POST};

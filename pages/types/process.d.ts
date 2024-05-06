@@ -3,6 +3,9 @@ import type {D1Database} from "@cloudflare/workers-types";
 declare global {
   interface CloudflareEnv {
     DB: D1Database;
+    DKIM_DOMAIN?: string;
+    DKIM_SELECTOR?: string;
+    DKIM_PRIVATE_KEY?: string;
 
     [key: string]: string | any | undefined;
 

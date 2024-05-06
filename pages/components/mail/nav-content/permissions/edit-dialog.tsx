@@ -24,7 +24,7 @@ import {Loader2} from "lucide-react";
 import type {Row} from "@/components/mail/nav-content/permissions/columns";
 
 const FormSchema = z.object({
-  email: z.string().email(),
+  email: z.string(),
   readMail: z.array(z.any()),
   sentMail: z.array(z.any()),
 });

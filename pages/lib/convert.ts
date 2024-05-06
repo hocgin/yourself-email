@@ -1,13 +1,23 @@
 import type {Mail, UserConfig} from "@prisma/client";
+import {getEmailName} from "@/lib/utils";
+import {IMail} from "@/types/http";
 
 export class ConvertKit {
+  static asIMail(imail: IMail) {
+    if (!imail) return imail;
+    return {
+      ...imail,
+      name: imail?.name ?? getEmailName(imail?.address)
+    };
+  }
+
 
   static asMail(entity: (Mail | any)) {
     if (!entity) return;
     return {
       id: entity.id,
       headers: JSON.parse(entity.headers),
-      fromAddress: JSON.parse(entity.from_address),
+      fromAddress: ConvertKit.asIMail(JSON.parse(entity.from_address)),
       sender: JSON.parse(entity.sender),
       replyTo: JSON.parse(entity.reply_to),
       toAddress: JSON.parse(entity.to_address),

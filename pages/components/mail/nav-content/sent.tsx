@@ -1,6 +1,6 @@
 import {Input} from "@/components/ui/input";
 import {ResizablePanel} from "@/components/ui/resizable";
-import React from "react";
+import React, {useEffect, useEffect} from "react";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {zodResolver} from "@hookform/resolvers/zod"
@@ -57,6 +57,10 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
       from: selectedOwner?.address === '*' ? undefined : selectedOwner?.address,
     }
   });
+  useEffect(() => {
+    form.setValue('from', (selectedOwner?.address === '*' ? undefined : selectedOwner?.address))
+  }, [selectedOwner?.address]);
+
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     sendMail.run(data);
@@ -71,7 +75,7 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
           render={({field}) => <FormItem>
             <FormControl>
               <div className="flex w-full items-center">
-                <Input type='email' placeholder="发件人" value={field.value}
+                <Input type='email' placeholder="Sender" value={field.value}
                        disabled={selectedOwner?.address !== '*'}
                        onChange={field.onChange} />
               </div>
@@ -84,11 +88,11 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
           render={({field}) => <FormItem>
             <FormControl>
               <div className="flex w-full items-center">
-                <MultipleSelector placeholder="收件人" creatable value={field.value}
+                <MultipleSelector placeholder="Recipient" creatable value={field.value}
                                   onChange={field.onChange} />
                 {/*<Input type="email" placeholder="收件人" {...field} />*/}
-                <Button type='button' variant="link" size='sm' onClick={toggleOpenCc}>抄送</Button>
-                <Button type='button' variant="link" size='sm' onClick={toggleOpenBcc}>密送</Button>
+                <Button type='button' variant="link" size='sm' onClick={toggleOpenCc}>CC</Button>
+                <Button type='button' variant="link" size='sm' onClick={toggleOpenBcc}>BCC</Button>
               </div>
             </FormControl>
             <FormMessage />
@@ -99,7 +103,7 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
           render={({field}) => <FormItem>
             <FormControl>
               <div className="flex w-full items-center">
-                <MultipleSelector placeholder="抄送" creatable value={field.value}
+                <MultipleSelector placeholder="cc" creatable value={field.value}
                                   onChange={field.onChange} />
                 <Button type='button' variant="link" size='sm' onClick={toggleOpenCc}>
                   <CircleX className='mr-2 h-4 w-4 ' />
@@ -114,7 +118,7 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
           render={({field}) => <FormItem>
             <FormControl>
               <div className="flex w-full items-center">
-                <MultipleSelector placeholder="密送" creatable value={field.value}
+                <MultipleSelector placeholder="bcc" creatable value={field.value}
                                   onChange={field.onChange} />
                 <Button type='button' variant="link" size='sm' onClick={toggleOpenBcc}>
                   <CircleX className='mr-2 h-4 w-4 ' />
@@ -128,7 +132,7 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
           name="subject"
           render={({field}) => <FormItem>
             <FormControl>
-              <Input type="text" placeholder="主题" {...field} />
+              <Input type="text" placeholder="Subject" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>} />
@@ -138,7 +142,7 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
           render={({field}) => (
             <FormItem>
               <FormControl>
-                <Textarea placeholder="正文.." className='resize-vertical min-h-[300px]' {...field} />
+                <Textarea placeholder="Content.." className='resize-vertical min-h-[300px]' {...field} />
               </FormControl>
               {/*<FormDescription>*/}
               {/*  You can <span>@mention</span> other users and organizations.*/}
