@@ -7,7 +7,7 @@ import {UserSession} from "@hocgin/nextjs-kit/dist/esm/type";
 import {UserService} from "@/service/db/user-service";
 import {UnAccessError} from "@/types/base";
 import {ConvertKit} from "@/lib/convert";
-import {getEmailName} from "@/lib/utils";
+import {getEmailDomain, getEmailName} from "@/lib/utils";
 
 export class MailService {
 
@@ -131,6 +131,11 @@ export class MailService {
       };
     }
 
+    let domain = getEmailDomain(ro?.from?.address);
+    // Message-ID: <tencent_977FDA0CB779B8D3F9BF4F6840976BF89808@qq.com>
+    let messageId = ['<yourself_', `${Date.now()}`, `@${domain}>`].join();
+    let inReplyTo = messageId;
+
     let {kit, prisma} = usePrisma(client);
     let asMail = (mail) => {
       return {
@@ -155,8 +160,9 @@ export class MailService {
       to: asMails(to), from: asMail(from),
       cc: asMails(cc), bcc: asMails(bcc),
       subject: subject, html: html,
-      ...dkim
+      ...dkim,
     });
+
     await prisma.mail.create({
       data: {
         headers: '[]',
@@ -164,8 +170,9 @@ export class MailService {
         cc: JSON.stringify(cc), bcc: JSON.stringify(bcc),
         subject, html: html,
         owner: from?.address,
-        message_id: `message_id_${Date.now()}`,
+        message_id: messageId,
         date: new Date(),
+        is_read: true,
       },
     });
   }

@@ -45,3 +45,9 @@ export const getEmailName = (address?: string) => {
   if (!address.includes('@')) return address;
   return address.split('@')[0];
 };
+
+export const getEmailDomain = (address?: string) => {
+  if (!address) return address;
+  if (!address.includes('@')) return address;
+  return address.split('@')[1];
+};

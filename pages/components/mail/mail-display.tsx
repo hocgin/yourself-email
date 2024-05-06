@@ -1,7 +1,7 @@
 "use client";
 
 import format from "date-fns/format"
-import {Archive, Clock, MoreVertical, Trash2,} from "lucide-react"
+import {Archive, Clock, Loader2, MoreVertical, Trash2,} from "lucide-react"
 
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 import {Button} from "@/components/ui/button"
@@ -12,7 +12,7 @@ import {Tooltip, TooltipContent, TooltipTrigger,} from "@/components/ui/tooltip"
 import {IMail, Mail} from "@/types/http";
 import {useRequest} from "ahooks";
 import {AppService} from "@/service/http/app";
-import {useState} from "react";
+import React, {useState} from "react";
 import {useToast} from "@/components/ui/use-toast"
 import {cn, formatDate} from "@/lib";
 import {Empty} from "@/components/empty";
@@ -30,18 +30,18 @@ interface MailDisplayProps {
 export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
   const {toast} = useToast()
   const [replyContent, setReplyContent] = useState<string>()
+  let title = mail?.subject ?? mail.fromAddress?.address;
   let sendMail = useRequest(() => AppService.sendMail({
     to: [mail.fromAddress],
-    from: selectedOwner,
-    subject: `Reply to ${mail.fromAddress}`,
+    from: {address: mail?.owner},
+    subject: `Re: ${title}`,
     html: replyContent
   }), {
     manual: true,
     onSuccess: (_) => {
       // 发送成功
       setReplyContent(undefined);
-      toast({title: `发送成功`, description: `Reply to ${mail.fromAddress}`});
-      // todo 查询页面
+      toast({title: `Success`, description: `Reply to ${title}`});
     },
     onError: (e) => toast({variant: "destructive", title: e?.name, description: e?.message}),
   });
@@ -162,7 +162,8 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
                   <Button onClick={(e) => {
                     e.preventDefault();
                     sendMail.run();
-                  }} size="sm" className="ml-auto">
+                  }} size="sm" className="ml-auto" disabled={sendMail?.loading}>
+                    {sendMail.loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <></>}
                     Send
                   </Button>
                 </div>

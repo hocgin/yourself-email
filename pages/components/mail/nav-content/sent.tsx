@@ -151,7 +151,7 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
             </FormItem>
           )} />
         <div className="flex items-center">
-          <Button type="submit" size="sm" className="ml-auto">
+          <Button type="submit" size="sm" className="ml-auto" disabled={sendMail?.loading}>
             {sendMail.loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <></>}
             Send
           </Button>
