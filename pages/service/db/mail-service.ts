@@ -137,20 +137,15 @@ export class MailService {
     let inReplyTo = messageId;
 
     let {kit, prisma} = usePrisma(client);
-    let asMail = (mail) => {
-      return {
-        email: mail?.address,
-        name: mail?.name ?? getEmailName(mail?.address),
-      };
-    };
-    let asMails = (mails: IMail[]) => {
+    let asMail = (mail: IMail) => ({
+      email: mail?.address,
+      name: mail?.name ?? getEmailName(mail?.address),
+    }), asMails = (mails: IMail[]) => {
       if (!mails?.length) return undefined;
       return mails.map(asMail);
     };
-    let to = ro?.to ?? [];
-    let cc = ro?.cc ?? [];
-    let bcc = ro?.bcc ?? [];
-    let from = ro?.from;
+    let to = ro?.to ?? [], from = ro?.from;
+    let cc = ro?.cc ?? [], bcc = ro?.bcc ?? [];
     let html = ro.html;
     if (html) {
       html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><meta http-equiv="Content-Type" content="text/html charset=UTF-8" /><html lang="en"><body>${html}</body></html>`
@@ -165,12 +160,12 @@ export class MailService {
 
     await prisma.mail.create({
       data: {
+        message_id: messageId,
         headers: '[]',
         to_address: JSON.stringify(to), from_address: JSON.stringify(from),
         cc: JSON.stringify(cc), bcc: JSON.stringify(bcc),
         subject, html: html,
         owner: from?.address,
-        message_id: messageId,
         date: new Date(),
         is_read: true,
       },

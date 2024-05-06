@@ -43,6 +43,7 @@ class Email {
     if (resp.status > 299 || resp.status < 200) {
       throw new Error(`Error sending email: ${resp.status} ${resp.statusText}`);
     }
+    return (await resp.text());
   }
 
   /**
