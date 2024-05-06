@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Dove Mail",
-  description: "Dove Mail",
+  name: "Mail",
+  description: "Mail",
   navItems: [],
   navMenuItems: [],
   links: {
