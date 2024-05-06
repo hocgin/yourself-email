@@ -1,11 +1,9 @@
-import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar"
 import {CalendarDays} from "lucide-react"
 import React from "react";
 import {UserAvatar} from "@/components/avatar";
 import {Mail} from "@/types/http";
-import format from "date-fns/format";
 import {Button} from "@/components/ui/button";
-import {cn, stripHtml} from "@/lib";
+import {cn, stripHtml, formatDistanceDay} from "@/lib";
 
 type Created = {
   mail: Mail;
@@ -25,7 +23,7 @@ export const MailCard: React.FC<Created> = ({mail, selected, onClick}) => {
       <div className="flex items-center pt-2">
         <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
         <span className="text-xs text-muted-foreground">
-         {format(new Date(mail.date), "PPpp")}
+         {formatDistanceDay(new Date(mail.date))}
         </span>
       </div>
     </div>

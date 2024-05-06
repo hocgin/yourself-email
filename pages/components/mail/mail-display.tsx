@@ -14,7 +14,7 @@ import {useRequest} from "ahooks";
 import {AppService} from "@/service/http/app";
 import {useState} from "react";
 import {useToast} from "@/components/ui/use-toast"
-import {cn, formatDistanceDay} from "@/lib";
+import {cn, formatDate} from "@/lib";
 import {Empty} from "@/components/empty";
 import {UserAvatar} from "@/components/avatar";
 import {EventEmitter} from "ahooks/lib/useEventEmitter";
@@ -144,7 +144,7 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
             </div>
             {mail.date && (
               <div className="ml-auto text-xs text-muted-foreground">
-                {formatDistanceDay(new Date(mail.date))}
+                {formatDate(new Date(mail.date))}
               </div>
             )}
           </div>

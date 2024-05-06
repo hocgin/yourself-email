@@ -25,11 +25,16 @@ export function formatDistanceDay(date: Date): string {
   }
 
   if (distance > 7 * oneDay) {
-    return format(date, "yyyy-MM-dd HH:mm:ss")
+    return format(date, "yyyy-MM-dd HH:mm:ss");
   }
 
   return formatDistanceToNow(date, {addSuffix: true})
 }
+
+export function formatDate(date: Date) {
+  return format(date, "yyyy-MM-dd HH:mm:ss");
+}
+
 
 export function stripHtml(html: string) {
   if (!html?.length) return html;

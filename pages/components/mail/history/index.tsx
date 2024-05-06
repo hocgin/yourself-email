@@ -42,7 +42,7 @@ export const History: React.FC<Created> = ({disabled, selectedMail, $event, owne
   return <Popover open={open} onOpenChange={setOpen}>
     <PopoverTrigger asChild>
       <TooltipTrigger asChild>
-        <Button variant={'ghost'} size="icon" disabled={disabled}>
+        <Button variant={open ? "secondary" : "ghost"} size="icon" disabled={disabled}>
           <Clock className="h-4 w-4" />
           <span className="sr-only">History</span>
         </Button>
