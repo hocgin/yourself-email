@@ -103,7 +103,7 @@ export class MailService {
         PrismaKit.Raw.if(sql`AND (M.is_archive = ${ro?.isArchive})`, ro?.isArchive !== undefined),
         PrismaKit.Raw.if(sql`AND (M.owner = ${ro.owner})`, ro.owner !== '*'),
       ]),
-      PrismaKit.Raw.orderBy(['M.id'])
+      PrismaKit.Raw.orderBy(['M.id DESC'])
     );
     return (await kit.scrollRaw(rawSql, ro)).convert(ConvertKit.asMail);
   }

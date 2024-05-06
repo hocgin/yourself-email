@@ -1,7 +1,7 @@
 import type {D1Database} from "@cloudflare/workers-types";
 import {UserConfigPagingRo, UserConfigSaveRo} from "@/types/http";
 import {PrismaKit, usePrisma} from "@/lib";
-import {join, unique} from "@/lib/utils";
+import {join, removeArray, unique} from "@/lib/utils";
 import {UserSession} from "@hocgin/nextjs-kit/dist/esm/type";
 import {MailService} from "@/service/db/mail-service";
 import {UnAccessError} from "@/types/base";
@@ -55,11 +55,13 @@ export class UserService {
   static async getState(client: D1Database, session: UserSession) {
     let authorize = await this.useAuthorize(client, session);
     let result = await this.listAccountsByUser(client, session);
+    let oldAddress = (result ?? []).map(({address}) => address);
+    let newAddress = removeArray((authorize?.readMails ?? []), oldAddress).map((address) => ({address}));
     return {
       isSuperAdmin: authorize.isSuperAdmin,
       sentMails: authorize.sentMails,
       readMails: authorize.readMails,
-      accounts: unique([...(result ?? []).map(({address}) => address), ...(authorize.readMails ?? [])]).map(address => ({address})),
+      accounts: unique([...result, ...newAddress]),
       ...(await MailService.countByUnread(client, session))
     };
   }

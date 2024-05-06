@@ -52,15 +52,15 @@ const defaultOptions = {
     // these attributes would make sense if we did.
     img: ['style', 'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
   },
-  // allowedStyles: {
-  //   '*': {
-  //     '*': [/^.*$/],
-  //   }
-  // }
 } as any;
 
 export const sanitize = (dirty: string, options?: IOptions) => {
   return ({
     __html: sanitizeHtml(dirty, {...defaultOptions, ...options}),
   });
+}
+
+export const removeArray = (a: string[] = [], b: string[] = []) => {
+  if (!b?.length) return a;
+  return a.filter(item => !b.includes(item));
 }
