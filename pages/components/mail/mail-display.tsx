@@ -150,7 +150,7 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
           </div>
           <Separator />
           <div className="flex-1 p-4 overflow-y-auto">
-            <div className={'html-content'} dangerouslySetInnerHTML={sanitize(mail.html)} />
+            <div className={'html-content'} dangerouslySetInnerHTML={sanitize(mail?.html) ?? {__html: mail?.text}} />
           </div>
           <Separator className="mt-auto" />
           <div className="p-4">

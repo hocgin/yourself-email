@@ -10,6 +10,7 @@ export function stripHtml(html: string) {
 
 
 export const sanitize = (dirty: string, options?: IOptions) => {
+  if (!dirty?.trim?.()?.length) return undefined;
   const defaultOptions = {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
     allowedAttributes: {

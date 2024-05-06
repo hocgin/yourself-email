@@ -19,7 +19,7 @@ export const MailCard: React.FC<Created> = ({mail, selected, onClick}) => {
     <div className="space-y-1 flex-1">
       <h4 className="text-sm font-semibold">{mail?.subject}</h4>
       <p className="text-sm line-clamp-2 text-muted-foreground">
-        {stripHtml(mail?.html)?.substring?.(0, 300)}
+        {stripHtml(mail?.html ?? mail?.text)?.substring?.(0, 300)}
       </p>
       <div className="flex items-center pt-2">
         <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}

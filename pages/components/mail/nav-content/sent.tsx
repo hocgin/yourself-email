@@ -1,6 +1,6 @@
 import {Input} from "@/components/ui/input";
 import {ResizablePanel} from "@/components/ui/resizable";
-import React, {useEffect, useEffect} from "react";
+import React, {useEffect} from "react";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {zodResolver} from "@hookform/resolvers/zod"

@@ -4,13 +4,14 @@
 
 ### 效果展示
 
-> 演示地址: mail.hocg.in, 使用任意邮箱登录。可读/写邮箱: test@hocg.in 和 test2@hocg.in
+> 演示地址: http://mail.hocg.in, 使用任意邮箱登录。
+> 可读/写邮箱: test@hocg.in 和 test2@hocg.in
 
 <img src="docs/tutorial/demo.c1.png" width="425"/> <img src="docs/tutorial/demo.c2.png" width="425"/>
 
 ### 部署流程
 
-<details>
+<details open>
 <summary>1. 创建数据库</summary>
 
 #### 初始化数据库
@@ -35,7 +36,7 @@ npx wrangler d1 execute yourself-email --remote --command "INSERT INTO UserConfi
 
 </details>
 
-<details>
+<details open>
 <summary>2. 部署邮件接收端(Workers) / 接收邮件</summary>
 
 #### 部署项目
@@ -70,7 +71,7 @@ npm run deploy
 
 </details>
 
-<details>
+<details open>
 <summary>3. 部署邮件界面端(Pages) / 发送邮件</summary>
 
 #### 部署项目

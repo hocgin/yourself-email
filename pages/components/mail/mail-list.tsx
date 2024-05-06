@@ -43,7 +43,7 @@ export function MailList({contentRef, items, selected, onClick}: MailListProps) 
             <div className="text-xs font-medium">{item.subject}</div>
           </div>
           <div className="line-clamp-2 text-xs text-muted-foreground">
-            {stripHtml(item?.html)?.substring?.(0, 300)}
+            {stripHtml(item?.html ?? item?.text)?.substring?.(0, 300)}
           </div>
           {item?.labels?.length ? (
             <div className="flex items-center gap-2">
