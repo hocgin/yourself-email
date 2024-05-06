@@ -1,7 +1,8 @@
 "use client";
 
 import React, {ComponentProps} from "react"
-import {cn, formatDistanceDay, stripHtml} from "@/lib/utils"
+import {cn, formatDistanceDay} from "@/lib/utils"
+import {stripHtml} from "@/lib/domkit"
 import {Badge} from "@/components/ui/badge"
 import {ScrollArea} from "@/components/ui/scroll-area"
 import {Mail} from "@/types/http";

@@ -1,8 +1,7 @@
 import type {D1Database} from "@cloudflare/workers-types";
 import {usePrisma, PrismaKit} from "@/lib";
 import {ChatUserScrollRo, ChatHistoryScrollRo, SendMailRo, IMail, MailScrollRo} from "@/types/http";
-import sql, {raw} from "sql-template-tag";
-import type {Mail} from "@prisma/client";
+import sql from "sql-template-tag";
 import Email from "vercel-email";
 import {UserSession} from "@hocgin/nextjs-kit/dist/esm/type";
 import {UserService} from "@/service/db/user-service";

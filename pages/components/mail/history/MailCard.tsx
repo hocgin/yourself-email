@@ -3,7 +3,8 @@ import React from "react";
 import {UserAvatar} from "@/components/avatar";
 import {Mail} from "@/types/http";
 import {Button} from "@/components/ui/button";
-import {cn, stripHtml, formatDistanceDay} from "@/lib";
+import {cn, formatDistanceDay} from "@/lib";
+import {stripHtml} from "@/lib/domkit";
 
 type Created = {
   mail: Mail;

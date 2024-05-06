@@ -1,13 +1,11 @@
 import {RabbitKit, useDelete, useGet, usePost, usePut} from "@hocgin/hkit";
 import {
-  ListAccountVo,
   ChatUserScrollRo,
   ChatHistoryScrollRo,
   SendMailRo,
   UserConfigPagingRo,
   UserConfigSaveRo
 } from "@/types/http";
-import {IScroll} from "@hocgin/nextjs-kit";
 
 export class AppService {
 

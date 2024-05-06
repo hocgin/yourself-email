@@ -11,7 +11,6 @@ const GET = ContextKit.withError(async (request: NextRequest) => {
   let authorize = await UserService.useAuthorize(env.DB, session);
 
   return ResultKit.success({
-    ...session,
     isSuperAdmin: authorize.isSuperAdmin,
     sentMails: authorize.sentMails,
     readMails: authorize.readMails,

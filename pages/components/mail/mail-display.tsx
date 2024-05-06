@@ -19,7 +19,7 @@ import {Empty} from "@/components/empty";
 import {UserAvatar} from "@/components/avatar";
 import {EventEmitter} from "ahooks/lib/useEventEmitter";
 import {Message, MessageType} from "@/types/base";
-import {sanitize} from "@/lib/utils";
+import {sanitize} from "@/lib/domkit";
 
 interface MailDisplayProps {
   mail: Mail | null;
