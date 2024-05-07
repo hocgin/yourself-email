@@ -50,6 +50,7 @@ export interface ChatHistoryScrollRo extends ScrollRo {
   keyword?: string;
   fromAddress: string;
   owner: string;
+  isReceive?: boolean;
 }
 
 export interface MailScrollRo extends ScrollRo {
@@ -58,6 +59,7 @@ export interface MailScrollRo extends ScrollRo {
   onlyUnread?: boolean;
   isTrash?: boolean;
   isArchive?: boolean;
+  isReceive?: boolean;
 }
 
 export interface UserConfigPagingRo extends PagingRo {

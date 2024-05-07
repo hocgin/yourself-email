@@ -79,6 +79,7 @@ export class MailService {
         PrismaKit.Raw.if(sql`AND (M.subject LIKE ${keyword} OR M.text LIKE ${keyword})`, keyword),
         PrismaKit.Raw.if(sql`AND (M.owner = ${ro.owner})`, ro.owner !== '*'),
         PrismaKit.Raw.if(sql`AND M.from_address like ${fromAddress}`, ro.fromAddress),
+        PrismaKit.Raw.if(sql`AND (M.is_receive = ${ro?.isReceive})`, ro?.isReceive !== undefined),
       ]),
       PrismaKit.Raw.orderBy(['M.id DESC'])
     );
@@ -102,6 +103,7 @@ export class MailService {
         PrismaKit.Raw.if(sql`AND (M.is_read = false)`, ro?.onlyUnread),
         PrismaKit.Raw.if(sql`AND (M.is_trash = ${ro?.isTrash})`, ro?.isTrash !== undefined),
         PrismaKit.Raw.if(sql`AND (M.is_archive = ${ro?.isArchive})`, ro?.isArchive !== undefined),
+        PrismaKit.Raw.if(sql`AND (M.is_receive = ${ro?.isReceive})`, ro?.isReceive !== undefined),
         PrismaKit.Raw.if(sql`AND (M.owner = ${ro.owner})`, ro.owner !== '*'),
       ]),
       PrismaKit.Raw.orderBy(['M.id DESC'])

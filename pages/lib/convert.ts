@@ -36,6 +36,7 @@ export class ConvertKit {
       isRead: entity.is_read,
       isTrash: entity.is_trash,
       isArchive: entity.is_archive,
+      isReceive: entity.is_receive,
       createdAt: entity.created_at,
       lastUpdatedAt: entity.last_updated_at,
       unreadCount: entity?.unread_count,

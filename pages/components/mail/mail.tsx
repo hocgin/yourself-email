@@ -58,7 +58,7 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
       onlyUnread: tabKey === TabKey.unread ? true : undefined,
       isArchive: path === RouteKey.Archive ? true : undefined,
       isTrash: path === RouteKey.Trash,
-      isSent: path === RouteKey.Sent,
+      isReceive: path !== RouteKey.Sent,
     })
   }, [path, tabKey]);
 
