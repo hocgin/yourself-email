@@ -140,6 +140,7 @@ export class MailService {
         owner: ro?.from?.address,
         date: new Date(),
         is_read: true,
+        is_receive: false
       },
     });
   }
@@ -175,7 +176,8 @@ export class MailService {
         owner: newRo?.from?.address,
         date: new Date(),
         is_read: true,
-        in_reply_to: inReplyTo
+        in_reply_to: inReplyTo,
+        is_receive: false
       },
     });
   }

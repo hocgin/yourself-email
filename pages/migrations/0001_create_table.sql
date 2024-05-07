@@ -20,6 +20,7 @@ CREATE TABLE "Mail"
   "text"            TEXT,
   "attachments"     TEXT,
   "owner"           TEXT     NOT NULL,
+  "is_receive"      BOOLEAN           DEFAULT true,
   "is_read"         BOOLEAN           DEFAULT false,
   "is_archive"      BOOLEAN           DEFAULT false,
   "is_trash"        BOOLEAN           DEFAULT false,

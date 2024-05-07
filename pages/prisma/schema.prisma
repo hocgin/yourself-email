@@ -52,7 +52,7 @@ model Mail {
   // 记录所属的账号(目标接收人或发件人地址)
   owner           String
   // 接收邮件
-  // is_receive      Boolean?  @default(true)
+  is_receive      Boolean?  @default(true)
   // 已读标记
   is_read         Boolean?  @default(false)
   // 标记为归档
