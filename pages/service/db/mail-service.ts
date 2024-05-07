@@ -1,5 +1,5 @@
 import type {D1Database} from "@cloudflare/workers-types";
-import {PrismaKit, usePrisma} from "@/lib";
+import {formatDate, PrismaKit, usePrisma} from "@/lib";
 import {ChatHistoryScrollRo, ChatUserScrollRo, IMail, MailScrollRo, ReplyMailRo, SendMailRo} from "@/types/http";
 import sql from "sql-template-tag";
 import Email from "@/lib/vercel-email";
@@ -161,11 +161,27 @@ export class MailService {
     let messageId = ['<yourself_', `${Date.now()}`, `@${domain}>`].join();
     let inReplyTo = mail?.messageId;
 
+    let html = ro.html;
+
+    // 如果旧内容长度短，添加旧内容信息
+    if (mail?.html?.length < 4 * 1024) {
+      let fromAddress = mail?.fromAddress;
+      let ownerName = getEmailName(mail?.owner);
+      let newHtml = `<div><div style="font-size:70%;padding:2px 0">------------------ Original ------------------</div>
+        <div style="font-size:70%;background:#f0f0f0;color:#212121;padding:8px;border-radius:4px"><div>
+        <b>Sender:</b> ${fromAddress?.name} &lt;${fromAddress?.address}&gt;</div><div>
+        <b>SendTime:</b> ${formatDate(mail?.date)}</div><div>
+        <b>Recipient:</b> ${ownerName} &lt;${mail?.owner}&gt;</div><div>
+        <b>Subject:</b> ${mail?.subject}</div></div></div><br/>`;
+      html = newHtml + html;
+    }
+
+
     let newRo = await sendMail({
       from: {address: mail?.owner},
       to: [mail.fromAddress],
       subject: ro.subject,
-      html: ro.html
+      html: html
     }, env);
 
     await prisma.mail.create({
