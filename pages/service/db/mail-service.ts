@@ -8,6 +8,7 @@ import {UserService} from "@/service/db/user-service";
 import {UnAccessError} from "@/types/base";
 import {ConvertKit} from "@/lib/convert";
 import {getEmailDomain, getEmailName} from "@/lib/utils";
+import {sendMail} from "@/lib/nodekit";
 
 export class MailService {
 
@@ -122,50 +123,21 @@ export class MailService {
     let access = sentAccess(ro?.from?.address);
     if (!access) throw new UnAccessError();
 
-    let dkim = {};
-    if (env.DKIM_DOMAIN && env.DKIM_SELECTOR && env.DKIM_PRIVATE_KEY) {
-      dkim = {
-        dkim_domain: env.DKIM_DOMAIN,
-        dkim_selector: env.DKIM_SELECTOR,
-        dkim_private_key: env.DKIM_PRIVATE_KEY,
-      };
-    }
+    let {kit, prisma} = usePrisma(client);
 
     let domain = getEmailDomain(ro?.from?.address);
-    // Message-ID: <tencent_977FDA0CB779B8D3F9BF4F6840976BF89808@qq.com>
     let messageId = ['<yourself_', `${Date.now()}`, `@${domain}>`].join();
-    let inReplyTo = messageId;
 
-    let {kit, prisma} = usePrisma(client);
-    let asMail = (mail: IMail) => ({
-      email: mail?.address,
-      name: mail?.name ?? getEmailName(mail?.address),
-    }), asMails = (mails: IMail[]) => {
-      if (!mails?.length) return undefined;
-      return mails.map(asMail);
-    };
-    let to = ro?.to ?? [], from = ro?.from;
-    let cc = ro?.cc ?? [], bcc = ro?.bcc ?? [];
-    let html = ro.html;
-    if (html) {
-      html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><meta http-equiv="Content-Type" content="text/html charset=UTF-8" /><html lang="en"><body>${html}</body></html>`
-    }
-    let subject = ro.subject;
-    await Email.send({
-      to: asMails(to), from: asMail(from),
-      cc: asMails(cc), bcc: asMails(bcc),
-      subject: subject, html: html,
-      ...dkim,
-    });
+    ro = await sendMail(ro, env);
 
     await prisma.mail.create({
       data: {
         message_id: messageId,
         headers: '[]',
-        to_address: JSON.stringify(to), from_address: JSON.stringify(from),
-        cc: JSON.stringify(cc), bcc: JSON.stringify(bcc),
-        subject, html: html,
-        owner: from?.address,
+        to_address: JSON.stringify(ro?.to), from_address: JSON.stringify(ro?.from),
+        cc: JSON.stringify(ro?.cc), bcc: JSON.stringify(ro?.bcc),
+        subject: ro?.subject, html: ro?.html,
+        owner: ro?.from?.address,
         date: new Date(),
         is_read: true,
       },
@@ -173,7 +145,39 @@ export class MailService {
   }
 
   static async replyMail(client: D1Database, id: string, ro: ReplyMailRo, session: UserSession, env: CloudflareEnv) {
+    let {sentAccess} = await UserService.useAuthorize(client, session);
+    let {kit, prisma} = usePrisma(client);
 
+    let mail = ConvertKit.asMail(await prisma.mail.findUnique({where: {id: Number(id)}}));
+
+    // 是否有权限发送
+    let access = sentAccess(mail?.owner);
+    if (!access) throw new UnAccessError();
+
+    let domain = getEmailDomain(mail?.owner);
+    let messageId = ['<yourself_', `${Date.now()}`, `@${domain}>`].join();
+    let inReplyTo = mail?.messageId;
+
+    let newRo = await sendMail({
+      from: {address: mail?.owner},
+      to: [mail.fromAddress],
+      subject: ro.subject,
+      html: ro.html
+    }, env);
+
+    await prisma.mail.create({
+      data: {
+        message_id: messageId,
+        headers: '[]',
+        to_address: JSON.stringify(newRo?.to), from_address: JSON.stringify(newRo?.from),
+        cc: JSON.stringify(newRo?.cc), bcc: JSON.stringify(newRo?.bcc),
+        subject: newRo?.subject, html: newRo?.html,
+        owner: newRo?.from?.address,
+        date: new Date(),
+        is_read: true,
+        in_reply_to: inReplyTo
+      },
+    });
   }
 
   /**
