@@ -4,7 +4,7 @@ import {
   ChatHistoryScrollRo,
   SendMailRo,
   UserConfigPagingRo,
-  UserConfigSaveRo
+  UserConfigSaveRo, ReplyMailRo
 } from "@/types/http";
 
 export class AppService {
@@ -50,6 +50,11 @@ export class AppService {
 
   static sendMail(ro: SendMailRo) {
     return usePost(`/api/mail/send`, {data: {...ro}, headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(RabbitKit.thenDataTryErrorIfExits);
+  }
+
+  static replyMail(id: number | string, ro: ReplyMailRo) {
+    return usePost(`/api/mail/${id}/reply`, {data: {...ro}, headers: {'X-Requested-With': 'XMLHttpRequest'}})
       .then(RabbitKit.thenDataTryErrorIfExits);
   }
 

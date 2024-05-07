@@ -81,7 +81,6 @@ export interface SendMailRo {
 }
 
 export interface ReplyMailRo {
-  id: string;
   subject: string;
   html?: string;
 }
