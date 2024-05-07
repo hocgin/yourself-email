@@ -23,7 +23,7 @@ interface MailProps {
   navCollapsedSize: number
 }
 
-enum RouteKey {
+export enum RouteKey {
   Inbox = 'inbox',
   Archive = 'archive',
   New = 'new',
@@ -133,6 +133,7 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
         <ResizableHandle withHandle />
         {[RouteKey.Inbox, RouteKey.Archive, RouteKey.Trash, RouteKey.Sent].includes(path as any) ?
           <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
+                        path={path}
                         contentRef={inboxRef}
                         setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
                         defaultLayout={defaultLayout}

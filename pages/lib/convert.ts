@@ -7,7 +7,7 @@ export class ConvertKit {
     if (!imail) return imail;
     return {
       ...imail,
-      name: imail?.name ?? getEmailName(imail?.address)
+      name: imail?.name?.length > 0 ? imail?.name : getEmailName(imail?.address)
     };
   }
 
@@ -20,7 +20,7 @@ export class ConvertKit {
       fromAddress: ConvertKit.asIMail(JSON.parse(entity.from_address)),
       sender: JSON.parse(entity.sender),
       replyTo: JSON.parse(entity.reply_to),
-      toAddress: JSON.parse(entity.to_address),
+      toAddress: (JSON.parse(entity.to_address) ?? []).map(ConvertKit.asIMail),
       cc: JSON.parse(entity.cc),
       bcc: JSON.parse(entity.bcc),
       returnPath: JSON.parse(entity.return_path),

@@ -1,7 +1,6 @@
 "use client";
 
-import format from "date-fns/format"
-import {Archive, Clock, Loader2, MoreVertical, Trash2,} from "lucide-react"
+import {Archive, CornerDownRight, Loader2, MoreVertical, Trash2, Captions} from "lucide-react"
 
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 import {Button} from "@/components/ui/button"
@@ -20,6 +19,9 @@ import {UserAvatar} from "@/components/avatar";
 import {EventEmitter} from "ahooks/lib/useEventEmitter";
 import {Message, MessageType} from "@/types/base";
 import {sanitize} from "@/lib/domkit";
+import {MailAddress, MailAddresses} from "../mails";
+import {Popover, PopoverTrigger, PopoverContent} from "../ui/popover";
+import {Label} from "../ui/label";
 
 interface MailDisplayProps {
   mail: Mail | null;
@@ -128,13 +130,28 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
             <div className="flex items-start gap-4 text-sm">
               <UserAvatar username={fromName} />
               <div className="grid gap-1">
-                <div className="font-semibold">
-                  <span>{fromName}</span>&nbsp;
-                  <span className={cn('text-xs', 'font-light')}>&lt;{fromAddress}&gt;</span>
+                <div className={'flex gap-1 items-center'}>
+                  <MailAddress mail={mail.fromAddress} />
+                  <Popover>
+                    <PopoverTrigger><Captions className={'h-3 w-3'} /></PopoverTrigger>
+                    <PopoverContent className="w-[300px]">
+                      <div className="grid gap-5 text-xs">
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <div>From</div>
+                          <div className={'col-span-2'}><MailAddress mail={mail.fromAddress} /></div>
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <div>To</div>
+                          <div className={'col-span-2'}><MailAddresses mails={mail.toAddress} className={'flex-col'} />
+                          </div>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                {/*<div className="line-clamp-1 text-xs">*/}
-                {/*  {mail.subject}*/}
-                {/*</div>*/}
+                <div className="flex line-clamp-1 text-xs items-center">
+                  <CornerDownRight className={'h-3 w-3'} />&nbsp;<MailAddresses mails={mail.toAddress} />
+                </div>
                 <div className="line-clamp-1 text-xs font-medium">
                   {mail.subject}
                 </div>

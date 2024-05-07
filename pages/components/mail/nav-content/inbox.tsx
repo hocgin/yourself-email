@@ -11,6 +11,7 @@ import {IMail, Mail} from "@/types/http";
 import {useQueryState} from "nuqs";
 import {EventEmitter} from "ahooks/lib/useEventEmitter";
 import {Message} from "@/types/base";
+import {RouteKey} from "@/components/mail/mail";
 
 type Created = {
   defaultLayout: number[];
@@ -24,6 +25,7 @@ type Created = {
   setSelectedMail: (mail: Mail) => void;
   $event: EventEmitter<Message>;
   contentRef: React.MutableRefObject<Element>;
+  path: RouteKey
 };
 
 export enum TabKey {
@@ -39,7 +41,7 @@ export const InboxContent: React.FC<Created> = ({
                                                   setKeyword,
                                                   setSelectedMail,
                                                   selectedOwner, $event,
-                                                  tabKey, setTabKey, contentRef
+                                                  tabKey, setTabKey, contentRef, path
                                                 }) => {
   return <>
     <ResizablePanel className={'flex flex-col'} defaultSize={defaultLayout[1]} minSize={30}>
@@ -70,7 +72,7 @@ export const InboxContent: React.FC<Created> = ({
           </form>
         </div>
         {mails?.length ? <>
-          <MailList contentRef={contentRef} items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
+          <MailList path={path} contentRef={contentRef} items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
         </> : <div className={'py-5 px-10 h-full'}>
           <Empty />
         </div>}
