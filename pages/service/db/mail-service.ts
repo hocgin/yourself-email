@@ -164,16 +164,17 @@ export class MailService {
     let html = ro.html;
 
     // 如果旧内容长度短，添加旧内容信息
-    if (mail?.html?.length < 4 * 1024) {
+    let oldHtml = mail?.html;
+    if (oldHtml?.length < 4 * 1024) {
       let fromAddress = mail?.fromAddress;
       let ownerName = getEmailName(mail?.owner);
-      let newHtml = `<div><div style="font-size:70%;padding:2px 0">------------------ Original ------------------</div>
+      let newHtml = `<div><br/><div style="font-size:70%;padding:2px 0">------------------ Original ------------------</div>
         <div style="font-size:70%;background:#f0f0f0;color:#212121;padding:8px;border-radius:4px"><div>
         <b>Sender:</b> ${fromAddress?.name} &lt;${fromAddress?.address}&gt;</div><div>
         <b>SendTime:</b> ${formatDate(mail?.date)}</div><div>
         <b>Recipient:</b> ${ownerName} &lt;${mail?.owner}&gt;</div><div>
         <b>Subject:</b> ${mail?.subject}</div></div></div><br/>`;
-      html = newHtml + html;
+      html = oldHtml + newHtml + html;
     }
 
 
