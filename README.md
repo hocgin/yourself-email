@@ -47,7 +47,7 @@ npx wrangler d1 execute yourself-email --remote --command "INSERT INTO UserConfi
 </details>
 
 <details open>
-<summary>2. Deploy email receiver(Workers) / incoming mail</summary>
+<summary>2. Deploy email Workers / incoming mail</summary>
 
 #### Deployment project
 
