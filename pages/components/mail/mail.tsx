@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {Inbox, Send, PencilLine, Plus, Trash2, Users2, Archive} from "lucide-react"
+import {Inbox, Send, Plus, Trash2, Users2, Archive} from "lucide-react"
 
 import {cn} from "@/lib/utils"
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup,} from "@/components/ui/resizable"

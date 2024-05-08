@@ -25,7 +25,7 @@ type Created = {
   setSelectedMail: (mail: Mail) => void;
   $event: EventEmitter<Message>;
   contentRef: React.MutableRefObject<Element>;
-  path: RouteKey
+  path: RouteKey | any
 };
 
 export enum TabKey {
@@ -72,7 +72,8 @@ export const InboxContent: React.FC<Created> = ({
           </form>
         </div>
         {mails?.length ? <>
-          <MailList path={path} contentRef={contentRef} items={mails} selected={selectedMail?.id} onClick={setSelectedMail} />
+          <MailList path={path} contentRef={contentRef} items={mails} selected={selectedMail?.id}
+                    onClick={setSelectedMail} />
         </> : <div className={'py-5 px-10 h-full'}>
           <Empty />
         </div>}
