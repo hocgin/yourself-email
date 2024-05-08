@@ -49,7 +49,7 @@ export function MailList({contentRef, path, items, selected, onClick}: MailListP
               </div>
               <div className="text-xs font-medium">{item.subject}</div>
             </div>
-            <div className="line-clamp-2 text-xs text-muted-foreground">
+            <div className="line-clamp-2 text-xs text-muted-foreground break-all">
               {stripHtml(item?.html ?? item?.text)?.substring?.(0, 300)}
             </div>
             {item?.labels?.length ? (

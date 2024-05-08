@@ -3,17 +3,18 @@
 @tailwind utilities;
 
 .min-h-9 {
-    min-height: 2.25rem;
+  min-height: 2.25rem;
 }
 
 /* fix html content css */
 .html-content img {
-    max-width: unset;
+  max-width: unset;
 }
 
 .html-content a {
-    color: #15c;
-    text-decoration: underline;
+  color: #15c;
+  text-decoration: underline;
+  word-break: break-all;
 }
 
 .html-content blockquote,
@@ -29,5 +30,11 @@
 .html-content figure,
 .html-content p,
 .html-content pre {
-    margin: auto;
+  margin: auto;
+}
+
+.html-content table {
+  text-indent: inherit; /* 1 */
+  border-color: gray; /* 2 */
+  border-collapse: separate; /* 3 */
 }

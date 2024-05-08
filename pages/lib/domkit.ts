@@ -1,6 +1,6 @@
 import {stripHtml as _stripHtml} from "string-strip-html";
-import sanitizeHtml from 'sanitize-html';
 import type {IOptions} from 'sanitize-html';
+import sanitizeHtml from 'sanitize-html';
 
 
 export function stripHtml(html: string) {
@@ -12,9 +12,11 @@ export function stripHtml(html: string) {
 export const sanitize = (dirty: string, options?: IOptions) => {
   if (!dirty?.trim?.()?.length) return undefined;
   const defaultOptions = {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'body']),
     allowedAttributes: {
       '*': ["style"],
+      body: ['style'],
+      table: ['*'],
       td: ['*'],
       p: ['dir', '*'],
       a: ['href', 'name', 'target', 'style'],
@@ -22,6 +24,9 @@ export const sanitize = (dirty: string, options?: IOptions) => {
       // these attributes would make sense if we did.
       img: ['style', 'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
     },
+    transformTags: {
+      'body': sanitizeHtml.simpleTransform('div', {}),
+    }
   } as any;
   return ({
     __html: sanitizeHtml(dirty, {...defaultOptions, ...options}),

@@ -179,6 +179,7 @@ echo -n "v=DKIM1;p=" > dkim_record.txt && openssl rsa -in private_key.pem -pubou
 - [x] User status, query the unread quantity and authorized account list
 - [ ] Support rich text editor
 - [ ] Organize/Develop API interface
+- [ ] Mobile support
 
 </details>
 
