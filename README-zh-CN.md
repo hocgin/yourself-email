@@ -10,9 +10,9 @@
 
 ### 效果展示
 
-> 演示地址: http://mail.hocg.in, 使用任意邮箱登录。
+> 演示地址: http://mail.hocg.in, 使用你的任意邮箱登录。
 >
-> 已配置默认权限，可读/发邮箱: test@hocg.in 和 test2@hocg.in
+> 目前已配置默认权限，登录后可以可读/发邮箱: test@hocg.in 和 test2@hocg.in
 
 <div style="display:inline-block">
   <img src="docs/tutorial/demo.c1.png" width="45%"/>
