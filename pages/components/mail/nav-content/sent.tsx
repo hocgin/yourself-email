@@ -68,7 +68,7 @@ export const SentContent: React.FC<Created> = ({selectedOwner, isMobile, default
     sendMail.run(data);
   }
 
-  return <ResizablePanel defaultSize={100 - defaultLayout[0]} minSize={30}>
+  return <ResizablePanel defaultSize={100 - defaultLayout[0]}>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}
             className={cn("space-y-2 mx-auto my-10", isMobile ? 'p-2' : 'w-2/3')}>

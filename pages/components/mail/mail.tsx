@@ -11,15 +11,20 @@ import {AccountSwitcher} from "./account-switcher"
 import {Nav} from "./nav"
 import {useMail} from "./use-mail"
 import {InboxContent, PermissionsContent, SentContent} from "@/components/mail/nav-content";
-import {useEventEmitter, useLocalStorageState} from 'ahooks';
+import {useEventEmitter} from 'ahooks';
 import {useQueryState} from 'nuqs';
 import {Message, MessageType} from "@/types/base";
 import {TabKey} from "@/components/mail/nav-content/inbox";
 import {useEffect, useRef} from "react";
 import {useDevice} from "@/components/useDevice";
+import {useState} from 'react'
 
 interface MailProps {
-  defaultLayout?: number[] | undefined
+  defaultLayoutPc?: number[] | undefined
+  defaultLayoutMc?: number[] | undefined
+  layoutMcKey?: string;
+  layoutPcKey?: string;
+  collapsedKey?: string;
   defaultCollapsed?: boolean
   navCollapsedSize: number
 }
@@ -33,12 +38,23 @@ export enum RouteKey {
   Permissions = 'permissions',
 }
 
-export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, navCollapsedSize}: MailProps) {
-  const inboxRef = useRef();
+export function Mail({
+                       navCollapsedSize,
+                       layoutMcKey,
+                       defaultCollapsed,
+                       layoutPcKey,
+                       collapsedKey,
+                       defaultLayoutMc,
+                       defaultLayoutPc
+                     }: MailProps) {
   let {isMobile = true} = useDevice();
+  let layoutKey = isMobile ? layoutMcKey : layoutPcKey;
+  let defaultLayout = (isMobile ? defaultLayoutMc : defaultLayoutPc) ?? [16, 24, 60];
+
+  const inboxRef = useRef();
   let [path, setPath] = useQueryState('path', {defaultValue: RouteKey.Inbox});
   let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
-  const [isCollapsed, setIsCollapsed] = useLocalStorageState<boolean>('isCollapsed', {defaultValue: defaultCollapsed})
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(isMobile || defaultCollapsed)
   let $event = useEventEmitter<Message>();
   $event.useSubscription(async (message: Message) => {
     if (message.type === MessageType.UpdateMail) {
@@ -55,8 +71,10 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
     inboxUnreadCount
   } = useMail({inboxRef});
   useEffect(() => {
-    if (!isMobile) return;
-    setIsCollapsed(true);
+    if (isMobile === isCollapsed) return;
+    const collapsed = isMobile;
+    document.cookie = `${collapsedKey}=${JSON.stringify(collapsed)}`;
+    setIsCollapsed(collapsed);
   }, [isMobile]);
   useEffect(() => {
     setFilter({
@@ -68,26 +86,29 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
     })
   }, [path, tabKey]);
 
+  console.log('isMobile', {isMobile, isCollapsed});
   return (
     <TooltipProvider delayDuration={0}>
       <ResizablePanelGroup direction="horizontal"
-                           onLayout={(sizes: number[]) => document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`}
+                           onLayout={(sizes: number[]) => document.cookie = `${layoutKey}=${JSON.stringify(sizes)}`}
                            className="h-full max-h-screen items-stretch">
         <ResizablePanel
-          defaultSize={isMobile ? 20 : defaultLayout[0]}
+          defaultSize={isMobile ? 10 : defaultLayout[0]}
           collapsedSize={navCollapsedSize}
-          collapsible={isCollapsed}
-          minSize={20}
+          collapsible
+          minSize={12}
           maxSize={20}
+          // 展开
           onExpand={() => {
             const collapsed = false;
-            setIsCollapsed(collapsed);
-            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(collapsed)}`;
+            setIsCollapsed(isMobile || collapsed);
+            document.cookie = `${collapsedKey}=${JSON.stringify(collapsed)}`;
           }}
+          // 折叠
           onCollapse={() => {
             const collapsed = true;
             setIsCollapsed(collapsed);
-            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(collapsed)}`;
+            document.cookie = `${collapsedKey}=${JSON.stringify(collapsed)}`;
           }}
           className={cn(isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out")}>
           <div className={cn("flex h-[52px] items-center justify-center",
