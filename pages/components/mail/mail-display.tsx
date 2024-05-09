@@ -126,7 +126,7 @@ export function MailDisplay({mail, selectedOwner, $event}: MailDisplayProps) {
       <Separator />
       {mail ? (
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex items-start p-4">
+          <div className="flex items-start p-4 gap-1">
             <div className="flex items-start gap-4 text-sm">
               <UserAvatar username={fromName} />
               <div className="grid gap-1">

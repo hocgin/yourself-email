@@ -16,6 +16,7 @@ import {useQueryState} from 'nuqs';
 import {Message, MessageType} from "@/types/base";
 import {TabKey} from "@/components/mail/nav-content/inbox";
 import {useEffect, useRef} from "react";
+import {useDevice} from "@/components/useDevice";
 
 interface MailProps {
   defaultLayout?: number[] | undefined
@@ -34,15 +35,16 @@ export enum RouteKey {
 
 export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, navCollapsedSize}: MailProps) {
   const inboxRef = useRef();
+  let {isMobile = true} = useDevice();
+  let [path, setPath] = useQueryState('path', {defaultValue: RouteKey.Inbox});
+  let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
+  const [isCollapsed, setIsCollapsed] = useLocalStorageState<boolean>('isCollapsed', {defaultValue: defaultCollapsed})
   let $event = useEventEmitter<Message>();
   $event.useSubscription(async (message: Message) => {
     if (message.type === MessageType.UpdateMail) {
       setSelectedMail(message?.value);
     }
   });
-  let [path, setPath] = useQueryState('path', {defaultValue: RouteKey.Inbox});
-  let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
-  const [isCollapsed, setIsCollapsed] = useLocalStorageState<boolean>('isCollapsed', {defaultValue: defaultCollapsed})
   const {
     filter, setFilter,
     selected, setSelected,
@@ -52,6 +54,10 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
     mails,
     inboxUnreadCount
   } = useMail({inboxRef});
+  useEffect(() => {
+    if (!isMobile) return;
+    setIsCollapsed(true);
+  }, [isMobile]);
   useEffect(() => {
     setFilter({
       ...filter,
@@ -68,10 +74,10 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
                            onLayout={(sizes: number[]) => document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`}
                            className="h-full max-h-screen items-stretch">
         <ResizablePanel
-          defaultSize={defaultLayout[0]}
+          defaultSize={isMobile ? 20 : defaultLayout[0]}
           collapsedSize={navCollapsedSize}
-          collapsible={true}
-          minSize={15}
+          collapsible={isCollapsed}
+          minSize={20}
           maxSize={20}
           onExpand={() => {
             const collapsed = false;
@@ -133,13 +139,15 @@ export function Mail({defaultLayout = [16, 24, 60], defaultCollapsed = false, na
         <ResizableHandle withHandle />
         {[RouteKey.Inbox, RouteKey.Archive, RouteKey.Trash, RouteKey.Sent].includes(path as any) ?
           <InboxContent mails={mails} selectedOwner={selected} selectedMail={selectedMail} $event={$event}
-                        path={path}
+                        isMobile={isMobile} path={path}
                         contentRef={inboxRef}
                         setSelectedMail={setSelectedMail} tabKey={tabKey} setTabKey={setTabKey}
                         defaultLayout={defaultLayout}
                         keyword={keyword} setKeyword={setKeyword} /> : undefined}
-        {path === RouteKey.New ? <SentContent selectedOwner={selected} defaultLayout={defaultLayout} /> : undefined}
-        {path === RouteKey.Permissions ? <PermissionsContent defaultLayout={defaultLayout} /> : undefined}
+        {path === RouteKey.New ?
+          <SentContent isMobile={isMobile} selectedOwner={selected} defaultLayout={defaultLayout} /> : undefined}
+        {path === RouteKey.Permissions ?
+          <PermissionsContent isMobile={isMobile} defaultLayout={defaultLayout} /> : undefined}
       </ResizablePanelGroup>
     </TooltipProvider>
   );

@@ -13,6 +13,7 @@ import {AppService} from "@/service/http/app";
 import {IMail, Mail} from "@/types/http";
 import {Loader2, CircleX} from "lucide-react";
 import MultipleSelector from "@/components/ui-expansions/multiple-selector";
+import {cn} from "@/lib";
 
 const FormSchema = z.object({
   to: z.array(z.any()),
@@ -30,9 +31,10 @@ const FormSchema = z.object({
 
 type Created = {
   defaultLayout: number[];
-  selectedOwner?: IMail
+  selectedOwner?: IMail;
+  isMobile?: boolean;
 };
-export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) => {
+export const SentContent: React.FC<Created> = ({selectedOwner, isMobile, defaultLayout}) => {
   let [openCc, {toggle: toggleOpenCc}] = useBoolean(false);
   let [openBcc, {toggle: toggleOpenBcc}] = useBoolean(false);
   let sendMail = useRequest(({to, from, cc, bcc, subject, html}) => {
@@ -68,7 +70,8 @@ export const SentContent: React.FC<Created> = ({selectedOwner, defaultLayout}) =
 
   return <ResizablePanel defaultSize={100 - defaultLayout[0]} minSize={30}>
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-2 mx-auto my-10">
+      <form onSubmit={form.handleSubmit(onSubmit)}
+            className={cn("space-y-2 mx-auto my-10", isMobile ? 'p-2' : 'w-2/3')}>
         <FormField
           control={form.control}
           name="from"

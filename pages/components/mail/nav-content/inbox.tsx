@@ -8,7 +8,7 @@ import {MailList} from "@/components/mail/mail-list";
 import Empty from "../../empty";
 import {MailDisplay} from "@/components/mail/mail-display";
 import {IMail, Mail} from "@/types/http";
-import {useQueryState} from "nuqs";
+import {Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {EventEmitter} from "ahooks/lib/useEventEmitter";
 import {Message} from "@/types/base";
 import {RouteKey} from "@/components/mail/mail";
@@ -25,7 +25,8 @@ type Created = {
   setSelectedMail: (mail: Mail) => void;
   $event: EventEmitter<Message>;
   contentRef: React.MutableRefObject<Element>;
-  path: RouteKey | any
+  path: RouteKey | any;
+  isMobile?: boolean;
 };
 
 export enum TabKey {
@@ -34,6 +35,7 @@ export enum TabKey {
 }
 
 export const InboxContent: React.FC<Created> = ({
+                                                  isMobile,
                                                   defaultLayout,
                                                   selectedMail,
                                                   mails,
@@ -43,8 +45,10 @@ export const InboxContent: React.FC<Created> = ({
                                                   selectedOwner, $event,
                                                   tabKey, setTabKey, contentRef, path
                                                 }) => {
+  let [open, setOpen] = useState(false);
   return <>
-    <ResizablePanel className={'flex flex-col'} defaultSize={defaultLayout[1]} minSize={30}>
+    <ResizablePanel className={'flex flex-col'} defaultSize={isMobile ? 100 - defaultLayout[0] : defaultLayout[1]}
+                    minSize={30}>
       <Tabs className='flex flex-col overflow-hidden' value={tabKey} onValueChange={setTabKey}>
         <div className="flex items-center px-4 py-2">
           <h1 className="text-xl font-bold">Inbox</h1>
@@ -73,15 +77,26 @@ export const InboxContent: React.FC<Created> = ({
         </div>
         {mails?.length ? <>
           <MailList path={path} contentRef={contentRef} items={mails} selected={selectedMail?.id}
-                    onClick={setSelectedMail} />
+                    onClick={(mail) => {
+                      setSelectedMail(mail);
+                      setOpen(true)
+                    }} />
         </> : <div className={'py-5 px-10 h-full'}>
           <Empty />
         </div>}
       </Tabs>
     </ResizablePanel>
-    <ResizableHandle withHandle />
-    <ResizablePanel defaultSize={defaultLayout[2]}>
-      <MailDisplay $event={$event} mail={selectedMail} selectedOwner={selectedOwner} />
-    </ResizablePanel>
+    {isMobile ? <>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent className={'p-0'} unclose>
+          <MailDisplay $event={$event} mail={selectedMail} selectedOwner={selectedOwner} />
+        </SheetContent>
+      </Sheet>
+    </> : <>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={defaultLayout[2]}>
+        <MailDisplay $event={$event} mail={selectedMail} selectedOwner={selectedOwner} />
+      </ResizablePanel>
+    </>}
   </>;
 };
