@@ -39,7 +39,7 @@ type MailCreated = {
   suffix?: string | JSX.Element;
 };
 export const MailAddress: React.FC<MailCreated> = ({mail, suffix}) => {
-  return <div className="font-semibold">
+  return <div className="font-semibold line-clamp-1">
     <span>{mail?.name}</span>&nbsp;
     <span className={cn('text-xs', 'font-light')}>&lt;{mail?.address}&gt;</span>
     {suffix}
