@@ -11,7 +11,7 @@ import {AccountSwitcher} from "./account-switcher"
 import {Nav} from "./nav"
 import {useMail} from "./use-mail"
 import {InboxContent, PermissionsContent, SentContent} from "@/components/mail/nav-content";
-import {useEventEmitter} from 'ahooks';
+import {useEventEmitter, useLocalStorageState} from 'ahooks';
 import {useQueryState} from 'nuqs';
 import {Message, MessageType} from "@/types/base";
 import {TabKey} from "@/components/mail/nav-content/inbox";
@@ -24,8 +24,6 @@ interface MailProps {
   defaultLayoutMc?: number[] | undefined
   layoutMcKey?: string;
   layoutPcKey?: string;
-  collapsedKey?: string;
-  defaultCollapsed?: boolean
   navCollapsedSize: number
 }
 
@@ -41,9 +39,7 @@ export enum RouteKey {
 export function Mail({
                        navCollapsedSize,
                        layoutMcKey,
-                       defaultCollapsed,
                        layoutPcKey,
-                       collapsedKey,
                        defaultLayoutMc,
                        defaultLayoutPc
                      }: MailProps) {
@@ -54,7 +50,7 @@ export function Mail({
   const inboxRef = useRef();
   let [path, setPath] = useQueryState('path', {defaultValue: RouteKey.Inbox});
   let [tabKey, setTabKey] = useQueryState('tab', {defaultValue: TabKey.all});
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(isMobile || defaultCollapsed)
+  const [isCollapsed, setIsCollapsed] = useLocalStorageState<boolean>('isCollapsed', {defaultValue: isMobile});
   let $event = useEventEmitter<Message>();
   $event.useSubscription(async (message: Message) => {
     if (message.type === MessageType.UpdateMail) {
@@ -70,12 +66,7 @@ export function Mail({
     mails,
     inboxUnreadCount
   } = useMail({inboxRef});
-  useEffect(() => {
-    if (isMobile === isCollapsed) return;
-    const collapsed = isMobile;
-    document.cookie = `${collapsedKey}=${JSON.stringify(collapsed)}`;
-    setIsCollapsed(collapsed);
-  }, [isMobile]);
+  useEffect(() => setIsCollapsed(isMobile), [isMobile]);
   useEffect(() => {
     setFilter({
       ...filter,
@@ -85,8 +76,6 @@ export function Mail({
       isReceive: path !== RouteKey.Sent,
     })
   }, [path, tabKey]);
-
-  console.log('isMobile', {isMobile, isCollapsed});
   return (
     <TooltipProvider delayDuration={0}>
       <ResizablePanelGroup direction="horizontal"
@@ -99,17 +88,9 @@ export function Mail({
           minSize={12}
           maxSize={20}
           // 展开
-          onExpand={() => {
-            const collapsed = false;
-            setIsCollapsed(isMobile || collapsed);
-            document.cookie = `${collapsedKey}=${JSON.stringify(collapsed)}`;
-          }}
+          onExpand={() => setIsCollapsed(false)}
           // 折叠
-          onCollapse={() => {
-            const collapsed = true;
-            setIsCollapsed(collapsed);
-            document.cookie = `${collapsedKey}=${JSON.stringify(collapsed)}`;
-          }}
+          onCollapse={() => setIsCollapsed(true)}
           className={cn(isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out")}>
           <div className={cn("flex h-[52px] items-center justify-center",
             isCollapsed ? "h-[52px]" : "px-2"
