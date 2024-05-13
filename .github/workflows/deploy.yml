@@ -1,0 +1,90 @@
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [ 'main' ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_version: 1.6.4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Fetch Account ID
+        id: fetch_account_id
+        run: |
+          if [[ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]]; then
+            ACCOUNT_ID="${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+            echo "Using provided CLOUDFLARE_ACCOUNT_ID from secrets."
+          else
+            ACCOUNT_ID=$(curl -X GET "https://api.cloudflare.com/client/v4/accounts" -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type:application/json" | jq ".result[0].id" -r)
+            if [[ "$ACCOUNT_ID" == "null" ]]; then
+              echo "Failed to get an account id, please make sure you have set up CLOUDFLARE_API_TOKEN correctly!"
+              exit 1
+            fi
+          fi
+          echo 'account_id='$ACCOUNT_ID >> $GITHUB_OUTPUT
+
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Install Workers packages
+        run: |
+          cd workers
+          pnpm install
+
+      - name: Install Pages packages
+        run: |
+          cd pages
+          pnpm install
+
+      - name: Build worker
+        run: |
+          cd workers
+          pnpm npx wrangler deploy src/index.ts --outdir dist --dry-run
+
+      - name: Build page
+        run: |
+          cd pages
+          pnpm npx @cloudflare/next-on-pages
+
+      - name: Deploy using Terraform
+        continue-on-error: true
+
+        run: |
+          terraform init
+          terraform apply -auto-approve -input=false
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
+
+      - name: Upload worker
+        run: |
+          curl --fail-with-body -X PUT https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/spider_worker/content --header 'Authorization: Bearer '$CLOUDFLARE_API_TOKEN -F 'index.js=@worker/dist/index.js;type=application/javascript+module' -F 'metadata={"main_module": "index.js"}'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
+
+      - name: Upload pages
+        run: |
+          pnpm npx wrangler pages deploy .vercel/output/static --project-name spider_page
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
