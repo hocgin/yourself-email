@@ -19,6 +19,10 @@ variable "CLOUDFLARE_EMAIL_ADDRESS" {
   type = string
 }
 
+variable "CLOUDFLARE_DOMAIN_ZONE_ID" {
+  type = string
+}
+
 resource "cloudflare_workers_kv_namespace" "yourselfemail_kv" {
   account_id = var.CLOUDFLARE_ACCOUNT_ID
   title      = "yourselfemail_kv"
@@ -30,10 +34,10 @@ resource "cloudflare_d1_database" "yourselfemail_db" {
 }
 
 # 图片存储
-resource "cloudflare_r2_bucket" "yourselfemail_bucket" {
-  account_id = var.CLOUDFLARE_ACCOUNT_ID
-  name       = "yourselfemail_bucket"
-}
+#resource "cloudflare_r2_bucket" "yourselfemail_bucket" {
+#  account_id = var.CLOUDFLARE_ACCOUNT_ID
+#  name       = "yourselfemail_bucket"
+#}
 
 
 resource "cloudflare_worker_script" "yourselfemail_worker" {
@@ -48,10 +52,10 @@ resource "cloudflare_worker_script" "yourselfemail_worker" {
     namespace_id = cloudflare_workers_kv_namespace.yourselfemail_kv.id
   }
 
-  r2_bucket_binding {
-    name        = "R2"
-    bucket_name = cloudflare_r2_bucket.yourselfemail_bucket.id
-  }
+  #  r2_bucket_binding {
+  #    name        = "R2"
+  #    bucket_name = cloudflare_r2_bucket.yourselfemail_bucket.id
+  #  }
 
   d1_database_binding {
     name        = "DB"
@@ -69,7 +73,7 @@ resource "cloudflare_email_routing_address" "yourselfemail_email_routing_address
 # 邮件路由转发
 resource "cloudflare_email_routing_catch_all" "yourselfemail_email_routing_catch_all" {
   name    = "yourselfemail_email_routing_catch_all"
-  zone_id = cloudflare_worker_script.yourselfemail_worker.id
+  zone_id = var.CLOUDFLARE_DOMAIN_ZONE_ID
   enabled = true
 
   matcher {
@@ -77,8 +81,8 @@ resource "cloudflare_email_routing_catch_all" "yourselfemail_email_routing_catch
   }
 
   action {
-    type  = "forward"
-    value = ["destinationaddress@example.net"]
+    type  = "worker"
+    value = [cloudflare_worker_script.yourselfemail_worker.name]
   }
 }
 
@@ -91,9 +95,9 @@ resource "cloudflare_worker_cron_trigger" "yourselfemail_worker_cron" {
   ]
 }
 
-resource "cloudflare_pages_project" "yourselfemail_page" {
+resource "cloudflare_pages_project" "yourselfemail" {
   account_id        = var.CLOUDFLARE_ACCOUNT_ID
-  name              = "yourselfemail_page"
+  name              = "yourselfemail"
   production_branch = "main"
 
   deployment_configs {
@@ -104,9 +108,9 @@ resource "cloudflare_pages_project" "yourselfemail_page" {
       d1_databases = {
         DB = cloudflare_d1_database.yourselfemail_db.id
       }
-      r2_buckets = {
-        BUCKET = cloudflare_r2_bucket.yourselfemail_bucket.id
-      }
+      #      r2_buckets = {
+      #        BUCKET = cloudflare_r2_bucket.yourselfemail_bucket.id
+      #      }
 
       compatibility_date  = "2024-04-05"
       compatibility_flags = ["nodejs_compat"]
