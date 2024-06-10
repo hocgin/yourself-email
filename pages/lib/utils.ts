@@ -8,15 +8,32 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+function isSameDay(date1: Date, date2: Date) {
+  // 获取两个日期的年月日
+  const date1Year = date1.getUTCFullYear();
+  const date1Month = date1.getUTCMonth();
+  const date1Day = date1.getUTCDate();
+
+  const date2Year = date2.getUTCFullYear();
+  const date2Month = date2.getUTCMonth();
+  const date2Day = date2.getUTCDate();
+
+  // 比较年月日
+  return date1Year === date2Year &&
+    date1Month === date2Month &&
+    date1Day === date2Day;
+}
+
 export function formatDistanceDay(date: Date): string {
-  const oneDay = 1000 * 3600 * 24;
-  const distance = Date.now() - date.getTime();
-  if (distance < oneDay && distance > 0) {
-    return "today";
+  let now = new Date();
+  if (isSameDay(date, now)) {
+    return format(date, "HH:mm:ss");
   }
 
-  if (distance > 7 * oneDay) {
-    return format(date, "yyyy-MM-dd HH:mm:ss");
+  const timeDiff = Math.abs(date.getTime() - now.getTime());
+  const daysApart = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  if (daysApart > 7) {
+    return format(date, "yyyy-MM-dd");
   }
 
   return formatDistanceToNow(date, {addSuffix: true})

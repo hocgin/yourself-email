@@ -38,3 +38,7 @@
   border-color: gray; /* 2 */
   border-collapse: separate; /* 3 */
 }
+
+div[data-radix-scroll-area-viewport] > div {
+  display: unset !important;
+}
