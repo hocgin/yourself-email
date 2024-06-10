@@ -29,8 +29,8 @@ export function MailList({contentRef, path, items, selected, onClick}: MailListP
             selected === item.id && "bg-muted"
           )} onClick={() => onClick(item)}>
             <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-hidden line-clamp-1 flex-1">
                   {/* 发件 */}
                   {path === RouteKey.Sent ? <MailAddresses mails={item.toAddress} maxSize={1} /> : null}
                   {/* 收件 */}

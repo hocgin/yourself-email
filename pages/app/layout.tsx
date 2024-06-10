@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  applicationName: `Dove-Mail`,
+  applicationName: `Mail`,
   manifest: '/manifest.json',
   icons: {
     icon: "/logo.png",
