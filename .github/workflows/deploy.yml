@@ -95,6 +95,11 @@ jobs:
           TF_VAR_CLOUDFLARE_DOMAIN_ZONE_ID: ${{ secrets.CLOUDFLARE_DOMAIN_ZONE_ID }}
           TF_VAR_CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
 
+      - name: init database
+        run: |
+          cd pages
+          pnpm npx wrangler d1 execute yourselfemail_db --remote --file=./migrations/0001_create_table.sql
+
       - name: Upload worker
         run: |
           cd workers
