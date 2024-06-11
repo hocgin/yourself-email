@@ -91,6 +91,7 @@ jobs:
           terraform apply -auto-approve -input=false
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_DOMAIN_ZONE_ID: ${{ secrets.CLOUDFLARE_DOMAIN_ZONE_ID }}
           TF_VAR_CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
 
       - name: Upload worker
