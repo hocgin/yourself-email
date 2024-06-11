@@ -99,6 +99,9 @@ jobs:
         run: |
           cd pages
           pnpm npx wrangler d1 execute yourselfemail_db --remote --file=./migrations/0001_create_table.sql
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
 
       - name: Upload worker
         run: |
