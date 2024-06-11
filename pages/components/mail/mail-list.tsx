@@ -34,7 +34,7 @@ export function MailList({contentRef, path, items, selected, onClick}: MailListP
                   {/* 发件 */}
                   {path === RouteKey.Sent ? <MailAddresses mails={item.toAddress} maxSize={1} /> : null}
                   {/* 收件 */}
-                  {path !== RouteKey.Sent ? <div className="font-semibold">
+                  {path !== RouteKey.Sent ? <div className="font-semibold flex-1 break-all">
                     <span>{item?.fromAddress?.name}</span>&nbsp;
                     <span className={cn('text-xs', 'font-light')}>&lt;{item?.fromAddress?.address}&gt;</span>
                   </div> : null}
