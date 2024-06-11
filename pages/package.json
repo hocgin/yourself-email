@@ -63,7 +63,7 @@
     "zod": "^3.23.6"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.11.2",
+    "@cloudflare/next-on-pages": "^1.11.3",
     "@cloudflare/workers-types": "^4.20240405.0",
     "@types/node": "^20",
     "@types/react": "^18",
