@@ -126,6 +126,8 @@ resource "cloudflare_record" "mx_1" {
   type     = "MX"
   value    = "route1.mx.cloudflare.net"
   priority = 3
+
+  allow_overwrite = true
 }
 
 resource "cloudflare_record" "mx_2" {
@@ -134,6 +136,8 @@ resource "cloudflare_record" "mx_2" {
   type     = "MX"
   value    = "route2.mx.cloudflare.net"
   priority = 58
+
+  allow_overwrite = true
 }
 
 resource "cloudflare_record" "mx_3" {
@@ -142,6 +146,8 @@ resource "cloudflare_record" "mx_3" {
   type     = "MX"
   value    = "route3.mx.cloudflare.net"
   priority = 95
+
+  allow_overwrite = true
 }
 
 resource "cloudflare_record" "txt" {
@@ -149,16 +155,20 @@ resource "cloudflare_record" "txt" {
   name    = data.cloudflare_zone.main.name
   type    = "TXT"
   value   = "v=spf1 include:_spf.mx.cloudflare.net ~all"
+
+  allow_overwrite = true
 }
 
 
-resource "cloudflare_record" "record" {
+resource "cloudflare_record" "page" {
   zone_id = trimspace(data.cloudflare_zone.main.id)
   name    = "mail"
   value   = cloudflare_pages_project.page.subdomain
   type    = "CNAME"
   ttl     = 1
   proxied = true
+
+  allow_overwrite = true
 }
 
 resource "cloudflare_pages_domain" "domain" {
@@ -168,7 +178,7 @@ resource "cloudflare_pages_domain" "domain" {
 
   depends_on = [
     cloudflare_pages_project.page,
-    cloudflare_record.record,
+    cloudflare_record.page,
   ]
 }
 
