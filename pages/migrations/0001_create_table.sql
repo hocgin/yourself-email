@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Mail"
+CREATE TABLE IF NOT EXISTS "Mail"
 (
   "id"              INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
   "headers"         TEXT     NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE "Mail"
 );
 
 -- CreateTable
-CREATE TABLE "UserConfig"
+CREATE TABLE IF NOT EXISTS "UserConfig"
 (
   "id"              INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
   "email"           TEXT     NOT NULL,
@@ -41,5 +41,5 @@ CREATE TABLE "UserConfig"
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UserConfig_email_key" ON "UserConfig" ("email");
+CREATE UNIQUE INDEX IF NOT EXISTS  "UserConfig_email_key" ON "UserConfig" ("email");
 
