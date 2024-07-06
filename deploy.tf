@@ -145,11 +145,25 @@ resource "cloudflare_record" "txt" {
   value   = "v=spf1 include:_spf.mx.cloudflare.net ~all"
 }
 
-resource "cloudflare_record" "a_mail" {
-  zone_id = data.cloudflare_zone.main.id
-  name    = data.cloudflare_zone.main.zone
-  type    = "A"
-  value   = "mail"
+
+resource "cloudflare_record" "record" {
+  zone_id = trimspace(data.cloudflare_zone.main.id)
+  name    = trimspace(data.cloudflare_zone.main.zone)
+  value   = cloudflare_pages_project.yourselfemail.subdomain
+  type    = "CNAME"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_pages_domain" "domain" {
+  account_id   = var.CLOUDFLARE_ACCOUNT_ID
+  project_name = "yourselfemail-domain"
+  domain       = trimspace(data.cloudflare_zone.main.zone)
+
+  depends_on = [
+    cloudflare_pages_project.yourselfemail,
+    cloudflare_record.record,
+  ]
 }
 
 
@@ -178,10 +192,6 @@ resource "cloudflare_pages_project" "yourselfemail" {
       d1_databases = {
         DB = sensitive(cloudflare_d1_database.database.id)
       }
-      #      r2_buckets = {
-      #        BUCKET = cloudflare_r2_bucket.yourselfemail_bucket.id
-      #      }
-
       compatibility_date = "2024-04-05"
     }
   }
