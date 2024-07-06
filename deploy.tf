@@ -186,8 +186,12 @@ resource "cloudflare_record" "page" {
 
 resource "cloudflare_pages_domain" "domain" {
   account_id   = var.CLOUDFLARE_ACCOUNT_ID
-  project_name = "${var.prefix}-domain"
+  project_name = "yourselfemail"
   domain       = trimspace(data.cloudflare_zone.main.name)
+
+  depends_on = [
+    cloudflare_pages_project.page
+  ]
 }
 
 
