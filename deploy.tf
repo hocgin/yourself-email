@@ -159,11 +159,24 @@ resource "cloudflare_record" "txt" {
   allow_overwrite = true
 }
 
+resource "cloudflare_record" "mailchannels" {
+  zone_id = data.cloudflare_zone.main.id
+  name    = "_mailchannels"
+  type    = "TXT"
+  value   = "v=mc1 cfid=${cloudflare_pages_project.page.subdomain} cfid=mail.${data.cloudflare_zone.main.name}"
+
+  allow_overwrite = true
+
+  depends_on = [
+    cloudflare_pages_project.page,
+  ]
+}
+
 
 resource "cloudflare_record" "page" {
   zone_id = trimspace(data.cloudflare_zone.main.id)
   name    = "mail"
-  value   = cloudflare_pages_project.page.subdomain
+  value   = data.cloudflare_zone.main.name
   type    = "CNAME"
   ttl     = 1
   proxied = true
@@ -175,11 +188,6 @@ resource "cloudflare_pages_domain" "domain" {
   account_id   = var.CLOUDFLARE_ACCOUNT_ID
   project_name = "${var.prefix}-domain"
   domain       = trimspace(data.cloudflare_zone.main.name)
-
-  depends_on = [
-    cloudflare_pages_project.page,
-    cloudflare_record.page,
-  ]
 }
 
 
@@ -197,7 +205,9 @@ resource "cloudflare_pages_project" "page" {
   name              = "yourselfemail"
   production_branch = "main"
 
+
   deployment_configs {
+    preview {}
     production {
       environment_variables = {
 
@@ -208,7 +218,8 @@ resource "cloudflare_pages_project" "page" {
       d1_databases = {
         DB = sensitive(cloudflare_d1_database.database.id)
       }
-      compatibility_date = "2024-04-05"
+      compatibility_date  = "2024-04-05"
+      compatibility_flags = ["nodejs_compat"]
     }
   }
 }
