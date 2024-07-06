@@ -1,8 +1,11 @@
 terraform {
+
+  // https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/email_routing_catch_all
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4"
+      # fix "Error: failed reading email routing destination address", https://github.com/cloudflare/terraform-provider-cloudflare/issues/3107#issuecomment-1982860666
+      version = "~> 4.22.0"
     }
   }
 }
@@ -15,20 +18,25 @@ variable "CLOUDFLARE_ACCOUNT_ID" {
   type = string
 }
 
+variable "CLOUDFLARE_ZONE_NAME" {
+  type = string
+}
+
 variable "CLOUDFLARE_EMAIL_ADDRESS" {
   type = string
 }
 
-variable "CLOUDFLARE_DOMAIN_ZONE_ID" {
-  type = string
+resource "cloudflare_zone" "main" {
+  account_id = var.CLOUDFLARE_ACCOUNT_ID
+  zone       = var.CLOUDFLARE_ZONE_NAME
 }
 
-resource "cloudflare_workers_kv_namespace" "yourselfemail_kv" {
+resource "cloudflare_workers_kv_namespace" "kv" {
   account_id = var.CLOUDFLARE_ACCOUNT_ID
   title      = "yourselfemail_kv"
 }
 
-resource "cloudflare_d1_database" "yourselfemail_db" {
+resource "cloudflare_d1_database" "database" {
   account_id = var.CLOUDFLARE_ACCOUNT_ID
   name       = "yourselfemail_db"
 }
@@ -40,7 +48,7 @@ resource "cloudflare_d1_database" "yourselfemail_db" {
 #}
 
 
-resource "cloudflare_worker_script" "yourselfemail_worker" {
+resource "cloudflare_worker_script" "worker" {
   account_id         = var.CLOUDFLARE_ACCOUNT_ID
   name               = "yourselfemail_worker"
   content            = file("workers/dist/index.js")
@@ -49,7 +57,7 @@ resource "cloudflare_worker_script" "yourselfemail_worker" {
 
   kv_namespace_binding {
     name         = "KV"
-    namespace_id = cloudflare_workers_kv_namespace.yourselfemail_kv.id
+    namespace_id = cloudflare_workers_kv_namespace.kv.id
   }
 
   #  r2_bucket_binding {
@@ -59,21 +67,26 @@ resource "cloudflare_worker_script" "yourselfemail_worker" {
 
   d1_database_binding {
     name        = "DB"
-    database_id = cloudflare_d1_database.yourselfemail_db.id
+    database_id = cloudflare_d1_database.database.id
   }
 
 }
 
 
-resource "cloudflare_email_routing_address" "yourselfemail_email_routing_address" {
-  account_id = var.CLOUDFLARE_ACCOUNT_ID
-  email      = var.CLOUDFLARE_EMAIL_ADDRESS
+resource "cloudflare_email_routing_settings" "email_routing_settings" {
+  zone_id = cloudflare_zone.main.id
+  enabled = "true"
 }
 
+#resource "cloudflare_email_routing_rule" "yourselfemail_email_routing_rule" {
+#  zone_id = cloudflare_zone.main.id
+#  enabled = "true"
+#}
+
 # 邮件路由转发
-resource "cloudflare_email_routing_catch_all" "yourselfemail_email_routing_catch_all" {
-  name    = "yourselfemail_email_routing_catch_all"
-  zone_id = var.CLOUDFLARE_DOMAIN_ZONE_ID
+resource "cloudflare_email_routing_catch_all" "email_routing_catch_all" {
+  name    = "email_routing_catch_all"
+  zone_id = cloudflare_zone.main.id
   enabled = true
 
   matcher {
@@ -82,14 +95,51 @@ resource "cloudflare_email_routing_catch_all" "yourselfemail_email_routing_catch
 
   action {
     type  = "worker"
-    value = [cloudflare_worker_script.yourselfemail_worker.name]
+    value = [cloudflare_worker_script.worker.name]
   }
 }
 
+// https://scrapbox.io/hiroxto/Cloudflare_Registrar%E3%81%AE%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92Terraform%E3%81%A7%E7%AE%A1%E7%90%86%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B
+resource "cloudflare_record" "mx_1" {
+  zone_id  = cloudflare_zone.main.id
+  name     = cloudflare_zone.main.zone
+  type     = "MX"
+  value    = "route1.mx.cloudflare.net"
+  priority = 3
+}
+resource "cloudflare_record" "mx_2" {
+  zone_id  = cloudflare_zone.main.id
+  name     = cloudflare_zone.main.zone
+  type     = "MX"
+  value    = "route2.mx.cloudflare.net"
+  priority = 58
+}
+
+resource "cloudflare_record" "mx_3" {
+  zone_id  = cloudflare_zone.main.id
+  name     = cloudflare_zone.main.zone
+  type     = "MX"
+  value    = "route3.mx.cloudflare.net"
+  priority = 95
+}
+
+resource "cloudflare_record" "txt" {
+  zone_id = cloudflare_zone.main.id
+  name    = cloudflare_zone.main.zone
+  type    = "TXT"
+  value   = "v=spf1 include:_spf.mx.cloudflare.net ~all"
+}
+
+resource "cloudflare_email_routing_address" "email_routing_address" {
+  account_id = var.CLOUDFLARE_ACCOUNT_ID
+  email      = var.CLOUDFLARE_EMAIL_ADDRESS
+}
+
+
 # 定时发送
-resource "cloudflare_worker_cron_trigger" "yourselfemail_worker_cron" {
+resource "cloudflare_worker_cron_trigger" "cronjob" {
   account_id  = var.CLOUDFLARE_ACCOUNT_ID
-  script_name = cloudflare_worker_script.yourselfemail_worker.name
+  script_name = cloudflare_worker_script.worker.name
   schedules   = [
     "* * * * *",
   ]
@@ -103,10 +153,10 @@ resource "cloudflare_pages_project" "yourselfemail" {
   deployment_configs {
     production {
       kv_namespaces = {
-        KV = cloudflare_workers_kv_namespace.yourselfemail_kv.id
+        KV = cloudflare_workers_kv_namespace.kv.id
       }
       d1_databases = {
-        DB = cloudflare_d1_database.yourselfemail_db.id
+        DB = cloudflare_d1_database.database.id
       }
       #      r2_buckets = {
       #        BUCKET = cloudflare_r2_bucket.yourselfemail_bucket.id
