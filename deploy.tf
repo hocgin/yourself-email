@@ -107,6 +107,7 @@ resource "cloudflare_record" "mx_1" {
   value    = "route1.mx.cloudflare.net"
   priority = 3
 }
+
 resource "cloudflare_record" "mx_2" {
   zone_id  = data.cloudflare_zone.main.id
   name     = data.cloudflare_zone.main.zone
