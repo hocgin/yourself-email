@@ -57,7 +57,7 @@ resource "cloudflare_worker_script" "worker" {
 
   kv_namespace_binding {
     name         = "KV"
-    namespace_id = cloudflare_workers_kv_namespace.kv.id
+    namespace_id = sensitive(cloudflare_workers_kv_namespace.kv.id)
   }
 
   #  r2_bucket_binding {
@@ -67,7 +67,7 @@ resource "cloudflare_worker_script" "worker" {
 
   d1_database_binding {
     name        = "DB"
-    database_id = cloudflare_d1_database.database.id
+    database_id = sensitive(cloudflare_d1_database.database.id)
   }
 
 }
@@ -169,18 +169,20 @@ resource "cloudflare_pages_project" "yourselfemail" {
 
   deployment_configs {
     production {
+      environment_variables = {
+
+      }
       kv_namespaces = {
-        KV = cloudflare_workers_kv_namespace.kv.id
+        KV = sensitive(cloudflare_workers_kv_namespace.kv.id)
       }
       d1_databases = {
-        DB = cloudflare_d1_database.database.id
+        DB = sensitive(cloudflare_d1_database.database.id)
       }
       #      r2_buckets = {
       #        BUCKET = cloudflare_r2_bucket.yourselfemail_bucket.id
       #      }
 
-      compatibility_date  = "2024-04-05"
-      compatibility_flags = ["nodejs_compat"]
+      compatibility_date = "2024-04-05"
     }
   }
 }
