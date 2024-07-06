@@ -28,7 +28,7 @@ variable "CLOUDFLARE_EMAIL_ADDRESS" {
 
 data "cloudflare_zone" "main" {
   #  account_id = var.CLOUDFLARE_ACCOUNT_ID
-  zone = var.CLOUDFLARE_ZONE_NAME
+  name = var.CLOUDFLARE_ZONE_NAME
 }
 
 resource "cloudflare_workers_kv_namespace" "kv" {
@@ -116,7 +116,7 @@ resource "cloudflare_email_routing_address" "email_routing_address" {
 // https://scrapbox.io/hiroxto/Cloudflare_Registrar%E3%81%AE%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92Terraform%E3%81%A7%E7%AE%A1%E7%90%86%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B
 resource "cloudflare_record" "mx_1" {
   zone_id  = data.cloudflare_zone.main.id
-  name     = data.cloudflare_zone.main.zone
+  name     = data.cloudflare_zone.main.name
   type     = "MX"
   value    = "route1.mx.cloudflare.net"
   priority = 3
@@ -124,7 +124,7 @@ resource "cloudflare_record" "mx_1" {
 
 resource "cloudflare_record" "mx_2" {
   zone_id  = data.cloudflare_zone.main.id
-  name     = data.cloudflare_zone.main.zone
+  name     = data.cloudflare_zone.main.name
   type     = "MX"
   value    = "route2.mx.cloudflare.net"
   priority = 58
@@ -132,7 +132,7 @@ resource "cloudflare_record" "mx_2" {
 
 resource "cloudflare_record" "mx_3" {
   zone_id  = data.cloudflare_zone.main.id
-  name     = data.cloudflare_zone.main.zone
+  name     = data.cloudflare_zone.main.name
   type     = "MX"
   value    = "route3.mx.cloudflare.net"
   priority = 95
@@ -140,7 +140,7 @@ resource "cloudflare_record" "mx_3" {
 
 resource "cloudflare_record" "txt" {
   zone_id = data.cloudflare_zone.main.id
-  name    = data.cloudflare_zone.main.zone
+  name    = data.cloudflare_zone.main.name
   type    = "TXT"
   value   = "v=spf1 include:_spf.mx.cloudflare.net ~all"
 }
@@ -148,7 +148,7 @@ resource "cloudflare_record" "txt" {
 
 resource "cloudflare_record" "record" {
   zone_id = trimspace(data.cloudflare_zone.main.id)
-  name    = trimspace(data.cloudflare_zone.main.zone)
+  name    = trimspace(data.cloudflare_zone.main.name)
   value   = cloudflare_pages_project.yourselfemail.subdomain
   type    = "CNAME"
   ttl     = 1
@@ -158,7 +158,7 @@ resource "cloudflare_record" "record" {
 resource "cloudflare_pages_domain" "domain" {
   account_id   = var.CLOUDFLARE_ACCOUNT_ID
   project_name = "yourselfemail-domain"
-  domain       = trimspace(data.cloudflare_zone.main.zone)
+  domain       = trimspace(data.cloudflare_zone.main.name)
 
   depends_on = [
     cloudflare_pages_project.yourselfemail,
