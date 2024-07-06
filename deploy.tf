@@ -148,7 +148,7 @@ resource "cloudflare_record" "txt" {
 
 resource "cloudflare_record" "record" {
   zone_id = trimspace(data.cloudflare_zone.main.id)
-  name    = trimspace(data.cloudflare_zone.main.name)
+  name    = "mail"
   value   = cloudflare_pages_project.yourselfemail.subdomain
   type    = "CNAME"
   ttl     = 1
