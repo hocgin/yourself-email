@@ -26,7 +26,7 @@ variable "CLOUDFLARE_EMAIL_ADDRESS" {
   type = string
 }
 
-resource "cloudflare_zone" "main" {
+data "cloudflare_zone" "main" {
   account_id = var.CLOUDFLARE_ACCOUNT_ID
   zone       = var.CLOUDFLARE_ZONE_NAME
 }
@@ -74,7 +74,7 @@ resource "cloudflare_worker_script" "worker" {
 
 
 resource "cloudflare_email_routing_settings" "email_routing_settings" {
-  zone_id = cloudflare_zone.main.id
+  zone_id = data.cloudflare_zone.main.id
   enabled = "true"
 }
 
@@ -86,7 +86,7 @@ resource "cloudflare_email_routing_settings" "email_routing_settings" {
 # 邮件路由转发
 resource "cloudflare_email_routing_catch_all" "email_routing_catch_all" {
   name    = "email_routing_catch_all"
-  zone_id = cloudflare_zone.main.id
+  zone_id = data.cloudflare_zone.main.id
   enabled = true
 
   matcher {
@@ -101,33 +101,40 @@ resource "cloudflare_email_routing_catch_all" "email_routing_catch_all" {
 
 // https://scrapbox.io/hiroxto/Cloudflare_Registrar%E3%81%AE%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92Terraform%E3%81%A7%E7%AE%A1%E7%90%86%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B
 resource "cloudflare_record" "mx_1" {
-  zone_id  = cloudflare_zone.main.id
-  name     = cloudflare_zone.main.zone
+  zone_id  = data.cloudflare_zone.main.id
+  name     = data.cloudflare_zone.main.zone
   type     = "MX"
   value    = "route1.mx.cloudflare.net"
   priority = 3
 }
 resource "cloudflare_record" "mx_2" {
-  zone_id  = cloudflare_zone.main.id
-  name     = cloudflare_zone.main.zone
+  zone_id  = data.cloudflare_zone.main.id
+  name     = data.cloudflare_zone.main.zone
   type     = "MX"
   value    = "route2.mx.cloudflare.net"
   priority = 58
 }
 
 resource "cloudflare_record" "mx_3" {
-  zone_id  = cloudflare_zone.main.id
-  name     = cloudflare_zone.main.zone
+  zone_id  = data.cloudflare_zone.main.id
+  name     = data.cloudflare_zone.main.zone
   type     = "MX"
   value    = "route3.mx.cloudflare.net"
   priority = 95
 }
 
 resource "cloudflare_record" "txt" {
-  zone_id = cloudflare_zone.main.id
-  name    = cloudflare_zone.main.zone
+  zone_id = data.cloudflare_zone.main.id
+  name    = data.cloudflare_zone.main.zone
   type    = "TXT"
   value   = "v=spf1 include:_spf.mx.cloudflare.net ~all"
+}
+
+resource "cloudflare_record" "a_mail" {
+  zone_id = data.cloudflare_zone.main.id
+  name    = data.cloudflare_zone.main.zone
+  type    = "A"
+  value   = "mail"
 }
 
 resource "cloudflare_email_routing_address" "email_routing_address" {
