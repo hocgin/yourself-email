@@ -184,7 +184,7 @@ resource "cloudflare_worker_cron_trigger" "cronjob" {
 
 resource "cloudflare_pages_project" "page" {
   account_id        = var.CLOUDFLARE_ACCOUNT_ID
-  name              = "${var.prefix}-page"
+  name              = "yourselfemail"
   production_branch = "main"
 
   deployment_configs {
