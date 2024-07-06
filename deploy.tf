@@ -78,12 +78,21 @@ resource "cloudflare_email_routing_settings" "email_routing_settings" {
   enabled = true
 }
 
-#resource "cloudflare_email_routing_rule" "yourselfemail_email_routing_rule" {
-#  zone_id = cloudflare_zone.main.id
-#  enabled = "true"
-#}
+resource "cloudflare_email_routing_rule" "email_routing_rule" {
+  name    = "email_routing_rule"
+  zone_id = data.cloudflare_zone.main.id
+  enabled = true
 
-# 邮件路由转发
+  matcher {
+    type = "all"
+  }
+
+  action {
+    type  = "worker"
+    value = [cloudflare_worker_script.worker.name]
+  }
+}
+
 resource "cloudflare_email_routing_catch_all" "email_routing_catch_all" {
   name    = "email_routing_catch_all"
   zone_id = data.cloudflare_zone.main.id
@@ -97,6 +106,11 @@ resource "cloudflare_email_routing_catch_all" "email_routing_catch_all" {
     type  = "worker"
     value = [cloudflare_worker_script.worker.name]
   }
+}
+
+resource "cloudflare_email_routing_address" "email_routing_address" {
+  account_id = var.CLOUDFLARE_ACCOUNT_ID
+  email      = var.CLOUDFLARE_EMAIL_ADDRESS
 }
 
 // https://scrapbox.io/hiroxto/Cloudflare_Registrar%E3%81%AE%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92Terraform%E3%81%A7%E7%AE%A1%E7%90%86%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B
@@ -136,11 +150,6 @@ resource "cloudflare_record" "a_mail" {
   name    = data.cloudflare_zone.main.zone
   type    = "A"
   value   = "mail"
-}
-
-resource "cloudflare_email_routing_address" "email_routing_address" {
-  account_id = var.CLOUDFLARE_ACCOUNT_ID
-  email      = var.CLOUDFLARE_EMAIL_ADDRESS
 }
 
 
