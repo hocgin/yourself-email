@@ -27,8 +27,8 @@ variable "CLOUDFLARE_EMAIL_ADDRESS" {
 }
 
 data "cloudflare_zone" "main" {
-  account_id = var.CLOUDFLARE_ACCOUNT_ID
-  zone       = var.CLOUDFLARE_ZONE_NAME
+  #  account_id = var.CLOUDFLARE_ACCOUNT_ID
+  zone = var.CLOUDFLARE_ZONE_NAME
 }
 
 resource "cloudflare_workers_kv_namespace" "kv" {
