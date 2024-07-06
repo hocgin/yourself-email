@@ -82,6 +82,8 @@ resource "cloudflare_worker_script" "worker" {
 resource "cloudflare_email_routing_settings" "email_routing_settings" {
   zone_id = data.cloudflare_zone.main.id
   enabled = true
+
+  skip_wizard = true
 }
 
 #resource "cloudflare_email_routing_rule" "email_routing_rule" {
