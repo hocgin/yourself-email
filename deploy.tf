@@ -84,20 +84,20 @@ resource "cloudflare_email_routing_settings" "email_routing_settings" {
   enabled = true
 }
 
-resource "cloudflare_email_routing_rule" "email_routing_rule" {
-  name    = "email_routing_rule"
-  zone_id = data.cloudflare_zone.main.id
-  enabled = true
-
-  matcher {
-    type = "all"
-  }
-
-  action {
-    type  = "worker"
-    value = [cloudflare_worker_script.worker.name]
-  }
-}
+#resource "cloudflare_email_routing_rule" "email_routing_rule" {
+#  name    = "email_routing_rule"
+#  zone_id = data.cloudflare_zone.main.id
+#  enabled = true
+#
+#  matcher {
+#    type = "all"
+#  }
+#
+#  action {
+#    type  = "worker"
+#    value = [cloudflare_worker_script.worker.name]
+#  }
+#}
 
 resource "cloudflare_email_routing_catch_all" "email_routing_catch_all" {
   name    = "email_routing_catch_all"
