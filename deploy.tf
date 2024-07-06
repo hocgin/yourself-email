@@ -170,7 +170,7 @@ resource "cloudflare_pages_domain" "domain" {
     cloudflare_pages_project.page,
     cloudflare_record.record,
   ]
-}k
+}
 
 
 # 定时发送
