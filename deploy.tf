@@ -175,17 +175,6 @@ resource "cloudflare_record" "mailchannels" {
 }
 
 
-resource "cloudflare_record" "page" {
-  zone_id = trimspace(data.cloudflare_zone.main.id)
-  name    = "mail"
-  value   = cloudflare_pages_project.page.subdomain
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-
-  allow_overwrite = true
-}
-
 resource "cloudflare_pages_domain" "domain" {
   account_id   = var.CLOUDFLARE_ACCOUNT_ID
   project_name = "yourselfemail"
