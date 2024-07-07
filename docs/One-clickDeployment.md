@@ -12,4 +12,4 @@
 - CLOUDFLARE_EMAIL_ADDRESS=xxx@gmail.com
 4. trigger deployment
 ![trigger_action.png](tutorial%2Ftrigger_action.png)
-5. Add user permissions [reference SQL](../pages/scripts/add_super_admin.sql)
+5. Log in to Cloudflare to view the page address, and Add user permissions [reference SQL](../pages/scripts/add_super_admin.sql)
