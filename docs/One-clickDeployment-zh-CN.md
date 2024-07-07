@@ -12,3 +12,4 @@
 - CLOUDFLARE_EMAIL_ADDRESS=xxx@gmail.com
 4. 触发部署
    ![trigger_action.png](tutorial%2Ftrigger_action.png)
+5. 添加用户权限 [参考 SQL](../pages/scripts/add_super_admin.sql)

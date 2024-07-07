@@ -12,3 +12,4 @@
 - CLOUDFLARE_EMAIL_ADDRESS=xxx@gmail.com
 4. trigger deployment
 ![trigger_action.png](tutorial%2Ftrigger_action.png)
+5. Add user permissions [reference SQL](../pages/scripts/add_super_admin.sql)
