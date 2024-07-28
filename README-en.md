@@ -1,7 +1,7 @@
 <div align="center">
   <img src="./docs/logo.png" alt="onedrive-cf-index-ng" width="250px" />
   <h3><a href="/">yourself-email</a></h3>
-  <p><em>使用 Cloudflare 来构建你自己的邮件系统，无需服务器</em></p>
+  <p><em>Use Cloudflare to build your own email system, no servers required</em></p>
 
   <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/hocgin/yourself-email">
     <img height="20" src="https://deploy.workers.cloudflare.com/button" alt="Deploy" />
@@ -11,47 +11,47 @@
   <a href="https://github.com/hocgin/yourself-email/blob/main/README-en.md"><img src="https://img.shields.io/badge/English-black?title=en&style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABeUlEQVRIie2VwUrDQBCGZ5ZubNmS0Ba9tF6CUqTHpg+g+AhCn8R30DfpM3jRezdHoZJroaBJQ2qgsIEdD7YSsCtJVBTxP87u/t/u7M4swDcLTQNSSseyLFbERCmlPc9LCgF83z/jnE9s294vvk+AJEmesiwbe553awQEQbCXZVnY7/ebjBXa/Ju01jCbzVIA6AwGA7WN1/KT4jg+6vV6TcYYpGlKq9UKiQgAAOr1OnU6HWNKGWPQarWa8/n8GADudwIQ0UJ89QjDEKMoOiEitRm7tm37gnNuPAUiAiJa+VjNNJmIYDgcPiAiAQD4vh9tT1NG5RJdQT8PkFKak/5ZgJTyUgjxPJ1Ob4josArAeMmWZYHrulftdhvX6/X5YrEwPtFKgG63C7ApxEajga7rVvH/BZf8D/hjACJSVRpabj1su+9OgBAiiOM41VqXNtdaw3K5TIUQQT7+rjqllKec84njOAdlAEmSPCqlxqPR6O5DQA70JZ/+t+sFAb2R22dSZ7wAAAAASUVORK5CYII=" alt="Documentation" /></a>
 </div>
 
-### 效果展示
+### Show Demo
 
-> 演示地址: http://mail.hocg.in, 使用你的任意邮箱登录。
+> Demo address: http://mail.hocg.in, Log in using any of your email addresses.
 >
-> 目前已配置默认权限，登录后可以可读/发邮箱: test@hocg.in 和 test2@hocg.in
+> Default permissions have been configured. After logging in, you can read/send emails: test@hocg.in 和 test2@hocg.in
 
 <div style="display:inline-block">
   <img src="docs/tutorial/demo.c1.png" width="45%"/>
   <img src="docs/tutorial/demo.c2.png" width="45%"/>
 </div>
 
-### 部署方式
+### Deployment
 
-**方式一** [一键部署(≈5分钟)](./docs/One-clickDeployment-zh-CN.md)
+**Scheme 1** [One-Click Deployment(≈5min)](./docs/One-clickDeployment.md)
 
-**方式二** [手动部署(≈30分钟)](./docs/ManualTutorial-zh-CN.md)
+**Scheme 2** [Manual Deployment(≈30min)](./docs/ManualTutorial.md)
 
-### 待办清单
+### ToDoList
 
 <details>
 
-<summary>待办清单</summary>
+<summary>ToDoList</summary>
 
-- [x] 标记已读
-- [x] 归档
-- [x] 回收站
-- [ ] 回收站、彻底删除
-- [ ] 邮件添加标签
-- [ ] 邮件详情，发送者显示邮件头部信息
-- [x] 邮件详情，查询与X用户沟通历史
-- [x] 权限设计实现
-- [x] 用户状态，查询未读数量、权限账号列表
-- [ ] 支持富文本编辑器
-- [ ] 整理/开发 API 接口
-- [x] 移动端支持
+- [x] Mark as read
+- [x] Archive
+- [x] Recycle Bin
+- [ ] Recycle bin, complete deletion
+- [ ] Add labels to emails
+- [ ] Email details, the sender displays the email header information
+- [x] Email details, query communication history with user X
+- [x] Permission design and implementation
+- [x] User status, query the unread quantity and authorized account list
+- [ ] Support rich text editor
+- [ ] Organize/Develop API interface
+- [x] Mobile support
 
 </details>
 
 ----
 
-### 相关资料
+### Ref
 
 - [Shadcn UI](https://ui.shadcn.com/)
 - [Prisma](https://www.prisma.io)
