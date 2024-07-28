@@ -24,9 +24,9 @@
 
 ### 部署方式
 
-**方式一** [一键部署(≈5分钟)](./docs/One-clickDeployment-zh-CN.md)
+**方式一** [一键部署(≈5分钟)](./One-ClickDeployment.md)
 
-**方式二** [手动部署(≈30分钟)](./docs/ManualTutorial-zh-CN.md)
+**方式二** [手动部署(≈30分钟)](./ManualTutorial.md)
 
 ### 待办清单
 

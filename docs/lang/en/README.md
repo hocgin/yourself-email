@@ -24,9 +24,9 @@
 
 ### Deployment
 
-**Scheme 1** [One-Click Deployment(≈5min)](./docs/One-clickDeployment.md)
+**Scheme 1** [One-Click Deployment(≈5min)](./One-ClickDeployment.md)
 
-**Scheme 2** [Manual Deployment(≈30min)](./docs/ManualTutorial.md)
+**Scheme 2** [Manual Deployment(≈30min)](./ManualTutorial.md)
 
 ### ToDoList
 
