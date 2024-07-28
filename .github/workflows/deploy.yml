@@ -100,8 +100,12 @@ jobs:
         run: |
           cd pages
           pnpm npx wrangler d1 execute yourselfemail_db --remote --file=./migrations/0001_create_table.sql
+
+          sed -i "s/:youradmin_mail/:${CLOUDFLARE_EMAIL_ADDRESS}/g" ./scripts/add_super_admin.sql
+          pnpm npx wrangler d1 execute yourselfemail_db --remote --file=./scripts/add_super_admin.sql
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_EMAIL_ADDRESS: ${{ secrets.CLOUDFLARE_EMAIL_ADDRESS }}
           CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
 
       - name: Upload worker
