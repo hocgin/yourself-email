@@ -156,7 +156,7 @@ resource "cloudflare_record" "txt" {
   zone_id = data.cloudflare_zone.main.id
   name    = data.cloudflare_zone.main.name
   type    = "TXT"
-  value   = "v=spf1 include:_spf.mx.cloudflare.net ~all"
+  value   = "v=spf1 a mx include:relay.mailchannels.net ~all"
 
   allow_overwrite = true
 }
