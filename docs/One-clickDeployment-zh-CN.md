@@ -1,4 +1,6 @@
 ### 操作流程
+> 如果安装失败，重新运行需要参考[前置条件](./Reinstall.md)
+
 1. 点击`fork`
 
 ![fork.png](tutorial/fork.png)
