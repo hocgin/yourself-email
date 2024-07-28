@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./docs/logo.png" alt="onedrive-cf-index-ng" width="250px" />
+  <img src="https://raw.githubusercontent.com/hocgin/yourself-email/main/docs/logo.svg" alt="onedrive-cf-index-ng" width="250px" />
   <h3><a href="/">yourself-email</a></h3>
   <p><em>使用 Cloudflare 来构建你自己的邮件系统，无需服务器</em></p>
 
@@ -18,8 +18,8 @@
 > 目前已配置默认权限，登录后可以可读/发邮箱: test@hocg.in 和 test2@hocg.in
 
 <div style="display:inline-block">
-  <img src="docs/tutorial/demo.c1.png" width="45%"/>
-  <img src="docs/tutorial/demo.c2.png" width="45%"/>
+  <img src="../../tutorial/demo.c1.png" width="45%"/>
+  <img src="../../tutorial/demo.c2.png" width="45%"/>
 </div>
 
 ### 部署方式

@@ -43,19 +43,19 @@ npm run deploy
 
 Select database `yourself-email`, and set the variable name to `DB`
 
-![woerk.d1.png](tutorial/woerk.d1.png)
+![woerk.d1.png](../../tutorial/woerk.d1.png)
 
 ##### Configuration Email Routing
 
 1. logIn [Cloudflare](https://dash.cloudflare.com/) Choose the domain name you want to use
 2. Enter the menu on the left Email > Email Routing > Email Workers，Enabled Email Routing
 3. Specify forward to `yourself-email-workers`
-   ![email-route.1.png](tutorial/email-route.1.png)
+   ![email-route.1.png](../../tutorial/email-route.1.png)
 4. Configure domain DNS
-   ![email-route.1.png](tutorial/email-route.3.png)
+   ![email-route.1.png](../../tutorial/email-route.3.png)
 
 ⚠️ A verified email address needs to be added here
-![email-route.2.png](tutorial/email-route.2.png)
+![email-route.2.png](../../tutorial/email-route.2.png)
 
 #### Configure domain name resolution
 
@@ -78,7 +78,7 @@ npm run deploy
 
 Select database `yourself-email`, and set the variable name to DB
 
-![pages.d1.png](tutorial/pages.d1.png)
+![pages.d1.png](../../tutorial/pages.d1.png)
 
 #### Configure DNS resolution(Domain Lockdown)
 
@@ -136,7 +136,7 @@ echo -n "v=DKIM1;p=" > dkim_record.txt && openssl rsa -in private_key.pem -pubou
 - DKIM_SELECTOR: `dmarc` 中 s= Field content, 填 `mailchannels`
 - DKIM_PRIVATE_KEY: `private_key.txt` document content
 
-![dkim.env.png](tutorial/dkim.env.png)
+![dkim.env.png](../../tutorial/dkim.env.png)
 
 </details>
 

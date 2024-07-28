@@ -43,19 +43,19 @@ npm run deploy
 
 选择数据库 `yourself-email`, 并设置变量名为 DB
 
-![woerk.d1.png](tutorial/woerk.d1.png)
+![woerk.d1.png](../../tutorial/woerk.d1.png)
 
 ##### 配置 Email Routing
 
 1. 登录 [Cloudflare](https://dash.cloudflare.com/) 选择你要使用的域名
 2. 左侧菜单依次进入 Email > Email Routing > Email Workers，开启 Email Routing
 3. 指定转发到 yourself-email-workers
-   ![email-route.1.png](tutorial/email-route.1.png)
+   ![email-route.1.png](../../tutorial/email-route.1.png)
 4. 配置域名 DNS
-   ![email-route.1.png](tutorial/email-route.3.png)
+   ![email-route.1.png](../../tutorial/email-route.3.png)
 
 ⚠️ 此处需要添加一个验证过的邮箱
-![email-route.2.png](tutorial/email-route.2.png)
+![email-route.2.png](../../tutorial/email-route.2.png)
 
 #### 配置域名解析
 
@@ -78,7 +78,7 @@ npm run deploy
 
 选择数据库 `yourself-email`, 并设置变量名为 DB
 
-![pages.d1.png](tutorial/pages.d1.png)
+![pages.d1.png](../../tutorial/pages.d1.png)
 
 #### 配置 DNS 解析(Domain Lockdown)
 
@@ -129,7 +129,7 @@ echo -n "v=DKIM1;p=" > dkim_record.txt && openssl rsa -in private_key.pem -pubou
 - DKIM_SELECTOR: `dmarc` 中 s= 字段内容, 填 `mailchannels`
 - DKIM_PRIVATE_KEY: `private_key.txt` 文件内容
 
-![dkim.env.png](tutorial/dkim.env.png)
+![dkim.env.png](../../tutorial/dkim.env.png)
 
 </details>
 
