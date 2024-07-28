@@ -24,7 +24,7 @@
 
 ### Deployment
 
-**Scheme 1** [One-click Deployment(≈5min)](./docs/One-clickDeployment.md)
+**Scheme 1** [One-Click Deployment(≈5min)](./docs/One-clickDeployment.md)
 
 **Scheme 2** [Manual Deployment(≈30min)](./docs/ManualTutorial.md)
 
