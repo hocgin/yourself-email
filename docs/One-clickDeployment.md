@@ -1,5 +1,6 @@
 ### 操作流程
-> 如果安装失败，重新运行需要参考[前置条件](./Reinstall.md)
+> - If the installation fails, please refer to the [Preconditions](./Reinstall-zh-CN.md)
+> - Frequently Asked Questions Reference: [FAQ](./FAQ-zh-CN.md)
 
 1. Click `fork`
 

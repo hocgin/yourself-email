@@ -4,6 +4,8 @@
 ### 需要确保没有以下内容
 > 如果存在请删除或重命名(有数据请提前备份)
 
+- Pages: yourselfemail
+- Workers: yourselfemail_worker
 - D1: yourselfemail_db
 - KV: yourselfemail_kv
 
