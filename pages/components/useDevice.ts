@@ -1,6 +1,6 @@
 "use client";
 
-import {useResponsive} from "ahooks/es/useResponsive";
+import useResponsive from "ahooks/es/useResponsive";
 import {useUpdateEffect} from "ahooks";
 import {useEffect, useMemo, useState} from "react";
 
