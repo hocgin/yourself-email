@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^9.5.0",
-    "@hocgin/hkit": "^2.0.162",
-    "@hocgin/nextjs-kit": "^2.0.162",
+    "@hocgin/hkit": "^2.0.189",
+    "@hocgin/nextjs-kit": "^2.0.189",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/adapter-d1": "5.12.1",
     "@prisma/client": "5.12.1",
