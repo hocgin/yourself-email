@@ -32,17 +32,28 @@
 
 以下为当前界面的本地演示截图，使用示例数据。
 
-**邮箱管理**：搜索与筛选邮箱，在侧栏编辑名称和启用状态。
-
-![邮箱管理列表与编辑侧栏](assets/readme/mailboxes.jpg)
-
-**邮件模板**：在编辑工作台中维护内容、变量与版本，并预览渲染结果。
-
-![邮件模板编辑工作台与 HTML 预览](assets/readme/templates.jpg)
-
-**收件 Webhook**：配置回调地址与订阅邮箱，查看投递历史。
-
-![收件 Webhook 列表与配置侧栏](assets/readme/webhooks.jpg)
+<table>
+  <tr>
+    <td width="50%">
+      <p align="center"><strong>收件阅读</strong></p>
+      <img src="assets/readme/inbox.jpg" alt="收件箱三栏界面：邮箱切换、邮件列表与阅读区" width="100%" />
+    </td>
+    <td width="50%">
+      <p align="center"><strong>邮箱管理</strong></p>
+      <img src="assets/readme/mailboxes.jpg" alt="搜索与筛选邮箱，在侧栏编辑名称和启用状态" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <p align="center"><strong>邮件模板</strong></p>
+      <img src="assets/readme/templates.jpg" alt="在编辑工作台中维护内容、变量与版本，并预览渲染结果" width="100%" />
+    </td>
+    <td width="50%">
+      <p align="center"><strong>收件 Webhook</strong></p>
+      <img src="assets/readme/webhooks.jpg" alt="配置回调地址与订阅邮箱，查看投递历史" width="100%" />
+    </td>
+  </tr>
+</table>
 
 ## 本地开发
 
@@ -82,6 +93,8 @@ pnpm deploy:check
 生产配置需要 `ADMIN_EMAIL`、`APP_URL`、`SSO_ISSUER`、`SSO_CLIENT_ID`、`SSO_RESOURCE`、Secret `SSO_CLIENT_SECRET` 以及 `DB`、`MAIL_STORAGE`、`EMAIL` 绑定。
 
 GitHub Actions 在 PR 和分支执行检查，在 `main` 检查成功后部署；生产参数使用 GitHub `production` environment 的 variables/secrets。旧 Terraform 配置仅保存在 `docs/legacy/` 供回退参考，不再运行。
+
+部署可借助 AI 按上述指南完成，也可以[联系作者](https://github.com/hocgin)协助进行有偿部署。
 
 详见 [架构与 API](docs/architecture.md) 和 [验收记录](docs/validation.md)。
 

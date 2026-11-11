@@ -32,17 +32,28 @@ A multi-domain private email system running in a single Cloudflare Worker. React
 
 Local demo screenshots of the current interface, using sample data.
 
-**Mailboxes**: search and filter mailboxes, edit names and enabled state in the sidebar.
-
-![Mailbox list with edit sidebar](assets/readme/mailboxes.jpg)
-
-**Templates**: maintain content, variables and versions in the editing workbench, with rendered preview.
-
-![Template editing workbench with HTML preview](assets/readme/templates.jpg)
-
-**Webhooks**: configure callback URLs and subscribed mailboxes, and review delivery history.
-
-![Inbound webhook list and config sidebar](assets/readme/webhooks.jpg)
+<table>
+  <tr>
+    <td width="50%">
+      <p align="center"><strong>Mail Reading</strong></p>
+      <img src="assets/readme/inbox.jpg" alt="Three-pane inbox: mailbox switcher, message list and reading pane" width="100%" />
+    </td>
+    <td width="50%">
+      <p align="center"><strong>Mailbox Management</strong></p>
+      <img src="assets/readme/mailboxes.jpg" alt="Search and filter mailboxes, edit names and enabled state in the sidebar" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <p align="center"><strong>Email Templates</strong></p>
+      <img src="assets/readme/templates.jpg" alt="Maintain content, variables and versions in the editing workbench, with rendered preview" width="100%" />
+    </td>
+    <td width="50%">
+      <p align="center"><strong>Inbound Webhooks</strong></p>
+      <img src="assets/readme/webhooks.jpg" alt="Configure callback URLs and subscribed mailboxes, and review delivery history" width="100%" />
+    </td>
+  </tr>
+</table>
 
 ## Local Development
 
@@ -82,6 +93,8 @@ Follow the [full deployment guide](docs/deployment.md) to create **new** D1 and 
 Production requires `ADMIN_EMAIL`, `APP_URL`, `SSO_ISSUER`, `SSO_CLIENT_ID`, `SSO_RESOURCE`, the `SSO_CLIENT_SECRET` secret, plus the `DB`, `MAIL_STORAGE` and `EMAIL` bindings.
 
 GitHub Actions runs checks on PRs and branches and deploys after `main` passes; production parameters come from the GitHub `production` environment's variables/secrets. The legacy Terraform config is only kept under `docs/legacy/` for rollback reference and no longer runs.
+
+You can deploy with the help of an AI agent by following the guide above, or contact [the author](https://github.com/hocgin) for paid deployment assistance.
 
 See [Architecture & API](docs/architecture.md) and [Validation records](docs/validation.md).
 
