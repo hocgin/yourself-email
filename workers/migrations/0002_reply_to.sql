@@ -1,0 +1,1 @@
+ALTER TABLE messages ADD COLUMN replyTo TEXT NOT NULL DEFAULT '[]';

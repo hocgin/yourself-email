@@ -19,7 +19,7 @@ npx wrangler d1 execute yourself-email --remote --file=./migrations/0001_create_
 
 # =========== ⚠️ Configure permissions ===========
 # Configure super administrator permissions
-npx wrangler d1 execute yourself-email --remote --command "INSERT INTO UserConfig(email, is_super_admin, read_mail, sent_mail) VALUES ('hocgin@gmail.com', true, '*', '*')";
+npx wrangler d1 execute yourself-email --remote --command "INSERT INTO UserConfig(email, is_super_admin, read_mail, sent_mail) VALUES ('admin@example.com', true, '*', '*')";
 # Configure default login account permissions
 npx wrangler d1 execute yourself-email --remote --command "INSERT INTO UserConfig(email, is_super_admin, read_mail, sent_mail) VALUES ('*', false, 'test@hocg.in', 'test@hocg.in')";
 ```

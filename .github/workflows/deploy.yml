@@ -1,125 +1,77 @@
-name: Deploy to Cloudflare
-
+name: Validate and deploy Workers
 on:
+  pull_request:
   push:
-    branches: [ 'main' ]
+    branches: [main, "codex/**"]
   workflow_dispatch:
-
+permissions:
+  contents: read
+concurrency:
+  group: workers-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  build-and-deploy:
+  check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          terraform_version: 1.6.4
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
+          package_json_file: workers/package.json
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: workers/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm cf:types
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm deploy:check
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: check
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: workers
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      APP_URL: ${{ vars.APP_URL }}
+      ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+      D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
+      R2_BUCKET_NAME: ${{ vars.R2_BUCKET_NAME }}
+      SSO_ISSUER: ${{ vars.SSO_ISSUER }}
+      SSO_CLIENT_ID: ${{ vars.SSO_CLIENT_ID }}
+      SSO_RESOURCE: ${{ vars.SSO_RESOURCE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          version: 8
-          run_install: false
-
-      - name: Fetch Account ID
-        id: fetch_account_id
-        run: |
-          if [[ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]]; then
-            ACCOUNT_ID="${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
-            echo "Using provided CLOUDFLARE_ACCOUNT_ID from secrets."
-          else
-            ACCOUNT_ID=$(curl -X GET "https://api.cloudflare.com/client/v4/accounts" -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type:application/json" | jq ".result[0].id" -r)
-            if [[ "$ACCOUNT_ID" == "null" ]]; then
-              echo "Failed to get an account id, please make sure you have set up CLOUDFLARE_API_TOKEN correctly!"
-              exit 1
-            fi
-          fi
-          echo 'account_id='$ACCOUNT_ID >> $GITHUB_OUTPUT
-
+          package_json_file: workers/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: workers/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/configure-deploy.mjs
+      - run: pnpm db:migrate:remote
+      - run: pnpm build
+      - name: Deploy one version with SSO secret
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      # https://github.com/cloudflare/terraform-provider-cloudflare/issues/3304
-      - name: Create worker subdomain
-        id: create_dummy_worker
+          SSO_CLIENT_SECRET: ${{ secrets.SSO_CLIENT_SECRET }}
+          WEBHOOK_MASTER_KEY: ${{ secrets.WEBHOOK_MASTER_KEY }}
         run: |
-          curl --request PUT --fail-with-body \
-               --url https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/dummy-ib4db6ntj5csdef3 \
-               --header 'Authorization: Bearer '$CLOUDFLARE_API_TOKEN \
-               --header 'Content-Type: application/javascript' \
-               --data 'addEventListener('\''fetch'\'', (event) => event.respondWith(new Response('\''OK'\'')))'\
-
-          curl --request DELETE --fail-with-body \
-               --url https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/dummy-ib4db6ntj5csdef3 \
-               --header 'Authorization: Bearer '$CLOUDFLARE_API_TOKEN \
-               --header 'Content-Type: application/json'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
-
-      - name: Install Workers packages
-        run: |
-          cd workers
-          pnpm install
-
-      - name: Install Pages packages
-        run: |
-          cd pages
-          pnpm install
-
-      - name: Build worker
-        run: |
-          cd workers
-          pnpm npx wrangler deploy src/index.ts --outdir dist --dry-run
-
-      - name: Build page
-        run: |
-          cd pages
-          pnpm npx @cloudflare/next-on-pages
-
-      - name: Deploy using Terraform
-        continue-on-error: true
-
-        run: |
-          terraform init
-          terraform apply -auto-approve -input=false
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          TF_VAR_CLOUDFLARE_EMAIL_ADDRESS: ${{ secrets.CLOUDFLARE_EMAIL_ADDRESS }}
-          TF_VAR_CLOUDFLARE_ZONE_NAME: ${{ secrets.CLOUDFLARE_ZONE_NAME }}
-          TF_VAR_CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
-
-      - name: init database
-        run: |
-          cd pages
-          pnpm npx wrangler d1 execute yourselfemail_db --remote --file=./migrations/0001_create_table.sql
-
-          sed -i "s/youradmin_mail/${CLOUDFLARE_EMAIL_ADDRESS}/g" ./scripts/add_super_admin.sql
-          pnpm npx wrangler d1 execute yourselfemail_db --remote --file=./scripts/add_super_admin.sql
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_EMAIL_ADDRESS: ${{ secrets.CLOUDFLARE_EMAIL_ADDRESS }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
-
-      - name: Upload worker
-        run: |
-          cd workers
-          curl --fail-with-body -X PUT https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/yourselfemail_worker/content --header 'Authorization: Bearer '$CLOUDFLARE_API_TOKEN -F 'index.js=@dist/index.js;type=application/javascript+module' -F 'metadata={"main_module": "index.js"}'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
-
-      - name: Upload pages
-        run: |
-          cd pages
-          pnpm npx wrangler pages deploy .vercel/output/static --project-name yourselfemail
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ steps.fetch_account_id.outputs.account_id }}
+          node --input-type=module <<'JS'
+          import {writeFileSync} from 'node:fs';
+          if (!process.env.SSO_CLIENT_SECRET) throw new Error('SSO_CLIENT_SECRET is required');
+          if (!process.env.WEBHOOK_MASTER_KEY || Buffer.from(process.env.WEBHOOK_MASTER_KEY, 'base64').length !== 32) throw new Error('WEBHOOK_MASTER_KEY must be a base64-encoded 32-byte secret');
+          writeFileSync(`${process.env.RUNNER_TEMP}/mail-secrets.json`, JSON.stringify({SSO_CLIENT_SECRET: process.env.SSO_CLIENT_SECRET, WEBHOOK_MASTER_KEY: process.env.WEBHOOK_MASTER_KEY}), {mode:0o600});
+          JS
+          trap 'rm -f "$RUNNER_TEMP/mail-secrets.json"' EXIT
+          pnpm exec wrangler deploy --secrets-file "$RUNNER_TEMP/mail-secrets.json"

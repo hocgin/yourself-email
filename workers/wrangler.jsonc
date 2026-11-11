@@ -1,0 +1,72 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "yourself-email-v2",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-10",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "yourself-email-v2",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MAIL_STORAGE",
+      "bucket_name": "yourself-email-v2"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "EMAIL"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "* * * * *"
+    ]
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "APP_URL": "https://mail.hocg.in",
+    "ADMIN_EMAIL": "admin@example.com",
+    "SSO_ISSUER": "https://sso.hocgin.top/api/auth",
+    "SSO_CLIENT_ID": "",
+    "SSO_RESOURCE": ""
+  },
+  "queues": {
+    "producers": [
+      {
+        "binding": "WEBHOOK_QUEUE",
+        "queue": "yourself-email-webhooks"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "yourself-email-webhooks",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5
+      }
+    ]
+  },
+  "routes": [
+    {
+      "pattern": "mail.hocg.in",
+      "custom_domain": true
+    }
+  ]
+}
