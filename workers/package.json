@@ -1,22 +1,59 @@
 {
 	"name": "yourself-email",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"private": true,
-	"scripts": {
-		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest"
+	"type": "module",
+	"packageManager": "pnpm@10.32.1",
+	"engines": {
+		"node": ">=22.12"
 	},
-	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.1.0",
-		"@cloudflare/workers-types": "^4.20240405.0",
-		"typescript": "^5.0.4",
-		"vitest": "1.3.0",
-		"wrangler": "^3.0.0"
+	"scripts": {
+		"dev": "vite --host 127.0.0.1",
+		"build": "vite build",
+		"preview": "vite preview",
+		"typecheck": "wrangler types && tsc --noEmit",
+		"test": "vitest run",
+		"deploy": "pnpm build && wrangler deploy",
+		"deploy:check": "pnpm build && wrangler deploy --dry-run",
+		"cf:types": "wrangler types",
+		"db:migrate": "wrangler d1 migrations apply DB --local",
+		"db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+		"design": "vite --config vite.design.config.ts"
 	},
 	"dependencies": {
-		"mimetext": "^3.0.24",
-		"postal-mime": "^2.2.5"
+		"@heroui/react": "3.2.7",
+		"@heroui/styles": "3.2.7",
+		"@tailwindcss/vite": "^4.1.0",
+		"drizzle-orm": "0.45.1",
+		"hono": "4.13.18",
+		"lucide-react": "^0.577.0",
+		"openid-client": "6.8.9",
+		"postal-mime": "^2.7.3",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0",
+		"react-router-dom": "^7.13.0",
+		"sanitize-html": "^2.17.0",
+		"tailwindcss": "^4.1.0",
+		"zod": "^4.3.0"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "1.68.0",
+		"@hono/cli": "1.0.0-rc.9",
+		"@types/node": "^22.19.0",
+		"@types/react": "^19.2.0",
+		"@types/react-dom": "^19.2.0",
+		"@types/sanitize-html": "^2.16.0",
+		"@vitejs/plugin-react": "^6.0.0",
+		"typescript": "^5.9.3",
+		"vite": "8.3.8",
+		"vitest": "^4.1.0",
+		"wrangler": "4.160.0",
+		"@cloudflare/vitest-plugin": "1.7.0"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"workerd"
+		]
 	}
 }

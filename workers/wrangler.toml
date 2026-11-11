@@ -1,5 +1,0 @@
-#:schema node_modules/wrangler/config-schema.json
-name = "yourself-email-workers"
-main = "src/index.ts"
-compatibility_date = "2024-04-05"
-node_compat = true

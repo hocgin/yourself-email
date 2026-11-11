@@ -1,0 +1,11 @@
+APP_URL=http://localhost:5173
+# Single administrator SSO login email; unset/invalid means no administrator.
+ADMIN_EMAIL=admin@example.com
+SSO_ISSUER=https://sso.hocgin.top/api/auth
+SSO_CLIENT_ID=
+SSO_CLIENT_SECRET=
+SSO_RESOURCE=
+# For real local SSO use an HTTPS tunnel and register that exact origin/callback.
+
+# Generate with: openssl rand -base64 32. Required for Webhook secret encryption.
+WEBHOOK_MASTER_KEY=
