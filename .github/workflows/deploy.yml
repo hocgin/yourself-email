@@ -1,8 +1,8 @@
 name: Validate and deploy Workers
 on:
-  pull_request:
-  push:
-    branches: [main, "codex/**"]
+  # pull_request:
+  # push:
+  #   branches: [main, "codex/**"]
   workflow_dispatch:
 permissions:
   contents: read
